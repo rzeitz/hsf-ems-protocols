@@ -1,12 +1,13 @@
 // HSF EMS Protocols — Service Worker
 // Caches the entire app for offline use in the field
 
-const CACHE_NAME = 'hsf-ems-v1';
+const CACHE_NAME = 'hsf-ems-v6';
 const ASSETS = [
   './HSF_EMS_Protocols.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './hsf-logo.png'
 ];
 
 // Install: cache all assets immediately

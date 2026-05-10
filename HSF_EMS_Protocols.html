@@ -101,7 +101,81 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .no-res{text-align:center;padding:60px 20px;color:#aaa;}
 .no-res .icon{font-size:48px;display:block;margin-bottom:12px;}
 /* Floating olmc */
-.olmc-btn{position:fixed;bottom:20px;right:16px;background:var(--red);color:#fff;border:none;border-radius:50px;padding:11px 18px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(192,57,43,.45);z-index:200;display:flex;align-items:center;gap:6px;}
+/* OLMC header button */
+.olmc-header-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.5);border-radius:10px;color:#fff;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;flex-shrink:0;line-height:1.2;text-decoration:none;}
+.olmc-header-btn span{font-size:9px;opacity:.85;font-weight:500;}
+/* HSF Logo in header */
+.hsf-logo{width:40px;height:40px;border-radius:8px;object-fit:contain;background:rgba(255,255,255,.15);flex-shrink:0;}
+.hsf-logo-placeholder{width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+/* General Info screen */
+#geninfo{display:none;flex-direction:column;min-height:100vh;}
+.gi-header{background:#37474f;color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.gi-body{flex:1;padding:12px 12px 100px;background:#f2f2f7;}
+.gi-section{background:#fff;border-radius:13px;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.gi-section-hdr{background:#37474f;color:#fff;padding:11px 14px;font-size:13px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.gi-section-hdr .gi-chevron{font-size:16px;transition:transform .2s;}
+.gi-section-hdr.open .gi-chevron{transform:rotate(180deg);}
+.gi-section-body{display:none;padding:13px 14px;}
+.gi-section-body.open{display:block;}
+.gi-section-body p{font-size:13px;line-height:1.65;color:#1c1c1e;margin-bottom:8px;}
+.gi-section-body p:last-child{margin-bottom:0;}
+.gi-section-body ul{padding-left:16px;margin-bottom:8px;}
+.gi-section-body ul li{font-size:13px;line-height:1.65;color:#1c1c1e;margin-bottom:4px;}
+.gi-section-body ol{padding-left:18px;margin-bottom:8px;}
+.gi-section-body ol li{font-size:13px;line-height:1.65;color:#1c1c1e;margin-bottom:4px;}
+.gi-section-body h4{font-size:12px;font-weight:700;color:#37474f;text-transform:uppercase;letter-spacing:.4px;margin:10px 0 5px;}
+.gi-alert{border-radius:8px;padding:10px 12px;margin-bottom:8px;border-left:4px solid;font-size:12.5px;line-height:1.5;}
+.gi-alert-red{background:#fdecea;border-color:#c0392b;color:#c0392b;}
+.gi-alert-amber{background:#fff3e0;border-color:#e65100;color:#bf360c;}
+.gi-alert-blue{background:#e8f0fe;border-color:#1a73e8;color:#1565c0;}
+.gi-alert-green{background:#e8f5e9;border-color:#2e7d32;color:#2e7d32;}
+.gi-hotline{display:flex;align-items:center;gap:10px;background:#fdecea;border-radius:9px;padding:10px 12px;margin-bottom:8px;}
+.gi-hotline-num{font-size:14px;font-weight:700;color:#c0392b;}
+/* Bottom nav 3 items */
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:400px;margin:0 auto;background:#fff;border-top:1px solid #e0e0e0;display:flex;z-index:150;padding-bottom:env(safe-area-inset-bottom);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0 6px;cursor:pointer;border:none;background:none;color:#aaa;font-size:10px;font-weight:500;gap:3px;transition:color .15s;}
+.nav-btn.active{color:var(--red);}
+.nav-btn svg{width:22px;height:22px;}
+/* push list content above nav */
+.proto-list{padding-bottom:100px !important;}
+/* Facilities screen */
+#facilities{display:none;flex-direction:column;min-height:100vh;}
+.fac-header{background:var(--teal);color:#fff;padding:14px 16px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.fac-search-bar{background:rgba(255,255,255,.18);border-radius:10px;display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;}
+.fac-search-bar input{background:none;border:none;color:#fff;font-size:15px;width:100%;outline:none;}
+.fac-search-bar input::placeholder{color:rgba(255,255,255,.6);}
+.fac-county-tabs{display:flex;border-bottom:none;overflow-x:auto;scrollbar-width:none;gap:6px;padding:0 0 10px;}
+.fac-county-tabs::-webkit-scrollbar{display:none;}
+.fac-ctab{flex-shrink:0;padding:5px 13px;font-size:12px;font-weight:600;border-radius:20px;border:1.5px solid rgba(255,255,255,.4);color:rgba(255,255,255,.7);cursor:pointer;background:transparent;transition:all .15s;}
+.fac-ctab.on{background:#fff;color:var(--teal);border-color:#fff;}
+.fac-type-wrap{background:#fff;border-bottom:1px solid #e0e0e0;overflow-x:auto;scrollbar-width:none;white-space:nowrap;padding:8px 12px;}
+.fac-type-wrap::-webkit-scrollbar{display:none;}
+.fac-type-btn{display:inline-block;margin-right:6px;padding:5px 12px;font-size:12px;font-weight:500;border-radius:20px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;transition:all .15s;}
+.fac-type-btn.on{background:var(--teal);border-color:var(--teal);color:#fff;}
+.fac-list{flex:1;overflow-y:auto;padding:12px 12px 100px;}
+.fac-section-hdr{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.6px;margin:14px 0 6px 4px;}
+.fac-card{background:#fff;border-radius:13px;padding:13px 14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.fac-name{font-size:14px;font-weight:700;color:#1c1c1e;margin-bottom:3px;}
+.fac-addr{font-size:12px;color:#888;margin-bottom:7px;line-height:1.4;}
+.fac-caps{display:flex;flex-wrap:wrap;gap:5px;}
+.cap-pill{font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;}
+.cap-adult{background:#e8f0fe;color:#1565c0;}
+.cap-peds{background:#e8f5e9;color:#2e7d32;}
+.cap-ob{background:#fce4ec;color:#880e4f;}
+.cap-psych{background:#f3e5f5;color:#6a1b9a;}
+.cap-trauma{background:#fbe9e7;color:#bf360c;}
+.cap-pedstrauma{background:#fff3e0;color:#e65100;}
+.cap-burn{background:#fff8e1;color:#f57f17;}
+.cap-stroke-csc{background:#fdecea;color:#c0392b;}
+.cap-stroke-psc{background:#fff3e0;color:#e65100;}
+.cap-stemi{background:#fdecea;color:#c0392b;}
+.cap-fsed{background:#eceff1;color:#455a64;}
+.cap-helipad{background:#e0f7fa;color:#006064;}
+.cap-hyperbaric{background:#e8eaf6;color:#283593;}
+.cap-lvad{background:#e0f2f1;color:#004d40;}
+/* Stroke scorer button */
+.score-stroke-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--purple);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:14px;}
 /* Stroke scorer button */
 .score-stroke-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--purple);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:14px;}
 /* Stroke calculator screen */
@@ -177,10 +251,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="home">
   <div class="app-header">
     <div class="header-top">
-      <div>
-        <h1>🚑 HSF EMS Protocols</h1>
+      <img src="hsf-logo.png" alt="HSF EMS Logo" class="hsf-logo" id="hsfLogo" onerror="this.style.display='none';document.getElementById('hsfLogoFallback').style.display='flex';">
+      <div class="hsf-logo-placeholder" id="hsfLogoFallback" style="display:none;">🚑</div>
+      <div style="flex:1;">
+        <h1>HSF EMS Protocols</h1>
         <p>Hatzalah South Florida · REV. 02/2025</p>
       </div>
+      <a href="tel:+13059908950" class="olmc-header-btn">
+        📞 OLMC
+        <span>(305) 990-8950</span>
+      </a>
     </div>
     <div class="search-bar">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -200,6 +280,55 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="detail-body" id="detailBody"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="nav-btn active" id="navProtocols" onclick="switchMainView('protocols')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    Protocols
+  </button>
+  <button class="nav-btn" id="navGenInfo" onclick="switchMainView('geninfo')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    General
+  </button>
+  <button class="nav-btn" id="navFacilities" onclick="switchMainView('facilities')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Facilities
+  </button>
+</nav>
+
+<!-- GENERAL INFORMATION SCREEN -->
+<div id="geninfo">
+  <div class="gi-header">
+    <div style="font-size:19px;font-weight:700;">📋 General Information</div>
+    <div style="font-size:11px;opacity:.85;margin-top:2px;">HSF EMS Protocols · Pages 1–13 · REV. 02/2025</div>
+  </div>
+  <div class="gi-body" id="giBody"></div>
+</div>
+
+<!-- FACILITIES SCREEN -->
+<div id="facilities">
+  <div class="fac-header">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <div>
+        <div style="font-size:19px;font-weight:700;">🏥 Facilities</div>
+        <div style="font-size:11px;opacity:.85;">Protocol 71 · Hospital Matrix</div>
+      </div>
+    </div>
+    <div class="fac-search-bar">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="facSearch" placeholder="Search facilities..." autocomplete="off">
+    </div>
+    <div class="fac-county-tabs">
+      <button class="fac-ctab on" onclick="facSetCounty('all')">All Counties</button>
+      <button class="fac-ctab" onclick="facSetCounty('miami-dade')">Miami-Dade</button>
+      <button class="fac-ctab" onclick="facSetCounty('broward')">Broward</button>
+      <button class="fac-ctab" onclick="facSetCounty('palm-beach')">Palm Beach</button>
+    </div>
+  </div>
+  <div class="fac-type-wrap" id="facTypeWrap"></div>
+  <div class="fac-list" id="facList"></div>
 </div>
 
 <!-- STROKE CALCULATOR SCREEN -->
@@ -300,7 +429,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   </div>
 </div>
-<button class="olmc-btn" id="olmcBtn">📞 OLMC (305) 990-8950</button>
+
 
 <script>
 const PROTOCOLS = [
@@ -416,6 +545,82 @@ sections:[
 {t:'info',text:'<strong>Croup:</strong> Usually <3 yrs old. Sick for days. Low-grade fever. Not toxic appearing. Barky cough.'},
 {t:'danger',text:'<strong>Epiglottitis:</strong> Usually 3–6 yrs. Sudden onset. HIGH fever. Poor impression. Drooling. Tripod position. Do NOT attempt OPA/NPA placement — transport emergently to Comprehensive Pediatric ED.'}]},
 ]},
+
+{id:'advanced-airway-adult',num:66,name:'Advanced Airway Management Adult',cat:'airway',icon:'🫁',color:'#1565c0',bg:'#e3f2fd',level:'p',levelLabel:'Paramedic',
+summary:'Adult · ETI · I-Gel · RSI · Cricothyrotomy · Post-Intubation Sedation',tags:['ETI','I-Gel','RSI','Cricothyrotomy','Etomidate','Ketamine','Versed','EtCO2'],
+sections:[
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Position and suction'},
+{n:3,text:'Pre-oxygenate: <strong>15 LPM via NRB</strong> or <strong>BVM with PEEP Valve</strong>'},
+{n:4,text:'Request ALS assistance (Hatzalah or 1099)'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Perform and record 12-lead EKG'},
+{n:7,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:8,text:'Prepare continuous EtCO2'},
+{n:9,text:'Consider use of adjunct airway devices (supraglottic devices) first'},
+{n:10,text:'<strong>Premedicate:</strong><br><strong>Etomidate 20mg IV</strong> or <strong>0.3mg/kg IV</strong> — may repeat ×1 PRN. Consider half dose for shock. Preferred for: Pregnant, CHF/cardiac, Hypertension.<br><strong>OR Versed (Midazolam) 5mg IV</strong> — may repeat ×1 PRN. CI: Hypotension.<br><strong>OR Ketamine 100mg IV</strong> — may repeat ×1 PRN. Preferred for: Bronchoconstriction, Septic shock, Hypotension, Violent/combative, Head injury with suspected ICP.'},
+{warn:'<strong>Ketamine Contraindications:</strong> Allergy · Acute Coronary Syndrome · Aortic Dissection · Pregnant · Penetrating eye trauma · Non-traumatic chest pain.<br><strong>Caution:</strong> Rapid IV administration → ↑ BP. May worsen schizophrenic symptoms.',cls:'warn'},
+{n:11,text:'<strong>Placement — Direct or Video Laryngoscopy:</strong><br>Confirm with: Continuous capnography · Bilateral lung sounds · Tube condensation · Cords visualized · Negative epigastric sounds.<br>If unsuccessful: reattempt ETT ×1 after pre-oxygenation.<br>→ If unable to place ET or SpO2 drops: <strong>Insert I-Gel</strong>.<br>→ If unable to ventilate with I-Gel: <strong>BVM with NPA/OPA</strong>.<br>→ If all above fail: <strong>Cricothyrotomy</strong>.'},
+{subhdr:'Post-Intubation Sedation'},
+]},
+{title:'Post-Intubation Sedation',type:'numbered',items:[
+{n:1,text:'<strong>Versed (Midazolam) 5mg IV</strong> every 5–10 min — goal RASS score -2 to -3. CI: Hypotension'},
+{n:2,text:'<strong>Fentanyl 25–50mcg IV</strong> every 5 min — goal RASS score -2 to -3'},
+{n:3,text:'<strong>Ketamine 50–100mg IV</strong> every 5 min'},
+{n:4,text:'May use multiple medications to keep patient sedated'},
+{n:5,text:'Contact OLMC (305) 990-8950 for further orders'},
+]},
+{title:'RASS Score — Richmond Agitation & Sedation Scale',type:'rass'},
+{title:'Medications Summary',type:'drugs',items:[
+{name:'Etomidate',dose:'20mg IV or 0.3mg/kg IV; repeat ×1 PRN (half dose in shock)'},
+{name:'Midazolam (Versed)',dose:'5mg IV; repeat ×1 PRN (CI: hypotension)'},
+{name:'Ketamine',dose:'100mg IV; repeat ×1 PRN (half dose in shock)'},
+{name:'Versed — Post-intubation',dose:'5mg IV q5-10min (goal RASS -2 to -3)'},
+{name:'Fentanyl — Post-intubation',dose:'25–50mcg IV q5min (goal RASS -2 to -3)'},
+{name:'Ketamine — Post-intubation',dose:'50–100mg IV q5min'},
+]}]},
+
+{id:'advanced-airway-peds',num:67,name:'Advanced Airway Management Pediatric',cat:'airway',icon:'🫁',color:'#1565c0',bg:'#e3f2fd',level:'p',levelLabel:'Paramedic',
+summary:'Pediatric · ETI · I-Gel · RSI · Cricothyrotomy · Post-Intubation Sedation',tags:['ETI','I-Gel','RSI','Cricothyrotomy','Etomidate','Ketamine','Versed','Atropine','Peds'],
+sections:[
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Position and suction'},
+{n:3,text:'Pre-oxygenate: <strong>15 LPM via NRB</strong> or <strong>BVM</strong>'},
+{n:4,text:'Request ALS assistance (Hatzalah or 1099)'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Perform and record 12-lead EKG'},
+{n:7,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:8,text:'Prepare continuous EtCO2'},
+{n:9,text:'Consider use of adjunct airway devices (supraglottic device) first'},
+{n:10,text:'<strong>Premedicate:</strong><br><strong>Atropine 0.02mg/kg IV/IO</strong> (max dose 0.5mg)<br><strong>Etomidate 0.3mg/kg IV</strong> — may repeat ×1 PRN, max single dose 30mg. Preferred for: CHF/cardiac patients.<br><strong>OR Ketamine 1–1.5mg/kg IV</strong> — may repeat ×1 PRN. Preferred for: Bronchoconstriction, Septic shock, Hypotension, Violent/combative, Head injury with suspected ICP.'},
+{warn:'<strong>Ketamine Contraindications (peds):</strong> Under 3 years old · Allergy · ACS · Aortic Dissection · Penetrating eye trauma · Non-traumatic chest pain.<br><strong>Caution:</strong> Rapid IV administration → ↑ BP and apnea. May worsen schizophrenic symptoms.',cls:'warn'},
+{n:11,text:'<strong>Placement — Direct or Video Laryngoscopy:</strong><br>Confirm with: Continuous capnography · Bilateral lung sounds.<br>If unsuccessful: reattempt ETT ×1 after pre-oxygenation.<br>→ If unable to place tube or SpO2 &lt;90%: <strong>Insert I-Gel</strong>.<br>→ If unable to ventilate with I-Gel: <strong>BVM with NPA/OPA</strong>.<br>→ If all above fail: <strong>Cricothyrotomy</strong>.'},
+{subhdr:'Post-Intubation Sedation'},
+]},
+{title:'Post-Intubation Sedation — Pediatric',type:'numbered',items:[
+{n:1,text:'<strong>Versed (Midazolam) 0.1mg/kg IV</strong> every 5 min — goal RASS -2 to -3. Max single dose 5mg. CI: Hypotension'},
+{n:2,text:'<strong>Fentanyl 1mcg/kg IV</strong> every 5 min — goal RASS -2 to -3'},
+{n:3,text:'<strong>Ketamine 1–1.5mg/kg IV</strong> — max single dose 50mg. See contraindications above. CI: Under 3 years old.'},
+{n:4,text:'May use multiple medications to keep patient sedated'},
+{n:5,text:'Contact OLMC (305) 990-8950 for further orders'},
+]},
+{title:'Medications Summary',type:'drugs',items:[
+{name:'Atropine',dose:'0.02mg/kg IV/IO (max 0.5mg)'},
+{name:'Etomidate',dose:'0.3mg/kg IV; repeat ×1 PRN (max 30mg/dose)'},
+{name:'Ketamine',dose:'1–1.5mg/kg IV; repeat ×1 PRN (CI: <3 yrs old)'},
+{name:'Versed — Post-intubation',dose:'0.1mg/kg IV q5min; max 5mg/dose (CI: hypotension)'},
+{name:'Fentanyl — Post-intubation',dose:'1mcg/kg IV q5min'},
+{name:'Ketamine — Post-intubation',dose:'1–1.5mg/kg IV; max 50mg/dose'},
+]}]},
+
 
 {id:'seizure',num:16,name:'Seizure',cat:'neuro',icon:'⚡',color:'#6a1b9a',bg:'#f3e5f5',level:'all',levelLabel:'All Levels',
 summary:'Adult & Pediatric · Versed · Status Epilepticus',tags:['Versed','Midazolam','Status Epilepticus','BGL','Febrile'],
@@ -809,6 +1014,8 @@ function openProtocol(id) {
         html += `<div class="drug-row"><div class="drug-name">${drug.name}</div><div class="drug-dose">${drug.dose}</div></div>`;
       });
       html += `</div>`;
+    } else if (sec.type === 'rass') {
+      html += buildRASSTable();
     } else if (sec.type === 'cincinnati') {
       html += `<div id="inline-cinn-widget" class="dsec-card" style="padding:12px 14px;"></div>`;
     } else if (sec.type === 'rhythm') {
@@ -853,7 +1060,7 @@ document.getElementById('searchInput').addEventListener('input', e => {
   if (searchTerm) { activeCat = 'all'; document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); document.querySelector('.tab').classList.add('active'); }
   renderList();
 });
-document.getElementById('olmcBtn').addEventListener('click', () => { window.location.href = 'tel:+13059908950'; });
+
 
 document.getElementById('backBtn').onclick = () => {
   document.getElementById('detail').style.display = 'none';
@@ -868,7 +1075,7 @@ document.getElementById('searchInput').addEventListener('input', e => {
   if (searchTerm) { activeCat = 'all'; document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); document.querySelector('.tab').classList.add('active'); }
   renderList();
 });
-document.getElementById('olmcBtn').addEventListener('click', () => { window.location.href = 'tel:+13059908950'; });
+
 
 // ── STROKE WIZARD ─────────────────────────────────────────────────────
 const SC_CINN = [
@@ -1113,6 +1320,561 @@ function scFullReset() {
 
 
 
+
+
+// ── GENERAL INFORMATION DATA & RENDERER ───────────────────────────────
+const GEN_INFO_SECTIONS = [
+  {
+    title: 'About These Protocols',
+    icon: '📄',
+    content: `
+      <p>These protocols are intended to guide and direct patient care by Hatzalah South Florida EMS, EMTs and Paramedics. They reflect the current evidence-based practice and consensus of content experts.</p>
+      <p>These protocols are not intended to be absolute treatment documents, rather as principles and directives which are sufficiently flexible to accommodate the complexity of patient management.</p>
+      <div class="gi-alert gi-alert-red"><strong>THESE PROTOCOLS ARE NOT A SUBSTITUTE FOR GOOD CLINICAL JUDGMENT.</strong> Any deviations from protocol shall be made with every attempt to consult online medical control. Clear documentation of the deviation is required and will be reviewed per QA/QI procedure.</div>
+      <h4>Medical Director</h4>
+      <p><strong>Dr. Yoram Gutfruend, MD, EMT-P</strong></p>
+      <h4>Administration</h4>
+      <p><strong>Chief Jeff Levy, EMT-P</strong> — EMS Director</p>
+      <h4>Medical Advisory Board</h4>
+      <ul>
+        <li>Yoram Gutfruend, MD, EMT-P</li>
+        <li>Jay Feldman, MD, EMT</li>
+        <li>Jonathan Auerbach, MD, EMT-P</li>
+        <li>Nachum Caplan, BSN, RN, EMT-P</li>
+        <li>Jonah Bardos, MD, MBE, EMT-P</li>
+      </ul>`
+  },
+  {
+    title: 'Scene Safety',
+    icon: '⚠️',
+    content: `
+      <p>It is the responsibility of EMTs and Paramedics to assess the scene for safety. Safety factors include, but are not limited to:</p>
+      <ul>
+        <li>Environmental conditions</li>
+        <li>Crowd and/or traffic control</li>
+        <li>Potentially dangerous patient(s) or family member(s)</li>
+        <li>HAZMAT situations</li>
+        <li>Fires or criminal acts in progress</li>
+        <li>Other unusual public health or safety emergencies</li>
+      </ul>
+      <div class="gi-alert gi-alert-amber">EMTs and Paramedics must use caution in situations they are not trained or equipped to handle. FD must be notified for MCIs, unscheduled medevac transports, HAZMAT, fires or crimes in progress, or unusual public health or safety emergencies.</div>`
+  },
+  {
+    title: 'Level of Care',
+    icon: '🏥',
+    content: `
+      <ol>
+        <li><strong>EMT</strong> — Follow all BLS guidelines per Florida Law</li>
+        <li><strong>ALS Assist</strong> — Only trained and approved members may initiate advanced therapies when a Paramedic is present, with permission of the Primary Paramedic on scene</li>
+        <li><strong>Paramedic</strong> — Follow all ALS guidelines per Florida Law</li>
+        <li><strong>OLMC</strong> — All members may utilize online medical control and initiate care per their scope</li>
+        <li><strong>1099</strong> — The 911 system</li>
+      </ol>
+      <div class="gi-hotline">
+        <span style="font-size:22px;">📞</span>
+        <div>
+          <div style="font-size:11px;color:#888;font-weight:600;">OLMC — Online Medical Control</div>
+          <div class="gi-hotline-num">(305) 990-8950</div>
+        </div>
+      </div>`
+  },
+  {
+    title: 'Medication Administration',
+    icon: '💊',
+    content: `
+      <div class="gi-alert gi-alert-blue">Prior to administering any medication: inquire about allergies, check name/expiration/color/clarity, and follow the <strong>6 Rights: Patient, Drug, Dose, Time, Route, Documentation.</strong></div>
+      <p>A true allergy causes rash, SOB, swelling of tongue, face and/or throat.</p>
+      <h4>Intravenous Sites (IV)</h4>
+      <ul>
+        <li>Upper extremities ONLY for adults. Feet acceptable for pediatrics when upper extremity IV is not possible.</li>
+        <li>Any location acceptable in cardiac arrest or peri-arrest where IO would be considered.</li>
+        <li><strong>All medications given to patients with a pulse should be given slow IV (over 2 minutes) unless otherwise stated.</strong></li>
+      </ul>
+      <h4>IM Injections</h4>
+      <ul>
+        <li><strong>Infants/small children:</strong> Lateral thigh (0.5–1mL max). If >1mL needed, split between both thighs.</li>
+        <li><strong>Adults/large children:</strong> Lateral thigh (4mL max) or deltoid. If >4mL needed, split between both thighs.</li>
+      </ul>
+      <h4>Mucosal Atomization Device (MAD)</h4>
+      <p>The following medications can be administered via MAD: <strong>Versed, Narcan, Fentanyl, Ketamine.</strong></p>`
+  },
+  {
+    title: 'Intraosseous Access (EZ-IO)',
+    icon: '🦴',
+    content: `
+      <p>IO should be placed for patients with emergency medical conditions requiring urgent vascular access in whom IV is not immediately obtainable or deemed insufficient.</p>
+      <h4>Adult IO Locations</h4>
+      <ul>
+        <li>Proximal Humerus</li>
+        <li>Proximal Tibia</li>
+        <li>Distal Tibia</li>
+      </ul>
+      <h4>Pediatric IO Locations</h4>
+      <ul>
+        <li>Distal Femur (preferred for &lt;6 years old)</li>
+        <li>Proximal Tibia</li>
+        <li>Distal Tibia</li>
+        <li>Proximal Humerus (only if surgical neck can be palpated)</li>
+      </ul>`
+  },
+  {
+    title: 'Pre-Existing Central Venous Lines',
+    icon: '🩸',
+    content: `
+      <ul>
+        <li>For unstable patients including cardiac arrest, Paramedics may consider using already established PICC lines in upper extremities under standing orders.</li>
+        <li><strong>All other central lines (ports from neck or chest) require OLMC (305) 990-8950 approval prior to use.</strong></li>
+        <li>Port-a-Caths and Hickman Ports shall NOT be used — beyond Paramedic scope of practice.</li>
+        <li>Dialysis catheters or shunts shall not be accessed in the out-of-hospital environment. Contact OLMC for emergency use.</li>
+      </ul>
+      <div class="gi-alert gi-alert-red">Never attempt to clear an obstructed line. Any line that cannot be easily flushed with 10mL crystalloid with blood return should be considered non-functional.</div>`
+  },
+  {
+    title: 'Pediatric Guidelines',
+    icon: '👶',
+    content: `
+      <h4>Age Classifications</h4>
+      <ul>
+        <li><strong>Neonates:</strong> Birth to 1 month</li>
+        <li><strong>Infants:</strong> 1 month to 1 year</li>
+        <li><strong>Children:</strong> 1 year to puberty</li>
+      </ul>
+      <h4>Puberty Definitions</h4>
+      <ul>
+        <li>Female: breast development</li>
+        <li>Male: underarm, chest, or facial hair</li>
+        <li>Once puberty is reached: use adult guidelines</li>
+      </ul>
+      <h4>Age Thresholds</h4>
+      <ul>
+        <li><strong>Medical ED:</strong> Pediatric = 17 y/o or younger / 18 = adult</li>
+        <li><strong>Trauma Alerts:</strong> Pediatric = 15 y/o or younger / 16 = adult trauma</li>
+      </ul>
+      <div class="gi-alert gi-alert-blue">Use the <strong>Pediatric Dosing Measuring Device (Broselow)</strong> for all pediatric patients — medication dosages, equipment, electrical therapy, and vital signs. IO is the preferred vascular access method during pediatric cardiac arrest.</div>`
+  },
+  {
+    title: 'Consent',
+    icon: '📝',
+    content: `
+      <h4>Who Can Refuse Care</h4>
+      <p>Any mentally competent adult (18+) has the right to refuse medical care, treatment, and/or transportation, including:</p>
+      <ul>
+        <li>Emancipated minors</li>
+        <li>Self-sufficient minors</li>
+        <li>Married minors</li>
+        <li>Minors in the military</li>
+      </ul>
+      <h4>Patients NOT Able to Refuse</h4>
+      <ul>
+        <li>Altered mental status (GCS &lt;15 or below baseline)</li>
+        <li>Suicide attempt (actual or verbal threat)</li>
+        <li>Severely altered vital signs</li>
+        <li>Mental retardation or deficiency</li>
+        <li>Not acting as a reasonable person would under the same circumstances</li>
+        <li>Under 18 years of age (except emancipated minors)</li>
+      </ul>
+      <div class="gi-alert gi-alert-amber"><strong>Anyone who refuses treatment must have a documented GCS of 15.</strong> Hatzalah personnel must contact the RMA Hotline prior to releasing any patient.</div>`
+  },
+  {
+    title: 'Baker Act (FS 394.463)',
+    icon: '⚖️',
+    content: `
+      <p>Florida's Baker Act provides emergency services and temporary detention up to <strong>72 hours</strong> for mental health examination. The Baker Act does NOT guarantee long-term placement.</p>
+      <h4>Criteria — All must be met</h4>
+      <ol>
+        <li>There is reason to believe the individual has a mental illness</li>
+        <li>Due to the mental illness, the individual has refused or is unable to determine if examination is necessary; AND either:</li>
+        <li>Without care or treatment, the individual is unlikely to care for themselves which may result in substantial harm; OR</li>
+        <li>Based on recent behavior, without treatment, the individual is likely to pose a serious threat to themselves or others</li>
+      </ol>`
+  },
+  {
+    title: 'Incapacitated Persons Law (FS 401.445)',
+    icon: '⚖️',
+    content: `
+      <p>Patients who have a medical emergency and lack capacity to refuse transport shall be transported to the appropriate Emergency Department for evaluation.</p>
+      <p>No recovery shall be allowed against any EMT, paramedic, or physician in an action brought for examining or treating a patient without informed consent if:</p>
+      <ol>
+        <li>The patient is intoxicated, under the influence of drugs, or otherwise incapable of providing informed consent</li>
+        <li>The patient is experiencing an emergency medical condition</li>
+        <li>The patient would reasonably undergo such examination or treatment if properly advised</li>
+      </ol>
+      <div class="gi-alert gi-alert-blue">Examination and treatment under this subsection shall be limited to reasonable examination to determine the medical condition and treatment reasonably necessary to alleviate the emergency or stabilize the patient.</div>`
+  },
+  {
+    title: 'Care for Minors',
+    icon: '👦',
+    content: `
+      <ul>
+        <li>Treatment of minors shall include informed parental consent when possible.</li>
+        <li>Any minor with a limb or life-threatening condition shall be treated and transported without delay.</li>
+        <li>For consent purposes: &lt;18 years old = minor; ≥18 years = adult.</li>
+      </ul>
+      <h4>Emergency Care Without Parental Consent (FS 743.064)</h4>
+      <p>Consent is not required if:</p>
+      <ul>
+        <li>Delay would endanger the health or physical well-being of the minor, OR</li>
+        <li>Parents/guardians cannot be located or minor cannot identify them</li>
+      </ul>
+      <h4>Order of Priority for Consent (if parent unavailable)</h4>
+      <ol>
+        <li>Person with power of attorney for medical consent</li>
+        <li>Stepparent</li>
+        <li>Grandparent</li>
+        <li>Adult sibling</li>
+        <li>Adult aunt or uncle</li>
+        <li>DCFS/Department of Juvenile Justice caseworker</li>
+      </ol>
+      <h4>Service Animals</h4>
+      <p>Service dogs are the only approved service animals that can be transported with a patient. The dog will be tethered to the stretcher. Transport via another vehicle if animal interferes with patient care or scene safety.</p>`
+  },
+  {
+    title: 'Suspected Abuse Reporting',
+    icon: '🚨',
+    content: `
+      <div class="gi-alert gi-alert-red"><strong>Mandatory Reporting (FS 415.504):</strong> Any person who knows or has reasonable cause to suspect child abuse, abandonment, or neglect SHALL report it. Failure to report is a misdemeanor of the second degree.</div>
+      <h4>How to Report</h4>
+      <div class="gi-hotline">
+        <span style="font-size:22px;">📞</span>
+        <div>
+          <div style="font-size:11px;color:#888;font-weight:600;">Florida Abuse Hotline — 24/7</div>
+          <div class="gi-hotline-num">1-800-96-ABUSE (1-800-962-2873)</div>
+        </div>
+      </div>
+      <ul>
+        <li>Press 1 — Elder or vulnerable adult abuse/neglect/exploitation</li>
+        <li>Press 2 — Child abuse, neglect, or abandonment</li>
+        <li>TDD (Deaf): 1-800-453-5145</li>
+        <li>Fax: 1-800-914-0004</li>
+      </ul>
+      <h4>F.R.E.E. Program (Elder Services)</h4>
+      <ul>
+        <li>Phone: 954-745-9779</li>
+        <li>Fax: 954-745-9566</li>
+      </ul>
+      <h4>Sexual Assault</h4>
+      <p>All suspected sexual assault victims require assessment and transport to the closest Emergency Department for medical clearance. Police will arrange transport from ED to Rape Treatment Center.</p>
+      <div class="gi-alert gi-alert-amber">The HSF provider shall visually assess the scene for evidence of possible abuse, record findings in ePCR, and request a supervisor be dispatched to scene. A verbal report shall be given to hospital staff upon arrival.</div>`
+  },
+  {
+    title: 'Operations & Documentation',
+    icon: '📋',
+    content: `
+      <h4>Patient Release at Hospital</h4>
+      <p>A HSF provider may not release a patient until they have provided the ED nurse, physician's assistant, or physician with a face-to-face verbal transfer of pertinent information. The name, title, and signature of the receiving provider must be recorded in the ePCR.</p>
+      <h4>Documentation</h4>
+      <ul>
+        <li>An ePCR will be completed on every Hatzalah South Florida call.</li>
+        <li>All ePCRs should be completed as soon as possible — preferably prior to leaving the hospital (for transports) or scene (for RMAs).</li>
+      </ul>
+      <h4>Patient in Possession of a Weapon</h4>
+      <div class="gi-alert gi-alert-red">When a patient is armed and the scene is unsafe: <strong>withdraw and request law enforcement.</strong> The patient will not be examined or transported until the weapon is surrendered to law enforcement. Under no circumstances will a member impound a weapon.</div>
+      <p>For any patient who appears violent or has a known mental health history, consider Police for clearing the patient before transport.</p>`
+  },
+];
+
+let giInitialized = false;
+
+function giInit() {
+  if (giInitialized) return;
+  giInitialized = true;
+  const body = document.getElementById('giBody');
+  body.innerHTML = GEN_INFO_SECTIONS.map((sec, idx) => `
+    <div class="gi-section">
+      <div class="gi-section-hdr" id="gihdr-${idx}" onclick="giToggle(${idx})">
+        <span>${sec.icon} ${sec.title}</span>
+        <span class="gi-chevron">▼</span>
+      </div>
+      <div class="gi-section-body" id="gibody-${idx}">${sec.content}</div>
+    </div>`).join('');
+  // Open first section by default
+  giToggle(0);
+}
+
+function giToggle(idx) {
+  const hdr = document.getElementById('gihdr-' + idx);
+  const body = document.getElementById('gibody-' + idx);
+  const isOpen = body.classList.contains('open');
+  hdr.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+// ── FACILITIES DATA (Protocol 71) ─────────────────────────────────────
+const FACILITIES = [
+  // ── MIAMI-DADE ────────────────────────────────────────────────────
+  {name:'Baptist',county:'miami-dade',addr:'8900 North Kendall Drive, Miami, FL 33176',caps:['adult','peds','ob-gen','ob-hr','stroke-csc','stemi','helipad']},
+  {name:'Baptist-Coral Way West FSED',county:'miami-dade',addr:'14591 SW 26 Street, Miami, FL 33175',caps:['adult','fsed']},
+  {name:'Baptist-Country Walk FSED',county:'miami-dade',addr:'14150 SW 136 Street, Miami, FL 33186',caps:['adult','fsed']},
+  {name:'Baptist-Doctors',county:'miami-dade',addr:'5000 University Drive, Coral Gables, FL 33146',caps:['adult','peds']},
+  {name:'Baptist Doral',county:'miami-dade',addr:'9500 NW 58 Street, Doral, FL 33178',caps:['adult']},
+  {name:'Baptist-Homestead',county:'miami-dade',addr:'975 Baptist Way, Homestead, FL 33033',caps:['adult','peds','ob-gen','ob-hr','psych','helipad']},
+  {name:'Baptist West',county:'miami-dade',addr:'9555 SW 162 Avenue, Miami, FL 33196',caps:['adult','ob-gen','ob-hr','stroke-psc','helipad']},
+  {name:'HCA FL Aventura',county:'miami-dade',addr:'20900 Biscayne Blvd, Aventura, FL 33180',caps:['adult','peds','psych','stroke-csc','stemi','trauma-adult','helipad']},
+  {name:'HCA FL Doral FSED',county:'miami-dade',addr:'10915 NW 41 Street, Doral, FL 33178',caps:['adult','peds','psych','fsed']},
+  {name:'HCA FL Kendall',county:'miami-dade',addr:'11750 Bird Road, Miami, FL 33175',caps:['adult','peds','ob-gen','ob-hr','psych','trauma-adult','burn','stroke-csc','stemi','helipad']},
+  {name:'HCA FL Mercy',county:'miami-dade',addr:'3663 S Miami Ave, Miami, FL 33133',caps:['adult','ob-gen','psych','stroke-psc','stemi','hyperbaric','helipad']},
+  {name:'HCA FL Town & Country FSED',county:'miami-dade',addr:'11800 Sherry Lane, Miami, FL 33183',caps:['adult','peds','psych','fsed']},
+  {name:'Jackson West Medical Center',county:'miami-dade',addr:'2801 NW 79th Ave, Doral, FL 33122',caps:['adult','peds','ob-gen']},
+  {name:'JMH North',county:'miami-dade',addr:'160 NW 170th St, North Miami Beach, FL 33169',caps:['adult','peds','ob-gen','ob-hr','stroke-psc','stemi']},
+  {name:'JMH South',county:'miami-dade',addr:'9333 SW 152nd St, Palmetto Bay, FL 33157',caps:['adult','ob-gen','psych','peds','trauma-adult','stroke-psc','stemi','helipad']},
+  {name:'JMH Ryder Trauma',county:'miami-dade',addr:'1611 NW 12th Ave, Miami, FL 33136',caps:['adult','peds','ob-gen','ob-hr','psych','trauma-adult','burn','stroke-csc','stemi','helipad','lvad']},
+  {name:'Larkin',county:'miami-dade',addr:'7031 SW 62nd Ave, South Miami, FL 33143',caps:['adult','peds','psych']},
+  {name:'Larkin Palm Springs',county:'miami-dade',addr:'1475 W 49th Pl, Hialeah, FL 33012',caps:['adult','stroke-psc']},
+  {name:'Mount Sinai',county:'miami-dade',addr:'4300 Alton Rd, Miami Beach, FL 33140',caps:['adult','peds','ob-gen','ob-hr','psych','stroke-csc','stemi','helipad']},
+  {name:'Mount Sinai-Aventura FSED',county:'miami-dade',addr:'2845 NE 199th St, Miami, FL 33180',caps:['adult','peds','psych','fsed']},
+  {name:'Mount Sinai-Hialeah FSED',county:'miami-dade',addr:'6050 W 20th Ave, Hialeah, FL 33016',caps:['adult','peds','psych','fsed']},
+  {name:'Nicklaus Children\'s',county:'miami-dade',addr:'3100 SW 62nd Ave, Miami, FL 33155',caps:['peds','trauma-peds','psych','helipad']},
+  {name:'South Miami',county:'miami-dade',addr:'6200 SW 73rd St, South Miami, FL 33143',caps:['adult','ob-gen','ob-hr','stroke-psc','stemi']},
+  {name:'Steward Coral Gables',county:'miami-dade',addr:'3100 SW 37th Ave, Miami, FL 33134',caps:['adult','stroke-psc']},
+  {name:'Steward Coral Gables-Bird Road FSED',county:'miami-dade',addr:'8665 Bird Rd, Miami, FL 33155',caps:['adult','fsed']},
+  {name:'Steward Hialeah',county:'miami-dade',addr:'651 E 25th St, Hialeah, FL 33013',caps:['adult','stroke-psc']},
+  {name:'Steward North Shore Medical Center',county:'miami-dade',addr:'1100 NW 95th St, Miami, FL 33150',caps:['adult','ob-gen','ob-hr','psych','stroke-csc','stemi']},
+  {name:'Steward Palmetto General',county:'miami-dade',addr:'2001 W 68th St, Hialeah, FL 33016',caps:['adult','peds','ob-gen','ob-hr','stroke-csc','stemi','helipad']},
+  {name:'University of Miami Hospital',county:'miami-dade',addr:'1400 NW 12th Ave, Miami, FL 33136',caps:['adult','peds','stroke-psc','stemi']},
+  {name:'Veterans',county:'miami-dade',addr:'1201 NW 16th St, Miami, FL 33125',caps:['adult','peds','stroke-psc']},
+  {name:'Westchester-Keralty Hospital',county:'miami-dade',addr:'2500 SW 75th Ave, Miami, FL 33155',caps:['adult','ob-gen','psych']},
+  // ── BROWARD ───────────────────────────────────────────────────────
+  {name:'Broward Health Coral Springs',county:'broward',addr:'3000 Coral Hills Dr, Coral Springs, FL 33065',caps:['adult','ob-gen','stroke-psc']},
+  {name:'Broward Health Imperial Point',county:'broward',addr:'6401 N Federal Hwy, Fort Lauderdale, FL 33308',caps:['adult','psych','stroke-psc']},
+  {name:'Broward Health Medical Center',county:'broward',addr:'1600 S Andrews Ave, Fort Lauderdale, FL 33316',caps:['adult','peds','psych','trauma-adult','stroke-csc','stemi']},
+  {name:'Broward Health North',county:'broward',addr:'201 E Sample Rd, Deerfield Beach, FL 33064',caps:['adult','peds','trauma-adult','stroke-csc','stemi']},
+  {name:'Cleveland Clinic',county:'broward',addr:'2950 Cleveland Clinic Blvd, Weston, FL 33331',caps:['adult','peds','psych','stroke-csc','stemi','lvad']},
+  {name:'Florida Medical Center',county:'broward',addr:'5000 W Oakland Park Blvd, Fort Lauderdale, FL 33313',caps:['adult','stroke-csc','stemi']},
+  {name:'HCA FL Plantation Freestanding',county:'broward',addr:'401 NW 42nd Ave, Plantation, FL 33317',caps:['adult','fsed']},
+  {name:'HCA FL University',county:'broward',addr:'3476 S University Dr, Davie, FL 33328',caps:['adult','ob-gen']},
+  {name:'HCA FL Woodmont',county:'broward',addr:'7201 N University Dr, Tamarac, FL 33321',caps:['adult','psych']},
+  {name:'HCA Florida Northwest',county:'broward',addr:'2801 N State Rd 7, Margate, FL 33063',caps:['adult','peds','ob-gen','stemi']},
+  {name:'HCA Florida Westside',county:'broward',addr:'8201 W Broward Blvd, Plantation, FL 33324',caps:['adult','stemi']},
+  {name:'Holy Cross Hospital',county:'broward',addr:'4725 N Federal Hwy, Fort Lauderdale, FL 33308',caps:['adult','peds','stemi']},
+  {name:'Memorial Hospital West',county:'broward',addr:'703 N Flamingo Rd, Pembroke Pines, FL 33028',caps:['adult','peds','ob-gen','stroke-csc','stemi','helipad','lvad']},
+  {name:'Memorial Miramar',county:'broward',addr:'1901 SW 172nd Ave, Miramar, FL 33029',caps:['adult','peds','ob-gen','ob-hr']},
+  {name:'Memorial Pembroke',county:'broward',addr:'7800 Sheridan St, Pembroke Pines, FL 33024',caps:['adult','peds','stroke-psc']},
+  {name:'Memorial Regional',county:'broward',addr:'3501 Johnson Street, Hollywood, FL 33021',caps:['adult','peds','ob-gen','ob-hr','psych','trauma-adult','stroke-csc','stemi','helipad','lvad']},
+  {name:'Memorial South',county:'broward',addr:'3600 Washington Street, Hollywood, FL 33021',caps:['adult','peds']},
+  {name:'The Emergency Center at Coconut Creek',county:'broward',addr:'4890 State Road 7, Coconut Creek, FL 33073',caps:['adult','peds','fsed']},
+  // ── PALM BEACH ────────────────────────────────────────────────────
+  {name:'Bethesda East',county:'palm-beach',addr:'2815 S Seacrest Blvd, Boynton Beach, FL 33435',caps:['adult','peds','stroke-psc']},
+  {name:'Bethesda West',county:'palm-beach',addr:'9655 Boynton Beach Blvd, Boynton Beach, FL 33472',caps:['adult','stroke-psc']},
+  {name:'Boca Regional',county:'palm-beach',addr:'800 Meadows Rd, Boca Raton, FL 33486',caps:['adult','peds','stroke-csc','stemi']},
+  {name:'Delray Medical Center',county:'palm-beach',addr:'5352 Linton Blvd, Delray Beach, FL 33484',caps:['adult','peds','ob-gen','psych','trauma-adult','stroke-csc','stemi','helipad']},
+  {name:'Good Samaritan Medical Center',county:'palm-beach',addr:'1309 N Flagler Dr, West Palm Beach, FL 33401',caps:['adult','stroke-psc']},
+  {name:'HCA Palms West',county:'palm-beach',addr:'13001 Southern Blvd, Loxahatchee, FL 33470',caps:['adult','stroke-psc']},
+  {name:'JFK Medical Center',county:'palm-beach',addr:'5301 S Congress Ave, Atlantis, FL 33462',caps:['adult','peds','stroke-csc','stemi','lvad']},
+  {name:'Jupiter Medical Center',county:'palm-beach',addr:'1210 S Old Dixie Hwy, Jupiter, FL 33458',caps:['adult','stroke-psc']},
+  {name:'Palm Beach Gardens Medical',county:'palm-beach',addr:'3360 Burns Rd, Palm Beach Gardens, FL 33410',caps:['adult','stroke-psc']},
+  {name:'St. Mary\'s Medical Center',county:'palm-beach',addr:'901 45th St, West Palm Beach, FL 33407',caps:['adult','peds','ob-gen','psych','trauma-adult','trauma-peds','hyperbaric']},
+  {name:'Wellington Regional',county:'palm-beach',addr:'10101 Forest Hill Blvd, Wellington, FL 33414',caps:['adult','stroke-psc']},
+  {name:'West Boca Medical',county:'palm-beach',addr:'21644 State Rd 7, Boca Raton, FL 33428',caps:['adult','peds','ob-gen','psych','stroke-psc','helipad']},
+];
+
+const CAP_META = {
+  'adult':       {label:'Adult ED',        cls:'cap-adult'},
+  'peds':        {label:'Pediatric ED',    cls:'cap-peds'},
+  'ob-gen':      {label:'OB General',      cls:'cap-ob'},
+  'ob-hr':       {label:'OB High Risk',    cls:'cap-ob'},
+  'psych':       {label:'Psych',           cls:'cap-psych'},
+  'trauma-adult':{label:'Adult Trauma',    cls:'cap-trauma'},
+  'trauma-peds': {label:'Peds Trauma',     cls:'cap-pedstrauma'},
+  'burn':        {label:'Burn Center',     cls:'cap-burn'},
+  'stroke-csc':  {label:'Stroke CSC',      cls:'cap-stroke-csc'},
+  'stroke-psc':  {label:'Stroke PSC',      cls:'cap-stroke-psc'},
+  'stemi':       {label:'STEMI Center',    cls:'cap-stemi'},
+  'fsed':        {label:'FSED',            cls:'cap-fsed'},
+  'helipad':     {label:'Helipad',         cls:'cap-helipad'},
+  'hyperbaric':  {label:'Hyperbaric',      cls:'cap-hyperbaric'},
+  'lvad':        {label:'LVAD',            cls:'cap-lvad'},
+};
+
+const FAC_TYPES = [
+  {id:'all',      label:'All'},
+  {id:'trauma-adult', label:'Trauma'},
+  {id:'stroke-csc',   label:'Stroke CSC'},
+  {id:'stroke-psc',   label:'Stroke PSC'},
+  {id:'stemi',        label:'STEMI'},
+  {id:'burn',         label:'Burn'},
+  {id:'peds',         label:'Pediatric'},
+  {id:'ob-gen',       label:'OB'},
+  {id:'psych',        label:'Psych'},
+  {id:'helipad',      label:'Helipad'},
+  {id:'lvad',         label:'LVAD'},
+  {id:'hyperbaric',   label:'Hyperbaric'},
+  {id:'fsed',         label:'FSED'},
+];
+
+let facCounty = 'all';
+let facType = 'all';
+let facSearch = '';
+
+function facInit() {
+  // Build type filter buttons
+  const wrap = document.getElementById('facTypeWrap');
+  FAC_TYPES.forEach(t => {
+    const btn = document.createElement('span');
+    btn.className = 'fac-type-btn' + (t.id === 'all' ? ' on' : '');
+    btn.textContent = t.label;
+    btn.onclick = () => {
+      facType = t.id;
+      document.querySelectorAll('.fac-type-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      renderFacilities();
+    };
+    wrap.appendChild(btn);
+  });
+
+  document.getElementById('facSearch').addEventListener('input', e => {
+    facSearch = e.target.value.trim().toLowerCase();
+    renderFacilities();
+  });
+
+  renderFacilities();
+}
+
+function facSetCounty(county) {
+  facCounty = county;
+  document.querySelectorAll('.fac-ctab').forEach(t => t.classList.remove('on'));
+  event.target.classList.add('on');
+  renderFacilities();
+}
+
+function renderFacilities() {
+  const list = document.getElementById('facList');
+  let filtered = FACILITIES.filter(f => {
+    const countyOk = facCounty === 'all' || f.county === facCounty;
+    const typeOk   = facType === 'all' || f.caps.includes(facType);
+    const searchOk = !facSearch ||
+      f.name.toLowerCase().includes(facSearch) ||
+      f.addr.toLowerCase().includes(facSearch);
+    return countyOk && typeOk && searchOk;
+  });
+
+  if (!filtered.length) {
+    list.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#aaa;"><div style="font-size:40px;margin-bottom:12px;">🏥</div><p style="font-size:14px;">No facilities match your filters.</p></div>`;
+    return;
+  }
+
+  const countyLabels = {'miami-dade':'Miami-Dade County','broward':'Broward County','palm-beach':'Palm Beach County'};
+  const grouped = {};
+  filtered.forEach(f => {
+    if (!grouped[f.county]) grouped[f.county] = [];
+    grouped[f.county].push(f);
+  });
+
+  const order = ['miami-dade','broward','palm-beach'];
+  let html = '';
+  order.forEach(county => {
+    if (!grouped[county]) return;
+    if (facCounty === 'all') html += `<div class="fac-section-hdr">${countyLabels[county]}</div>`;
+    grouped[county].sort((a,b) => a.name.localeCompare(b.name)).forEach(f => {
+      const pillsHtml = f.caps.map(c => {
+        const m = CAP_META[c];
+        return m ? `<span class="cap-pill ${m.cls}">${m.label}</span>` : '';
+      }).join('');
+      html += `<div class="fac-card">
+        <div class="fac-name">${f.name}</div>
+        <div class="fac-addr">📍 ${f.addr}</div>
+        <div class="fac-caps">${pillsHtml}</div>
+      </div>`;
+    });
+  });
+  list.innerHTML = html;
+}
+
+function switchMainView(view) {
+  const home = document.getElementById('home');
+  const fac  = document.getElementById('facilities');
+  const gi   = document.getElementById('geninfo');
+  const btnP = document.getElementById('navProtocols');
+  const btnF = document.getElementById('navFacilities');
+  const btnG = document.getElementById('navGenInfo');
+  // Hide all
+  home.style.display = 'none';
+  fac.style.display  = 'none';
+  gi.style.display   = 'none';
+  [btnP, btnF, btnG].forEach(b => b.classList.remove('active'));
+  if (view === 'protocols') {
+    home.style.display = 'block';
+    btnP.classList.add('active');
+  } else if (view === 'facilities') {
+    fac.style.display = 'flex';
+    btnF.classList.add('active');
+    facInit();
+  } else {
+    gi.style.display = 'flex';
+    btnG.classList.add('active');
+    giInit();
+  }
+}
+
+
+// ── RASS SCORE TABLE BUILDER ──────────────────────────────────────────
+function buildRASSTable() {
+  const rows = [
+    {score:'+4', label:'Combative',         desc:'Violent, immediate danger to staff',                                              cat:'agitated', target:false},
+    {score:'+3', label:'Very agitated',     desc:'Pulls at or removes tubes, aggressive',                                          cat:'agitated', target:false},
+    {score:'+2', label:'Agitated',          desc:'Frequent non-purposeful movements, fights ventilator',                           cat:'agitated', target:false},
+    {score:'+1', label:'Restless',          desc:'Anxious, apprehensive but movements not aggressive or vigorous',                  cat:'agitated', target:false},
+    {score: '0', label:'Alert & calm',      desc:'',                                                                               cat:'alert',    target:false},
+    {score:'-1', label:'Drowsy',            desc:'Not fully alert, sustained awakening to voice (eye opening & contact >10 secs)', cat:'sedated',  target:false},
+    {score:'-2', label:'Light sedation',    desc:'Briefly awakens to voice (eye opening & contact < 10 secs)',                     cat:'sedated',  target:true},
+    {score:'-3', label:'Moderate sedation', desc:'Movement or eye-opening to voice (no eye contact)',                              cat:'sedated',  target:true},
+    {score:'-4', label:'Deep sedation',     desc:'No response to voice, but movement or eye opening to physical stimulation',      cat:'deep',     target:false},
+    {score:'-5', label:'Un-rousable',       desc:'No response to voice or physical stimulation',                                   cat:'deep',     target:false},
+  ];
+
+  const catColor = {
+    agitated: {bg:'#fdecea', border:'#e74c3c', text:'#c0392b', badge:'Agitated'},
+    alert:    {bg:'#e8f5e9', border:'#2e7d32', text:'#2e7d32', badge:'Alert'},
+    sedated:  {bg:'#e8f0fe', border:'#1a73e8', text:'#1565c0', badge:'Target Zone'},
+    deep:     {bg:'#eceff1', border:'#607d8b', text:'#455a64', badge:'Deep'},
+  };
+
+  let rowsHtml = '';
+  rows.forEach(r => {
+    const c = catColor[r.cat];
+    const isTarget = r.target;
+    const scoreStyle = `font-size:15px;font-weight:700;width:36px;flex-shrink:0;text-align:center;color:${c.text};`;
+    const targetBadge = isTarget
+      ? `<span style="font-size:9px;font-weight:700;background:#1a73e8;color:#fff;border-radius:4px;padding:2px 5px;margin-left:6px;flex-shrink:0;">TARGET</span>`
+      : '';
+    rowsHtml += `
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:9px 12px;border-bottom:1px solid ${isTarget?'#bbdefb':'#f0f0f0'};background:${isTarget?'#e3f2fd':'transparent'};">
+        <div style="${scoreStyle}">${r.score}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+            <span style="font-size:13px;font-weight:600;color:#1c1c1e;">${r.label}</span>
+            ${targetBadge}
+          </div>
+          ${r.desc ? `<div style="font-size:11.5px;color:#666;line-height:1.4;margin-top:2px;">${r.desc}</div>` : ''}
+        </div>
+        <div style="width:10px;border-radius:3px;align-self:stretch;background:${c.border};flex-shrink:0;"></div>
+      </div>`;
+  });
+
+  return `<div class="dsec-card" style="overflow:hidden;">
+    <div style="background:#1565c0;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="color:#fff;font-size:13px;font-weight:700;">RASS Score</div>
+        <div style="color:rgba(255,255,255,.8);font-size:11px;">Richmond Agitation &amp; Sedation Scale</div>
+      </div>
+      <div style="background:rgba(255,255,255,.15);border-radius:6px;padding:4px 10px;text-align:center;">
+        <div style="color:#fff;font-size:10px;font-weight:600;">POST-INTUBATION</div>
+        <div style="color:#fff;font-size:13px;font-weight:700;">GOAL: -2 to -3</div>
+      </div>
+    </div>
+    <div style="display:flex;padding:6px 12px;background:#f5f5f5;gap:12px;border-bottom:1px solid #e0e0e0;">
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:10px;border-radius:2px;background:#e74c3c;"></div><span style="font-size:11px;color:#555;">Agitated</span></div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:10px;border-radius:2px;background:#2e7d32;"></div><span style="font-size:11px;color:#555;">Alert</span></div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:10px;border-radius:2px;background:#1a73e8;"></div><span style="font-size:11px;color:#555;">Target (-2 to -3)</span></div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:10px;border-radius:2px;background:#607d8b;"></div><span style="font-size:11px;color:#555;">Deep</span></div>
+    </div>
+    ${rowsHtml}
+    <div style="padding:9px 12px;background:#fff3e0;">
+      <div style="font-size:11px;font-weight:700;color:#e65100;margin-bottom:2px;">⚠️ CAM-ICU Note</div>
+      <div style="font-size:11.5px;color:#bf360c;line-height:1.5;">If RASS ≥ -2: Proceed to CAM-ICU delirium assessment. If RASS &lt; -2: STOP — recheck later.</div>
+    </div>
+  </div>`;
+}
+
 // ── RHYTHM STRIP SVG BUILDER ─────────────────────────────────────────
 function buildRhythmStrips() {
   // A-fib: irregularly irregular baseline with fibrillatory waves, no clear P waves, narrow QRS
@@ -1330,11 +2092,17 @@ init();
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('HSF EMS SW registered:', reg.scope))
-      .catch(err => console.warn('SW registration failed:', err));
-  });
+  // Only register SW when running from a real host (not a preview/sandbox)
+  const isPreview = location.hostname.includes('claudeusercontent.com') ||
+                    location.hostname === 'localhost' ||
+                    location.protocol === 'file:';
+  if (!isPreview) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('HSF EMS SW registered:', reg.scope))
+        .catch(err => console.warn('SW registration failed:', err));
+    });
+  }
 }
 </script>
 </body>
