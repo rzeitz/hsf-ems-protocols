@@ -107,6 +107,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* HSF Logo in header */
 .hsf-logo{width:40px;height:40px;border-radius:8px;object-fit:contain;background:rgba(255,255,255,.15);flex-shrink:0;}
 .hsf-logo-placeholder{width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+/* Med Chart screen */
+#medchart{display:none;flex-direction:column;min-height:100vh;}
+.mc-header{background:#00695c;color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.mc-body{flex:1;padding:12px 12px 100px;background:#f2f2f7;}
+.mc-section{background:#fff;border-radius:13px;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.mc-section-hdr{background:#00695c;color:#fff;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.mc-section-hdr .mc-chev{font-size:16px;transition:transform .2s;}
+.mc-section-hdr.open .mc-chev{transform:rotate(180deg);}
+.mc-section-body{display:none;padding:0;}
+.mc-section-body.open{display:block;}
+.mc-info{padding:11px 14px;font-size:12.5px;line-height:1.6;color:#1c1c1e;border-bottom:1px solid #f0f0f0;}
+.mc-alert{padding:10px 13px;border-left:4px solid;font-size:12.5px;line-height:1.5;margin:0;}
+.mc-alert-red{background:#fdecea;border-color:#c0392b;color:#c0392b;}
+.mc-alert-amber{background:#fff3e0;border-color:#e65100;color:#bf360c;}
+.mc-alert-teal{background:#e0f2f1;border-color:#00695c;color:#00695c;}
+/* Drip rate tables */
+.drip-table{width:100%;border-collapse:collapse;font-size:12px;}
+.drip-table th{background:#00695c;color:#fff;padding:7px 8px;text-align:center;font-weight:600;}
+.drip-table td{padding:7px 8px;text-align:center;border-bottom:1px solid #f0f0f0;color:#1c1c1e;}
+.drip-table tr:nth-child(even) td{background:#f5f5f5;}
+.drip-table tr:hover td{background:#e0f2f1;}
+/* Infusion reference table */
+.inf-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+.inf-table th{background:#1565c0;color:#fff;padding:7px 8px;font-weight:600;text-align:left;}
+.inf-table td{padding:8px;border-bottom:1px solid #f0f0f0;vertical-align:top;}
+.inf-table tr:nth-child(even) td{background:#f5f5f5;}
+/* General Info screen */
 /* General Info screen */
 #geninfo{display:none;flex-direction:column;min-height:100vh;}
 .gi-header{background:#37474f;color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2);}
@@ -257,7 +284,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <h1>HSF EMS Protocols</h1>
         <p>Hatzalah South Florida · REV. 02/2025</p>
       </div>
-      <a href="tel:+13059908950" class="olmc-header-btn">
+      <a href="tel:+13059908950" class="olmc-header-btn" onclick="window.location.href='tel:+13059908950';return false;">
         📞 OLMC
         <span>(305) 990-8950</span>
       </a>
@@ -292,11 +319,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     General
   </button>
+  <button class="nav-btn" id="navMedChart" onclick="switchMainView('medchart')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v11m0 0H5m4 0h4M5 14H3a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H19m-14 0h14"/></svg>
+    Med Chart
+  </button>
   <button class="nav-btn" id="navFacilities" onclick="switchMainView('facilities')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Facilities
   </button>
 </nav>
+
+<!-- MED CHART SCREEN -->
+<div id="medchart">
+  <div class="mc-header">
+    <div style="font-size:19px;font-weight:700;">💊 Medication Chart</div>
+    <div style="font-size:11px;opacity:.85;margin-top:2px;">Protocol 70 · HSF EMS · REV. 02/2025</div>
+  </div>
+  <div class="mc-body" id="mcBody"></div>
+</div>
 
 <!-- GENERAL INFORMATION SCREEN -->
 <div id="geninfo">
@@ -436,18 +476,1666 @@ const PROTOCOLS = [
 {id:'pt-assess',num:1,name:'Patient Assessment',cat:'general',icon:'🩺',color:'#455a64',bg:'#eceff1',level:'all',levelLabel:'All Levels',
 summary:'Adult & Pediatric · AVPU · GCS · SAMPLE · OPQRST',tags:['AVPU','GCS','SAMPLE','OPQRST','DNRO','BGL'],
 sections:[
-{title:'Mental Status (AVPU)',type:'steps',items:['Alert: Patient is awake','Verbal: Responds only to verbal stimuli','Pain: Responds only to painful stimuli','Unresponsive: Does not respond to any stimuli','Determine orientation: Self, Place, Time, Situation','Assess GCS (Eye 1-4, Verbal 1-5, Motor 1-6)']},
-{title:'AMS Mnemonic — AEIOU-TIPS',type:'alert',items:[
-{t:'info',text:'<strong>A</strong>lcohol · <strong>E</strong>pilepsy · <strong>I</strong>nsulin (Glucose) · <strong>O</strong>verdose/Oxygenation · <strong>U</strong>remia (Kidney)'},
-{t:'info',text:'<strong>T</strong>rauma · <strong>I</strong>nfection (Sepsis) · <strong>P</strong>sychiatric · <strong>S</strong>troke/Shock'}]},
-{title:'Vital Signs',type:'steps',items:['Pulse (rate, rhythm, quality)','Respirations (rate, quality)','Skin (color, condition, temperature)','Blood Pressure (manual if abnormal)','BGL · Temperature · SpO2 · Pupils','ALL patients: minimum 2 sets of vitals','Priority 2 patients: vitals every 5 minutes','BP before and after every medication']},
-{title:'SAMPLE History',type:'steps',items:['Signs & Symptoms','Allergies','Medications (prescribed, OTC, or not prescribed)','Past Medical History (patient & family)','Last Oral Intake','Events Preceding']},
-{title:'OPQRSTA Pain History',type:'steps',items:['Onset: Sudden or gradual?','Palliative: What makes it better?','Provoke: What makes it worse?','Quality: Pressure, squeezing, aching, dull, sharp?','Radiation: Does pain radiate? Where?','Severity: 0-10 scale (Faces scale for peds)','Time: When did it begin?','Associated: Other signs and symptoms?']},
-{title:'DNRO — Florida',type:'alert',items:[
-{t:'warn',text:'<strong>Valid Florida DNRO:</strong> DH Form 1896 on YELLOW paper, signed, with "DO NOT RESUSCITATE ORDER" across the top.'},
-{t:'danger',text:'Contact Medical Control immediately if DNR is presented. Verify patient identity via photo ID or witness.'}]},
-{title:'BGL Requirements',type:'steps',items:['All Priority 1 and 2 patients','Any Priority 3 with: diabetes, general weakness, lightheadedness, dizziness, poisoning, stroke']},
+{title:'Information',type:'outline',items:[
+{style:'plain',indent:0,text:'The following standard requirements should be performed on patients whenever possible, consent should be obtained prior to treatment.'},
 ]},
+{title:'1. Mental Status (AVPU) — Level of Consciousness',type:'outline',items:[
+{style:'circle',indent:1,text:'<strong>Alert:</strong> Patient is awake'},
+{style:'square',indent:2,text:'<strong>Verbal:</strong> Responds only to verbal stimuli'},
+{style:'square',indent:2,text:'<strong>Pain:</strong> Responds only to painful stimuli'},
+{style:'square',indent:2,text:'<strong>Unresponsive:</strong> Patient does not respond to any stimuli'},
+{style:'circle',indent:1,text:'<strong>Level of Orientation</strong> (determine patient&#39;s baseline mentation)'},
+{style:'square',indent:2,text:'Self, Place, Time, Situation'},
+{style:'circle',indent:1,text:'<strong>GCS</strong>'},
+]},
+{title:'Glasgow Coma Scale (GCS)',type:'gcs'},
+{title:'Patient with Altered Mental Status — AEIOU-TIPS',type:'aeiou'},
+{title:'2. Vital Signs',type:'outline',items:[
+{style:'circle',indent:1,text:'Pulse (rate, rhythm and quality)'},
+{style:'circle',indent:1,text:'Respirations (rate and quality)'},
+{style:'circle',indent:1,text:'Skin (color, condition, and Temperature)'},
+{style:'circle',indent:1,text:'Blood Pressure'},
+{style:'circle',indent:1,text:'BGL'},
+{style:'circle',indent:1,text:'Temperature'},
+{style:'circle',indent:1,text:'Pulse Oximetry'},
+{style:'circle',indent:1,text:'Pupils Assessment (Equal, round, reactive)'},
+{style:'num',n:3,indent:0,text:'All patients shall receive at least 2 sets of vitals'},
+{style:'num',n:4,indent:0,text:'Priority 2 patients shall receive vitals every 5 minutes when possible'},
+{style:'num',n:5,indent:0,text:'A manual Blood Pressure shall be taken to confirm any abnormal or significant changes of an automatic Blood Pressure cuff reading'},
+{style:'num',n:6,indent:0,text:'Blood Pressure shall be checked before and after administration of a medication'},
+{style:'num',n:7,indent:0,text:'Hypotension for adults is defined as Systolic BP less than 90 mm Hg'},
+]},
+{title:'Patient History',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>CHIEF COMPLAINT:</strong> Why did the person call Hatzalah?'},
+{style:'num',n:2,indent:0,text:'S.A.M.P.L.E. HISTORY (S.A.M.P.L.E)'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">S</span>IGNS &amp; SYMPTOMS</strong>'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">A</span>LLERGIES</strong>'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">M</span>EDICATIONS:</strong> Prescribed, over the counter, or not prescribed to patient'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">P</span>AST MEDICAL HISTORY</strong> (patient&#39;s and immediate family&#39;s)'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">L</span>AST ORAL INTAKE</strong>'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">E</span>VENTS PRECEDING</strong>'},
+{style:'num',n:3,indent:0,text:'HISTORY OF THE PRESENT ILLNESS <span style="color:#c0392b">(O.P.Q.R.S.T.A)</span>'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">O</span>NSET:</strong> Did the symptoms appear gradually or suddenly?'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">P</span>ALLIATIVE:</strong> What makes the symptoms better?'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">P</span>ROVOKE:</strong> What makes the symptoms worse?'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">P</span>REVIOUS:</strong> Previous similar episodes?'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">Q</span>UALITY:</strong> (What kind of pain?) pressure, squeezing, aching, dull, etc.'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">R</span>ADIATION:</strong> Does the pain or discomfort radiate? Where?'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">S</span>EVERITY OF PAIN:</strong> 1-10 scale (utilize "Faces" pain scale for pediatrics)'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">T</span>IME:</strong> What time did the symptoms begin?'},
+{style:'circle',indent:1,text:'<strong><span style="color:#c0392b">A</span>SSOCIATED:</strong> What are the associated signs &amp; symptoms'},
+]},
+{title:'4. Advanced Directives / DNRO',type:'outline',items:[
+{style:'num',n:4,indent:0,text:'<strong>Does the patient have an Advance Directive?</strong>'},
+]},
+{title:'Advanced Directives / Do Not Resuscitate Orders (DNRO)',type:'outline',items:[
+{style:'plain',indent:0,text:'Legislative authority. Under Florida Administrative Code (FAC) 64J-2.018. Do Not Resuscitate Order (DNRO) Form and Patient Identification Device. The Florida DNRO form is the only form approved in the State of Florida.'},
+{style:'circle',indent:1,text:'DH Form 1896 Florida DNRO form can be original or copy.'},
+{style:'circle',indent:1,text:'The Form shall be printed on yellow paper. (the shade of yellow does not matter).'},
+{style:'circle',indent:1,text:'The words “DO NOT RESUSCITATE ORDER” printed in black and displayed across the top of the form.'},
+{style:'circle',indent:1,text:'A Patient identification device is a miniature version of DH Form 1896, and must be signed.'},
+{style:'circle',indent:1,text:'If there is a State Of Florida approved DNRO form present:'},
+{style:'roman',n:'i',indent:2,text:'Contact Medical Control as soon as possible for direction.'},
+{style:'roman',n:'ii',indent:2,text:'An EMT or paramedic shall withhold or withdraw cardiopulmonary resuscitation.'},
+{style:'roman',n:'iii',indent:2,text:'Verify the identity of the patient via the patient&#39;s driver license, other photo identification, or from a witness in the presence of the patient.'},
+]},
+{title:'BGL (Glucose Checking)',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>A BGL shall be documented for patients with any of the following:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'<strong>Priority 1 and 2 Patients as well as any priority 3 patient with:</strong>'},
+{style:'roman',n:'i',indent:2,text:'History of diabetes'},
+{style:'roman',n:'ii',indent:2,text:'General weakness'},
+{style:'roman',n:'iii',indent:2,text:'Lightheadedness'},
+{style:'roman',n:'iv',indent:2,text:'Dizziness'},
+{style:'roman',n:'v',indent:2,text:'Poisoning'},
+{style:'roman',n:'vi',indent:2,text:'Stroke'},
+]},
+{title:'Hgb (Hemoglobin)',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>A Hgb level shall be attempted for patients with any of the following:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Altered mental status'},
+{style:'alpha',n:'b',indent:1,text:'General weakness'},
+{style:'alpha',n:'c',indent:1,text:'Palpitations / tachycardia'},
+{style:'alpha',n:'d',indent:1,text:'Near syncope / Syncope'},
+{style:'alpha',n:'e',indent:1,text:'Lightheadedness / Dizziness'},
+{style:'alpha',n:'f',indent:1,text:'Shortness of breath'},
+{style:'alpha',n:'g',indent:1,text:'Dark stools / Hematochezia / Hematemesis'},
+]},
+{title:'ECG Monitoring',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>All ALS patients shall have continuous ECG monitoring</strong>'},
+{style:'alpha',n:'a',indent:1,text:'12 lead ECGs shall be considered on the following patients:'},
+{style:'roman',n:'i',indent:2,text:'Chest/arm/neck/jaw/upper back/shoulder/epigastric pain or discomfort'},
+{style:'roman',n:'ii',indent:2,text:'Palpitations'},
+{style:'roman',n:'iii',indent:2,text:'Syncope, lightheadedness, general weakness, or fatigue'},
+{style:'roman',n:'iv',indent:2,text:'CHF, SOB, hypertension or hypotension'},
+{style:'roman',n:'v',indent:2,text:'Unexplained diaphoresis or nausea'},
+{style:'roman',n:'vi',indent:2,text:'Whenever possible without interfering with other needed patient care'},
+{style:'alpha',n:'b',indent:1,text:'When transporting, leave cables connected until the patient is turned over to the Emergency Department (ED) staff.'},
+]},
+{title:'EtCO2 Monitoring',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>Shall be utilized for the following patients:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Patients requiring ventilatory support (e.g., BVM, ET tube, Igel, CPAP)'},
+{style:'alpha',n:'b',indent:1,text:'Patients in respiratory distress'},
+{style:'alpha',n:'c',indent:1,text:'Patients with Altered Mental Status'},
+{style:'alpha',n:'d',indent:1,text:'Patients who have been sedated'},
+{style:'alpha',n:'e',indent:1,text:'Patients who have received high dose narcotics when there is concern for respiratory depression'},
+]},
+{title:'Airway',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>AIRWAY POSITIONING:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'<strong>Medical patient:</strong>'},
+{style:'roman',n:'i',indent:2,text:'Position patient with “head tilt chin lift”.'},
+{style:'alpha',n:'b',indent:1,text:'<strong>Trauma patient with suspected spinal cord injury:</strong>'},
+{style:'roman',n:'i',indent:2,text:'Modified jaw thrust'},
+{style:'num',n:2,indent:0,text:'<strong>NASOPHARYNGEAL AIRWAY (NPA):</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Semi-conscious patients with an intact gag reflex shall have a nasopharyngeal airway inserted, unless contraindicated (head Injury)'},
+{style:'num',n:3,indent:0,text:'<strong>OROPHARYNGEAL AIRWAY (OPA):</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Unresponsive patients without a gag reflex shall have an oropharyngeal airway inserted, unless contraindicated.'},
+{style:'num',n:4,indent:0,text:'Suction as needed'},
+]},
+{title:'Oxygen Administration',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong><span style="color:#c0392b">DO NOT</span> withhold Oxygen if the patient is dyspneic or showing signs of hypoxia</strong>'},
+{style:'circle',indent:0,text:'<strong>SpO2:</strong> Maintain SpO2 of more than 94%'},
+{style:'alpha',n:'a',indent:1,text:'Exception: <strong>COPD</strong> — Allow an SpO2 as low as 92% if there is no distress or signs of Hypoxia'},
+{style:'circle',indent:0,text:'<strong>OXYGEN ADMINISTRATION:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'15 LPM via NRB regardless of SpO2:'},
+{style:'roman',n:'i',indent:2,text:'All 3rd trimester pregnancy trauma patients'},
+{style:'roman',n:'ii',indent:2,text:'All head injury patients'},
+{style:'roman',n:'iii',indent:2,text:'Decompression sickness'},
+{style:'roman',n:'iv',indent:2,text:'Carbon Monoxide exposure'},
+{style:'roman',n:'v',indent:2,text:'Cyanide exposure'},
+{style:'circle',indent:0,text:'If oxygen saturation cannot be maintained, ventilatory support should be provided.'},
+]},
+{title:'Circulation',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong>Adult:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Carotid and radial pulse present, assess capillary refill, assess skin color, condition and temperature.'},
+{style:'alpha',n:'b',indent:1,text:'Refer to the “Cardiac Arrest” algorithm <strong>(Protocol 30)</strong>, for all patients found pulseless'},
+{style:'circle',indent:0,text:'<strong>Pediatric:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Carotid and radial pulse present (brachial in infants), assess capillary refill, assess skin color, condition, and temperature'},
+{style:'alpha',n:'b',indent:1,text:'Refer to the “Cardiac Arrest” algorithm <strong>(Protocol 31)</strong>, for all patients found pulseless'},
+{style:'alpha',n:'c',indent:1,text:'Infants and children with a heart rate less than 60 beats/minute after adequate ventilation has occurred with signs of poor perfusion shall have CCR initiated (continuous compressions).'},
+{style:'alpha',n:'d',indent:1,text:'Refer to the “Bradycardia” protocol <strong>(Protocol 21)</strong>, for pediatric patients found bradycardic with signs of poor perfusion and AMS'},
+{style:'circle',indent:0,text:'Apply AED/Cardiac monitor on all unconscious patients.'},
+{style:'circle',indent:0,text:'Perform Cardio-Cerebral Resuscitation (CCR) on all cardiac arrest patients and defibrillate as needed.'},
+{style:'circle',indent:0,text:'After oxygenation and ventilation of 1 minute for infants/children and 30 seconds for neonates (birth to 1 month), begin chest compressions if the heart rate remains below 60 BPM with signs of poor perfusion (AMS).'},
+]},
+{title:'Pediatric Vital Signs Reference Chart (Protocol 69)',type:'pedsvitals'},
+]},
+
+{id:'peds-vitals',num:69,name:'Pediatric Vital Signs Chart',cat:'general',icon:'👶',color:'#1565c0',bg:'#e3f2fd',level:'all',levelLabel:'All Levels',
+summary:'Heart Rate · Respiratory Rate · Blood Pressure · Temperature · SpO2',tags:['Pediatric','Vital Signs','Heart Rate','Blood Pressure','SpO2','Temperature','PALS'],
+sections:[
+{title:'Pediatric Vital Signs Reference Chart',type:'pedsvitals'},
+]},
+
+
+{id:'vent-assist',num:2,name:'Ventilatory Assistance',cat:'airway',icon:'💨',color:'#1565c0',bg:'#e3f2fd',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · BVM · Ventilation Rates · ICP · Stoma',tags:['BVM','EtCO2','SpO2','Ventilation','ICP','Stoma','SGA'],
+sections:[
+{title:'Information',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>In certain patients, excessive ventilation rates may be harmful. Overzealous positive pressure ventilation can impair:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Venous return'},
+{style:'alpha',n:'b',indent:1,text:'Cardiac output'},
+{style:'alpha',n:'c',indent:1,text:'Cerebral perfusion'},
+{style:'num',n:2,indent:0,text:'Ultimately the patient&#39;s SpO2 and EtCO2 should determine the ventilation rate for the patient (ideally EtCO2 should be 35–45 mm Hg).'},
+]},
+{title:'Adult Ventilatory Rates',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>PATIENTS WITH A PULSE:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'1 breath every 6 seconds'},
+{style:'num',n:2,indent:0,text:'<strong>PATIENTS WITHOUT A PULSE:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'1 breath every 10 seconds. Coordinate compressions and ventilations to avoid simultaneous delivery.'},
+{style:'num',n:3,indent:0,text:'<strong>PATIENTS WITH ICP and/or HERNIATION:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Maintain EtCO2 between 30–35 mm Hg and SpO2 greater than 90% while continuously monitoring BP'},
+]},
+{title:'Pediatric Ventilatory Rates',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>PATIENTS WITH A PULSE:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'1 breath every 3 seconds'},
+{style:'num',n:2,indent:0,text:'<strong>PATIENTS WITHOUT A PULSE:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'1 breath every 6 seconds. Coordinate compressions and ventilations to avoid simultaneous delivery.'},
+{style:'num',n:3,indent:0,text:'<strong>PATIENTS WITH ICP and/or HERNIATION:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Maintain EtCO2 between 30–35 mm Hg and SpO2 greater than 90% while continuously monitoring BP'},
+]},
+{title:'Stoma Ventilation',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'To ventilate with a bag-mask device, place the patient&#39;s head in a neutral position, locate and expose the stoma.'},
+{style:'num',n:2,indent:0,text:'Place the BVM over the stoma and ensure adequate seal'},
+{style:'num',n:3,indent:0,text:'If patient has a Tracheostomy in place connect BVM to inner Cannula'},
+{style:'num',n:4,indent:0,text:'Assess for proper ventilation by observing rise of chest'},
+{style:'num',n:5,indent:0,text:'If air leak is felt around the mask, seal the patient&#39;s mouth and nose during ventilations or seal stoma and use BVM on face.'},
+{style:'num',n:6,indent:0,text:'If unable to ventilate or Malfunctioning, consider inserting pediatric EndoTracheal tube which adapts to BVM'},
+]},
+{title:'Warning',type:'alert',items:[
+{t:'danger',text:'<strong>⚠️ DO NOT ATTEMPT TO AGGRESSIVELY NORMALIZE CAPNOMETRY/EtCO2 READINGS IN THE FOLLOWING PATIENTS:</strong><br>• Cardiac arrest pre/post ROSC<br>• Bronchospasm (i.e., asthma, COPD)<br>• High EtCO2 levels are acceptable and even desired in these patients'}]},
+{title:'Pediatric BVM Note',type:'alert',items:[
+{t:'info',text:'The preferred method for ventilating pediatric patients is with a BVM in conjunction with an oral or nasal airway. Pediatric patients who cannot protect their airway, are unable to maintain oxygen saturation despite BVM ventilation, and/or cannot be effectively ventilated with a BVM, should be upgraded to a <strong>Supraglottic Airway (SGA)</strong> (age specific) followed by intubation if needed.'}]},
+{title:'Quick Reference',type:'drugs',items:[
+{name:'Adult — With Pulse',dose:'1 breath every 6 seconds'},
+{name:'Adult — Without Pulse',dose:'1 breath every 10 seconds'},
+{name:'Adult — ICP/Herniation',dose:'EtCO2 30–35 mmHg · SpO2 >90%'},
+{name:'Pediatric — With Pulse',dose:'1 breath every 3 seconds'},
+{name:'Pediatric — Without Pulse',dose:'1 breath every 6 seconds'},
+{name:'Pediatric — ICP/Herniation',dose:'EtCO2 30–35 mmHg · SpO2 >90%'},
+{name:'Target EtCO2 (all others)',dose:'35–45 mmHg'},
+]}]},
+
+
+{id:'transport-adult',num:3,name:'Adult Transport Destinations',cat:'general',icon:'🚑',color:'#455a64',bg:'#eceff1',level:'all',levelLabel:'All Levels',
+summary:'Priority 1/2/3 · STEMI · Stroke · Trauma · OB · Baker Act',tags:['Priority 1','Priority 2','Priority 3','STEMI','Stroke CSC','Trauma','OB','Baker Act'],
+sections:[
+{title:'Priority Definitions',type:'alert',items:[
+{t:'info',text:'<strong>Priority 1:</strong> Patients in Cardiac or Respiratory Arrest'},
+{t:'warn',text:'<strong>Priority 2:</strong> Unstable patients with immediate life-threatening conditions'},
+{t:'ok',text:'<strong>Priority 3:</strong> Stable patients with no immediate life-threatening conditions'}]},
+{title:'Priority 1 — Adult',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>PRIMARY CARDIAC ARREST:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'If transport time <20 minutes: transport to the closest STEMI facility'},
+{style:'alpha',n:'b',indent:1,text:'If transport time >20 minutes: transport to the closest ED (excluding free standing ED)'},
+{style:'num',n:2,indent:0,text:'<strong>RESPIRATORY ARREST / SECONDARY ARREST:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Transport to the closest ED (excluding free standing ED)'},
+]},
+{title:'Priority 2 — Adult',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'Shall be transported to the closest appropriate ED'},
+{style:'num',n:2,indent:0,text:'<strong>TRAUMA ALERT:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Transport to closest Trauma Center. If on Diversion (Closed): next closest Trauma Center.'},
+{style:'alpha',n:'b',indent:1,text:'Minimum 1 paramedic and 1 EMT must accompany trauma alert patient. Consider 1099 if ALS unavailable. Do NOT delay transport.'},
+{style:'alpha',n:'c',indent:1,text:'On-scene times <10 minutes. Times >10 min: document reason in ePCR.'},
+{style:'alpha',n:'d',indent:1,text:'If ground transport >25 minutes: transport by air (Protocol 5)'},
+{style:'alpha',n:'e',indent:1,text:'Trauma patients who arrest in presence of Hatzalah shall be transported to closest Trauma Center.'},
+{style:'num',n:3,indent:0,text:'<strong>PREGNANT TRAUMA (≥20 weeks gestation):</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Transport to: Memorial Regional Hospital · St Mary\'s Trauma Center · Ryder Trauma Center'},
+{style:'num',n:4,indent:0,text:'<strong>STEMI ALERTS:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Transport to closest STEMI facility'},
+{style:'alpha',n:'b',indent:1,text:'If ground transport >40 minutes: transport by air to closest STEMI facility with surgical backup'},
+{style:'num',n:5,indent:0,text:'<strong>STROKE ALERTS:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'ALL Stroke Alerts: transport to a Comprehensive Stroke Center only'},
+{style:'alpha',n:'b',indent:1,text:'If ground transport >20 minutes: transport by air to closest Comprehensive Stroke Center'},
+{style:'num',n:6,indent:0,text:'<strong>SEPSIS ALERT:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Transport to closest ED (excluding free standing ED)'},
+{style:'num',n:7,indent:0,text:'<strong>HYPERBARIC (Decompression Sickness / CO Exposure):</strong>'},
+{style:'alpha',n:'a',indent:1,text:'St. Mary\'s Hyperbaric Chamber, Mercy Hospital Miami, or Mariners Hospital (FL Keys) — encode prior to transport to confirm availability. If ground >20 min: transport by air.'},
+]},
+{title:'Priority 3 — Adult',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'Transport to closest appropriate ED of their choice within 20 minutes. Local Supervisor may approve/decline requests >20 minutes.'},
+{style:'num',n:2,indent:0,text:'<strong>FREE STANDING ED:</strong> Stable patients may be transported after being informed that admission requires transfer to another facility.'},
+{style:'num',n:3,indent:0,text:'<strong>OBSTETRICAL (gestation >20 weeks):</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Unstable OB patients: transport to closest OB ED'},
+{style:'alpha',n:'b',indent:1,text:'Stable OB patients: transport to OB ED of their choice within 20 minutes'},
+{style:'num',n:4,indent:0,text:'<strong>BAKER ACT:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Stable: transport to closest Baker Act receiving facility'},
+{style:'alpha',n:'b',indent:1,text:'Unstable: transport to closest ED for stabilization'},
+]}]},
+
+{id:'transport-peds',num:4,name:'Pediatric Transport Destinations',cat:'general',icon:'👶',color:'#2e7d32',bg:'#e8f5e9',level:'all',levelLabel:'All Levels',
+summary:'Pediatric <18 yrs · Comprehensive Peds ED · Trauma · Stroke · Sepsis',tags:['Pediatric','Comprehensive Peds ED','Trauma','Stroke','Sepsis','Hyperbaric'],
+sections:[
+{title:'Definitions',type:'alert',items:[
+{t:'info',text:'<strong>Primary Pediatric ED:</strong> No inpatient pediatric capabilities but comfortable treating minor pediatric illness/injury in the ED.'},
+{t:'warn',text:'<strong>Comprehensive Pediatric ED:</strong> Pediatric admitting capabilities, surgery options, and bridge to pediatric intensive care.'},
+{t:'info',text:'For transport purposes: Pediatric = <18 years old. Exception: Trauma Alerts = 15 years old and younger.'}]},
+{title:'Priority 1 — Pediatric',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong>TRANSPORT TO COMPREHENSIVE PEDIATRIC ED:</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Pediatric patients who have regained ROSC'},
+{style:'alpha',n:'b',indent:1,text:'Pediatric respiratory arrest with successful airway management (good BVM compliance, positive EtCO2, improving SpO2)'},
+{style:'circle',indent:0,text:'<strong>TRANSPORT TO CLOSEST APPROVED PEDIATRIC ED (Primary or Comprehensive):</strong>'},
+{style:'alpha',n:'a',indent:1,text:'Pulseless pediatric patients'},
+{style:'alpha',n:'b',indent:1,text:'Pediatric respiratory arrest with unstable airway (unable to ventilate or oxygenate)'},
+]},
+{title:'Priority 2 — Pediatric',type:'outline',items:[
+{style:'circle',indent:0,text:'Transport to closest appropriate ED'},
+{style:'circle',indent:0,text:'<strong>TRAUMA ALERT:</strong> Closest Trauma Center. On-scene <10 min. Air if ground >20 min. Minimum 1 paramedic + 1 EMT.'},
+{style:'circle',indent:0,text:'<strong>TRAUMA ARREST:</strong> If helicopter unavailable and ground >40 min: acceptable to transport to nearest ED'},
+{style:'circle',indent:0,text:'<strong>STROKE ALERTS:</strong> Transport to Pediatric Comprehensive ED / Comprehensive Stroke Center (St Mary\'s, Joe DiMaggio, Broward Health Medical, or Holtz Children\'s). Air if ground >20 min.'},
+{style:'circle',indent:0,text:'<strong>SUSPECTED SEPSIS:</strong> Transport to closest Comprehensive Pediatric ED'},
+{style:'circle',indent:0,text:'<strong>HYPERBARIC:</strong> Decompression Sickness / CO Exposure — air if ground >20 min'},
+]},
+{title:'Priority 3 — Pediatric',type:'outline',items:[
+{style:'circle',indent:0,text:'Transport to closest appropriate ED of their choice within 20 minutes. Local Supervisor may approve/decline requests >20 minutes.'},
+]}]},
+
+{id:'helicopter',num:5,name:'Helicopter Transport Criteria',cat:'general',icon:'🚁',color:'#455a64',bg:'#eceff1',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · Trauma · MCI · Weight Limits',tags:['Helicopter','Air Transport','Trauma','MCI','Bariatric'],
+sections:[
+{title:'Operational Criteria — Trauma',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'Pre-hospital ground transport to a Trauma Center is greater than 20 minutes'},
+{style:'num',n:2,indent:0,text:'Pre-hospital scene extrication time greater than 15 minutes'},
+{style:'num',n:3,indent:0,text:'Pre-hospital ground response time to the scene is greater than 10 minutes'},
+{style:'num',n:4,indent:0,text:'Mass Casualty Incidents (MCI) involving multiple patients with traumatic injuries'},
+]},
+{title:'Helicopter MAY Be Used',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'For patients weighing 350–500 lbs: use discretion as to whether air transport is preferred'},
+{style:'num',n:2,indent:0,text:'The flight crew must be capable of loading, unloading, and treating the patient within the aircraft'},
+{style:'num',n:3,indent:0,text:'The flight crew has final authority to accept or reject the transport'},
+]},
+{title:'Helicopter SHALL NOT Be Used',type:'alert',items:[
+{t:'danger',text:'<strong>1.</strong> Bariatric patient known or estimated to be ≥500 lbs (227 kg)'},
+{t:'danger',text:'<strong>2.</strong> Patient who is unable to lay supine (when clinically indicated for air transport)'},
+{t:'danger',text:'<strong>3.</strong> Patient who is combative and cannot be physically and/or chemically restrained'},
+{t:'danger',text:'<strong>4.</strong> Hazmat contaminated patient'},
+]}]},
+
+{id:'dystonic',num:10,name:'Dystonic Reaction',cat:'medical',icon:'⚡',color:'#6a1b9a',bg:'#f3e5f5',level:'all',levelLabel:'All Levels',
+summary:'Muscle Spasms · Antipsychotics · Benadryl',tags:['Dystonic','Benadryl','Diphenhydramine','Antipsychotic','Antiemetic'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'info',text:'<strong>Dystonic reactions:</strong> intermittent spasmodic or sustained involuntary contractions of muscles in the face, neck, trunk, pelvis, extremities, or larynx.'},
+{t:'warn',text:'<strong>Causative medications:</strong> Antipsychotics (Haldol, Risperdal) · Antiemetics (Compazine, Reglan, Phenergan) · Antidepressants (Prozac, Paxil). Can occur immediately or be delayed hours to days.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management'},
+{n:3,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+{subhdr:'ALS Assist'},
+{n:4,text:'Begin cardiac monitoring'},
+{n:5,text:'Consider performing 12-lead EKG'},
+{n:6,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:7,text:'Perform advanced airway management as needed'},
+{n:8,text:'Establish intravascular access'},
+{n:9,text:'Consider performing 12-lead EKG'},
+{subhdr:'Adult'},
+{n:10,text:'<strong>BENADRYL 50mg IV/IO/IM</strong> over 2 minutes for IV/IO. Dilute with 9mL Normal Saline for IV/IO administration.'},
+{subhdr:'Pediatric'},
+{n:11,text:'<strong>BENADRYL 1mg/kg IV/IO/IM</strong> over 2 minutes for IV/IO. Dilute with 9mL Normal Saline. Max single dose 50mg. CI: Neonates.'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Diphenhydramine (Benadryl) — Adult',dose:'50mg IV/IO/IM over 2 min (dilute 9mL NS)'},
+{name:'Diphenhydramine (Benadryl) — Peds',dose:'1mg/kg IV/IO/IM; max 50mg (CI: Neonates)'},
+]}]},
+
+{id:'dehydration',num:11,name:'Dehydration',cat:'medical',icon:'💧',color:'#1565c0',bg:'#e3f2fd',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · Normal Saline · Fluid Resuscitation',tags:['Dehydration','Normal Saline','Fluid Resuscitation','Rhabdomyolysis'],
+sections:[
+{title:'Indications for Fluid Resuscitation',type:'alert',items:[
+{t:'info',text:'Hypotension · Fatigue · Dark urine · Dry mouth · Headache · Prolonged vomiting or diarrhea · Non-traumatic bleeding (vaginal or GI) · Suspected Rhabdomyolysis · Paramedic discretion'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management'},
+{n:3,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+{n:4,text:'Request ALS assistance (Hatzalah or 1099) if dehydration is severe'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:7,text:'Perform advanced airway management as needed'},
+{n:8,text:'Establish intravascular access'},
+{n:9,text:'Consider performing 12-lead EKG'},
+{n:10,text:'Transport'},
+{subhdr:'Adult'},
+{n:11,text:'<strong>NORMAL SALINE 1L IV/IO</strong> titrate to desired effect. Assess lung sounds and BP frequently. May repeat ×1. Precaution: CHD, CHF, renal failure.'},
+{subhdr:'Pediatric'},
+{n:12,text:'<strong>NORMAL SALINE 20mL/kg IV bolus</strong> — may repeat ×1 to maintain SBP: Children 1–10 yrs: SBP >70+(2×age) · Children >10 yrs: SBP >90 mmHg'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Normal Saline — Adult',dose:'1L IV/IO; may repeat ×1'},
+{name:'Normal Saline — Pediatric',dose:'20mL/kg IV; may repeat ×1 for age-appropriate SBP'},
+]}]},
+
+{id:'hyperkalemia',num:12,name:'Hyperkalemia',cat:'cardiac',icon:'⚡',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Renal Failure · ECG Changes · Calcium Chloride · Sodium Bicarb · Albuterol',tags:['Hyperkalemia','Calcium Chloride','Sodium Bicarb','Albuterol','Dialysis'],
+sections:[
+{title:'Recognition',type:'alert',items:[
+{t:'warn',text:'Consider in renal failure/dialysis patients presenting with: General weakness · Tall peaked T-waves (V1–4) · Sine wave · Wide complex QRS · RRWCT · Severe bradycardia · High degree AV blocks'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management'},
+{n:3,text:'Administer oxygen'},
+{n:4,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+{n:5,text:'Request ALS assistance (Hatzalah or 1099)'},
+{subhdr:'ALS Assist'},
+{n:6,text:'Begin cardiac monitoring'},
+{n:7,text:'Perform and record 12-lead EKG'},
+{n:8,text:'Obtain intravascular access'},
+{subhdr:'Paramedic'},
+{n:9,text:'Perform advanced airway management as needed'},
+{n:10,text:'Establish additional intravascular access'},
+{n:11,text:'Perform and evaluate 12-lead EKG — leave on patient'},
+{n:12,text:'Reevaluate EKG during and after treatments'},
+{subhdr:'Adult — For Cardiac Arrhythmias / ECG Abnormalities'},
+{n:13,text:'<strong>CALCIUM CHLORIDE 1g IV/IO</strong> over 2–5 minutes. CI: Do NOT give if patient is on Digoxin. Preferable to obtain 2 large bore IVs. DO NOT mix with Sodium Bicarbonate in same line without flushing.'},
+{n:14,text:'<strong>ALBUTEROL 10mg via nebulizer.</strong> Continuous treatments (via in-line neb if advanced airway)'},
+{n:15,text:'<strong>SODIUM BICARBONATE 100mEq IV/IO</strong> (2 amps) over 2 minutes. DO NOT administer in same line as Calcium Chloride without flushing. Preferable to obtain 2 large bore IVs.'},
+{subhdr:'If Patient is Hypotensive (Adult)'},
+{n:16,text:'<strong>NORMAL SALINE 500mL IV/IO</strong> titrate to effect. Assess lung sounds frequently. May repeat ×1. Precaution: CHD, CHF, renal failure.'},
+{subhdr:'Pediatric — For Cardiac Arrhythmias / ECG Abnormalities'},
+{n:17,text:'<strong>CALCIUM CHLORIDE 20mg/kg IV/IO</strong> over 2 minutes. DO NOT mix with Sodium Bicarbonate without flushing. Preferable to obtain 2 IVs.'},
+{n:18,text:'<strong>ALBUTEROL 2.5mg via nebulizer.</strong> Continuous treatments (via in-line neb if advanced airway)'},
+{n:19,text:'<strong>SODIUM BICARBONATE 1mEq/kg IV/IO</strong> over 2 minutes. Max single dose 50mEq. May repeat ×1 in 5 min. Max total 100mEq. DO NOT mix with Calcium Chloride without flushing.'},
+{subhdr:'If Patient is Hypotensive (Pediatric)'},
+{n:20,text:'<strong>NORMAL SALINE 20mL/kg IV/IO</strong> titrate to effect. May repeat ×1. Precaution: CHD, CHF, renal failure.'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Calcium Chloride — Adult',dose:'1g IV/IO over 2-5 min (CI: Digoxin)'},
+{name:'Calcium Chloride — Peds',dose:'20mg/kg IV/IO over 2 min'},
+{name:'Albuterol — Adult',dose:'10mg neb (continuous)'},
+{name:'Albuterol — Peds',dose:'2.5mg neb (continuous)'},
+{name:'Sodium Bicarbonate — Adult',dose:'100mEq (2 amps) IV/IO over 2 min'},
+{name:'Sodium Bicarbonate — Peds',dose:'1mEq/kg IV/IO; max 50mEq/dose; max 100mEq total'},
+{name:'Normal Saline — Adult (hypotension)',dose:'500mL IV/IO; may repeat ×1'},
+{name:'Normal Saline — Peds (hypotension)',dose:'20mL/kg IV/IO; may repeat ×1'},
+]}]},
+
+{id:'nausea',num:13,name:'Nausea / Vomiting',cat:'medical',icon:'🤢',color:'#455a64',bg:'#eceff1',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · Zofran · Ondansetron · QT Prolongation',tags:['Zofran','Ondansetron','Nausea','Vomiting','QT Prolongation','Normal Saline'],
+sections:[
+{title:'Differential Diagnosis — Consider',type:'alert',items:[
+{t:'info',text:'Cardiac · Stroke · Diabetic · Head Injury · Other'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and appropriate oxygen therapy'},
+{n:3,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+{n:4,text:'Do not allow the patient to eat or drink'},
+{n:5,text:'Place patient in position of comfort'},
+{n:6,text:'Assess for shock and treat as needed'},
+{n:7,text:'Request ALS assistance (Hatzalah or 1099)'},
+{subhdr:'ALS Assist'},
+{n:8,text:'Begin cardiac monitoring'},
+{n:9,text:'Perform and record 12-lead EKG'},
+{n:10,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:11,text:'Perform advanced airway management as needed'},
+{n:12,text:'Establish intravascular access'},
+{n:13,text:'Begin cardiac monitoring and obtain 12-lead EKG for possible prolonged QT or cardiac etiology'},
+{subhdr:'Adult'},
+{n:14,text:'<strong>NORMAL SALINE 1L IV/IO</strong> titrate to desired effect. Assess lung sounds and BP frequently. May repeat ×1. Precaution: CHD, CHF, renal failure.'},
+{n:15,text:'<strong>ZOFRAN (Ondansetron) 4mg IV/IO/IM/SL</strong> over 2 min for IV/IO. May repeat ×1. CI: Prolonged QT (>460ms men / >440ms women).'},
+{subhdr:'Pediatric (>6 months old)'},
+{n:16,text:'<strong>NORMAL SALINE 20mL/kg IV/IO</strong> — assess lung sounds and BP frequently. May repeat ×2 for age-appropriate hypotension.'},
+{n:17,text:'<strong>ZOFRAN (Ondansetron) 0.1mg/kg IV/IO/IM/PO</strong> over 2 min for IV/IO. Max single dose 4mg. IV formulation may be given PO.'},
+]},
+{title:'Zofran / QT Warning',type:'alert',items:[
+{t:'danger',text:'Ondansetron associated with QT prolongation — possible Torsades de Pointes. Do NOT give to patients with personal or family history of QT prolongation. Caution in cardiac patients or patients on QT-prolonging medications.'}]},
+{title:'Medications',type:'drugs',items:[
+{name:'Normal Saline — Adult',dose:'1L IV/IO; may repeat ×1'},
+{name:'Normal Saline — Peds',dose:'20mL/kg IV/IO; may repeat ×2'},
+{name:'Ondansetron (Zofran) — Adult',dose:'4mg IV/IO/IM/SL; may repeat ×1 (CI: prolonged QT)'},
+{name:'Ondansetron (Zofran) — Peds',dose:'0.1mg/kg IV/IO/IM/PO; max 4mg/dose'},
+]}]},
+
+{id:'bradycardia-peds',num:21,name:'Bradycardia Pediatric',cat:'cardiac',icon:'💓',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Peds · HR <60 · Epinephrine · Atropine · Transcutaneous Pacing',tags:['Bradycardia','Pediatric','Epinephrine','Atropine','Pacing','BVM','Broselow'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'info',text:'<strong>Stable Bradycardia:</strong> Ventricular rate <60 bpm WITHOUT signs of shock. Use Broselow/HANDTEVY app if weight unknown.'},
+{t:'warn',text:'<strong>Compromised Perfusion Signs:</strong> AMS · Hypotension · Tachypnea · Pallor · Diaphoresis'},
+{t:'danger',text:'Hypoxia is the most common cause of bradycardia and cardiac arrest in pediatrics. Rapid ventilation and hyperoxygenation is crucial.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Maintain airway patency — assist breathing with high-flow O2 via BVM at 20 breaths/min. Consider PEEP valve 3–7 cmH2O.'},
+{n:3,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:4,text:'If after 60 seconds of ventilation HR remains <60 bpm: initiate CPR — use PEA Protocol 31'},
+{n:5,text:'Obtain BGL'},
+{subhdr:'ALS Assist'},
+{n:6,text:'Begin cardiac monitoring'},
+{n:7,text:'Perform and record 12-lead EKG'},
+{n:8,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:9,text:'Begin cardiac monitoring'},
+{n:10,text:'Perform, record and evaluate 12-lead EKG prior to any other interventions'},
+{n:11,text:'Establish intravascular access'},
+{n:12,text:'Monitor and document vital signs every 5 minutes'},
+{n:13,text:'Stable bradycardia: transport to closest appropriate hospital'},
+{n:14,text:'If significant bradycardia WITH compromised perfusion:\na. <strong>Epinephrine 0.01mg/kg IV</strong> (max 1mg) — 0.1mL/kg of 1:10,000. Repeat Q3–5 min.\nb. If vagal tone or primary AV block: <strong>Atropine 0.02mg/kg IV</strong> (min 0.1mg; max 0.5mg). May repeat ×1.'},
+{n:15,text:'Advanced airway only if unable to provide effective BVM ventilations. BVM may be effective alternative.'},
+{n:16,text:'Administer crystalloid fluids 20mL/kg IV'},
+{n:17,text:'If no response to Epi and Atropine: begin <strong>TRANSCUTANEOUS PACING</strong> — start at 40mA or 1mA/kg at age-appropriate rate (see Protocol 69). Increase by 10mA Q5 sec until capture. Contact OLMC (305) 990-8950 for sedation prior to pacing conscious patients.'},
+{n:18,text:'If bradycardia improves but perfusion signs persist: <strong>Epinephrine 5mcg OR 1mcg/kg IV/IO push</strong> over 30 sec, repeat Q3–5 min. Consider Epi drip 1–10 mcg/min (see Protocol 70).'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Epinephrine 1:10,000',dose:'0.01mg/kg IV (max 1mg); 0.1mL/kg; Q3-5min'},
+{name:'Atropine',dose:'0.02mg/kg IV (min 0.1mg; max 0.5mg); repeat ×1'},
+{name:'Crystalloid Fluid',dose:'20mL/kg IV'},
+{name:'Epinephrine (perfusion)',dose:'5mcg OR 1mcg/kg IV/IO over 30 sec; Q3-5min'},
+{name:'Epinephrine drip',dose:'1-10 mcg/min — see Protocol 70'},
+]}]},
+
+{id:'chf',num:23,name:'CHF / Pulmonary Edema',cat:'cardiac',icon:'💓',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Adult & Pediatric · CPAP · Diuresis · OLMC',tags:['CHF','Pulmonary Edema','CPAP','Orthopnea','Rales','Tachycardia'],
+sections:[
+{title:'Signs & Symptoms',type:'alert',items:[
+{t:'info',text:'Hypertension · Tachycardia · Orthopnea (SOB while lying flat) · Rales · Pedal Edema'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and appropriate oxygen therapy'},
+{n:3,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:4,text:'If chest pain: follow Protocol 22'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Perform and record 12-lead EKG'},
+{n:7,text:'Establish IV access'},
+{subhdr:'Adult'},
+{n:8,text:'<strong>CPAP 10 cmH2O</strong> — CI: SBP <90 · No spontaneous respirations · Decreased LOC (lethargic) · Weight <30kg'},
+{subhdr:'Pediatric — Paramedic'},
+{n:9,text:'<strong>CALL OLMC (305) 990-8950 FOR ORDERS</strong>'},
+{n:10,text:'Begin cardiac monitoring'},
+{n:11,text:'Perform, record and evaluate 12-lead EKG prior to any other interventions'},
+{n:12,text:'Establish intravascular access'},
+{n:13,text:'Monitor and document vital signs every 5 minutes'},
+]},
+{title:'CPAP Contraindications',type:'alert',items:[
+{t:'danger',text:'SBP <90 mmHg · No spontaneous respirations · Decreased LOC (lethargic) · Weight <30kg'}]}]},
+
+{id:'cardiogenic-shock',num:24,name:'Cardiogenic Shock',cat:'cardiac',icon:'🫀',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Adult & Pediatric · Push-Dose Epi · Vasopressors',tags:['Cardiogenic Shock','Push-Dose Epi','Vasopressors','Pulmonary Edema'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'danger',text:'Heart suddenly cannot pump enough blood to meet body needs. Most often caused by severe heart attack. Rare but often fatal if not treated immediately.'},
+{t:'info',text:'<strong>Symptoms:</strong> Tachypnea · Tachycardia · Chest pain · Diaphoresis · Skin pallor · LOC change · Hypoperfusion · Hypotension'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management'},
+{n:3,text:'Administer O2 — maintain SpO2 >95%. DO NOT withhold O2 for any patient in respiratory distress.'},
+{n:4,text:'Request ALS assistance (Hatzalah or 1099)'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Perform and record 12-lead EKG'},
+{n:7,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:8,text:'Begin cardiac monitoring'},
+{n:9,text:'Perform, record and evaluate 12-lead EKG'},
+{n:10,text:'Establish intravascular access'},
+{n:11,text:'Monitor and document vital signs every 5 minutes'},
+{subhdr:'Adult — Pulmonary Edema with Hypotension'},
+{n:12,text:'<strong>PUSH-DOSE PRESSOR EPINEPHRINE 1:100,000:</strong> Dilute: discard 9mL of Epi 1:10,000 (0.1mg/mL) and draw up 9mL NS → creates 10mcg/mL. Administer 10mcg/min IV/IO Q2–5 min, titrate to maintain SBP ≥90. Duration: 5–10 min.'},
+{n:13,text:'<strong>NORMAL SALINE 250mL IV/IO</strong> titrate to effect. May repeat ×1. Precaution: CHD, CHF, renal failure.'},
+{warn:'DO NOT ADMINISTER NITROGLYCERIN FOR CARDIOGENIC SHOCK. Once SBP ≥100: refer to CHF Protocol 23.',cls:'danger'},
+{subhdr:'Pediatric — Pulmonary Edema with Age-Appropriate Hypotension'},
+{n:14,text:'<strong>PUSH-DOSE PRESSOR EPINEPHRINE 1:100,000:</strong> Same dilution. Administer 1mL/min IV/IO, titrate to age-appropriate SBP. CI: Hypotension from blood loss. Do NOT give faster than 1mL/min.'},
+{n:15,text:'<strong>NORMAL SALINE 10mL/kg IV/IO</strong> — assess lung sounds and BP frequently. May repeat ×2 for age-appropriate hypotension.'},
+{subhdr:'Sustained Hypotension — Adult & Pediatric'},
+{n:16,text:'Contact OLMC (305) 990-8950. Consider Vasopressors — see Protocol 70.'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Push-Dose Epi 1:100,000 — Adult',dose:'10mcg/mL · 10mcg/min IV/IO Q2-5min (target SBP ≥90)'},
+{name:'Push-Dose Epi 1:100,000 — Peds',dose:'10mcg/mL · 1mL/min IV/IO (do NOT exceed 1mL/min)'},
+{name:'Normal Saline — Adult',dose:'250mL IV/IO; may repeat ×1'},
+{name:'Normal Saline — Peds',dose:'10mL/kg IV/IO; may repeat ×2'},
+]}]},
+
+{id:'svt',num:25,name:'Supraventricular Tachycardia (SVT)',cat:'cardiac',icon:'💓',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Adult & Pediatric · Vagal · Adenosine · Cardizem · Cardioversion',tags:['SVT','Adenosine','Cardizem','Vagal','Cardioversion','Tachycardia'],
+sections:[
+{title:'SVT vs Sinus Tachycardia',type:'alert',items:[
+{t:'info',text:'SVT: no discernible P-waves or P-waves just after QRS. Rate >150 bpm (adult) / >180 bpm (peds) / >220 bpm (infants). QRS <0.12 sec (adult) / <0.09 sec (peds).'},
+{t:'warn',text:'Vagal maneuvers will either not affect SVT OR abruptly break it. Sinus tach will gently slow. SVT should not gently terminate.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and appropriate oxygen therapy'},
+{n:3,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:4,text:'If chest pain: follow Protocol 22'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Perform and record 12-lead EKG'},
+{n:7,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:8,text:'Begin cardiac monitoring'},
+{n:9,text:'Perform, record and evaluate 12-lead EKG prior to any other interventions'},
+{n:10,text:'Establish intravascular access'},
+{n:11,text:'Monitor and document vital signs every 5 minutes'},
+{subhdr:'Adult — Stable'},
+{n:12,text:'<strong>VAGAL MANEUVERS</strong>'},
+{n:13,text:'<strong>NORMAL SALINE 1L IV</strong> — may repeat ×1 (total 2L). Precaution: CHD, CHF, renal failure.'},
+{n:14,text:'<strong>ADENOSINE 6mg rapid IV/IO</strong> with simultaneous 20mL NS flush — use most proximal access. Repeat 12mg ×2 as needed. Print ECG during administration. CI: Heart transplant · Tegretol · 2nd/3rd degree AV block without pacemaker · Sick sinus without pacemaker · Active bronchospasm.'},
+{n:15,text:'If SVT fails to convert or Adenosine contraindicated: <strong>CARDIZEM 0.25mg/kg IV/IO over 2 min</strong> (max 20mg). Repeat ×1 in 5 min, contact OLMC. CI: Hypotension · Wide QRS · WPW · Sick sinus · Heart blocks. Caution: beta blockers, hypotension.'},
+{subhdr:'Adult — Unstable (AMS / Hypotension / Chest Pain)'},
+{n:16,text:'DO NOT DELAY CARDIOVERSION to establish IV access'},
+{n:17,text:'Sedation — see Protocol 41'},
+{n:18,text:'<strong>SYNCHRONIZED CARDIOVERSION:</strong> 100J → 200J → 300J → 360J. Repeat 360J until converted. Brief Adenosine trial may be used prior if A-Fib/Flutter suspected.'},
+{n:19,text:'For sustained hypotension: <strong>CALCIUM CHLORIDE 500mg IV/IO over 2 min</strong>. Consider vasopressors (Protocol 70).'},
+{subhdr:'Pediatric — Stable'},
+{n:20,text:'VAGAL MANEUVERS'},
+{n:21,text:'<strong>ADENOSINE 0.1mg/kg rapid IV/IO</strong> with 10mL NS flush — max single dose 6mg. If no change in 1 min: 0.2mg/kg (max 12mg).'},
+{subhdr:'Pediatric — Unstable (AMS / Age-Appropriate Hypotension)'},
+{n:22,text:'Sedation — see Protocol 41'},
+{n:23,text:'<strong>SYNCHRONIZED CARDIOVERSION:</strong> 1J/kg → 2J/kg. Repeat 2J/kg until converted.'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Adenosine — Adult',dose:'6mg rapid IV; repeat 12mg ×2 prn'},
+{name:'Adenosine — Peds',dose:'0.1mg/kg (max 6mg); then 0.2mg/kg (max 12mg)'},
+{name:'Cardizem (Diltiazem)',dose:'0.25mg/kg IV over 2 min (max 20mg); repeat ×1'},
+{name:'Cardioversion — Adult',dose:'100J → 200J → 300J → 360J'},
+{name:'Cardioversion — Peds',dose:'1J/kg → 2J/kg'},
+{name:'Calcium Chloride (hypotension)',dose:'500mg IV/IO over 2 min'},
+]}]},
+
+{id:'wct',num:26,name:'Wide Complex Tachycardia',cat:'cardiac',icon:'💓',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Adult & Pediatric · Amiodarone · Lidocaine · Cardioversion · WPW',tags:['WCT','Amiodarone','Lidocaine','Cardioversion','WPW','Wide QRS'],
+sections:[
+{title:'WPW Warning',type:'alert',items:[
+{t:'danger',text:'If concern for WPW: DO NOT administer any medication without contacting OLMC (305) 990-8950. Consider Synchronized Cardioversion.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and appropriate oxygen therapy'},
+{n:3,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:4,text:'If chest pain: follow Protocol 22'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Perform and record 12-lead EKG'},
+{n:7,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:8,text:'Begin cardiac monitoring'},
+{n:9,text:'Perform, record and evaluate 12-lead EKG'},
+{n:10,text:'Establish intravascular access'},
+{n:11,text:'Monitor and document vital signs every 5 minutes'},
+{subhdr:'Adult — Stable WCT'},
+{n:12,text:'<strong>AMIODARONE 150mg in 100mL D5W over 10 min IV/IO</strong> (1.25 gtts/sec). Administer all 150mg even if WCT terminates. May repeat ×1. CI: Marked sinus bradycardia · Allergy · Cardiogenic shock · 2nd/3rd degree heart blocks · Hypotension · QTc >500.'},
+{n:13,text:'<strong>LIDOCAINE 100mg IV/IO</strong>'},
+{n:14,text:'<strong>MAGNESIUM SULFATE 2g</strong> diluted in 100mL NS over 10 minutes'},
+{subhdr:'Adult — Unstable WCT or Any Amiodarone Contraindication'},
+{n:15,text:'DO NOT delay cardioversion to establish IV access'},
+{n:16,text:'Sedation — see Protocol 41'},
+{n:17,text:'<strong>SYNCHRONIZED CARDIOVERSION:</strong> 100J → 200J → 300J → 360J. Repeat 360J until converted.'},
+{n:18,text:'Post-conversion: immediate 12-lead. If converted after 2 cardioversions or 2+ ICD shocks AND Amiodarone not yet given: repeat Amiodarone infusion.'},
+{subhdr:'Pediatric — QRS ≥0.09 (2.25 boxes)'},
+{n:19,text:'Obtain 12 and 15-lead ECGs — leave cables connected'},
+{subhdr:'Pediatric — Stable WCT'},
+{n:20,text:'<strong>AMIODARONE 5mg/kg in 50mL D5W over 25 min IV/IO</strong> (max 150mg). May repeat ×1. Same CI as adult.'},
+{n:21,text:'<strong>LIDOCAINE 1mg/kg IV</strong> (max 100mg)'},
+{n:22,text:'<strong>MAGNESIUM SULFATE 40mg/kg IV</strong> max 2g (dilute in 100mL NS)'},
+{subhdr:'Pediatric — Unstable WCT'},
+{n:23,text:'<strong>ETOMIDATE 0.1mg/kg IV/IO over 30 sec</strong> (max 6mg). May repeat ×1.'},
+{n:24,text:'<strong>SYNCHRONIZED CARDIOVERSION:</strong> 1J/kg → 2J/kg. Repeat 2J/kg until converted.'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Amiodarone — Adult',dose:'150mg in 100mL D5W over 10 min; may repeat ×1'},
+{name:'Amiodarone — Peds',dose:'5mg/kg in 50mL D5W over 25 min (max 150mg)'},
+{name:'Lidocaine — Adult',dose:'100mg IV/IO'},
+{name:'Lidocaine — Peds',dose:'1mg/kg IV (max 100mg)'},
+{name:'Magnesium Sulfate — Adult',dose:'2g in 100mL NS over 10 min'},
+{name:'Magnesium Sulfate — Peds',dose:'40mg/kg IV; max 2g'},
+{name:'Cardioversion — Adult',dose:'100J → 200J → 300J → 360J'},
+{name:'Cardioversion — Peds',dose:'1J/kg → 2J/kg'},
+{name:'Etomidate — Peds sedation',dose:'0.1mg/kg IV/IO over 30 sec (max 6mg)'},
+]}]},
+
+{id:'rrwct',num:27,name:'Regular Really Wide Complex Tachycardia',cat:'cardiac',icon:'💓',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Adult & Pediatric · QRS ≥0.20 · Calcium Chloride · Sodium Bicarb · Cardioversion',tags:['RRWCT','Wide Complex','Calcium Chloride','Sodium Bicarb','Cardioversion'],
+sections:[
+{title:'ECG Features',type:'alert',items:[
+{t:'info',text:'QRS width ≥0.20 (5 small boxes or 1 large box). Rate usually <120 bpm.'},
+{t:'warn',text:'Transmit 12-lead to OLMC immediately.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and appropriate oxygen therapy'},
+{n:3,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:4,text:'If chest pain: follow Protocol 22'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Perform and record 12-lead EKG — transmit to OLMC'},
+{n:7,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:8,text:'Begin cardiac monitoring'},
+{n:9,text:'Perform, record and evaluate 12-lead EKG'},
+{n:10,text:'Establish intravascular access'},
+{n:11,text:'Monitor and document vital signs every 5 minutes'},
+{subhdr:'Adult — Stable RRWCT'},
+{n:12,text:'<strong>CALCIUM CHLORIDE 1g IV/IO over 2 min</strong> (dilute in 50–100mL NS)'},
+{n:13,text:'<strong>SODIUM BICARBONATE 100mEq IV/IO over 2 min</strong> — DO NOT give in same line as Calcium Chloride without flushing.'},
+{subhdr:'Adult — Unstable RRWCT or RRWCT with Hypotension'},
+{n:14,text:'DO NOT delay cardioversion to establish IV access'},
+{n:15,text:'Sedation — see Protocol 41'},
+{n:16,text:'<strong>SYNCHRONIZED CARDIOVERSION:</strong> 100J → 200J → 300J → 360J. CI: Irregularly-irregular WCTs.'},
+{subhdr:'If Unstable RRWCT Fails to Convert After 360J'},
+{n:17,text:'Calcium Chloride as above'},
+{n:18,text:'Sodium Bicarbonate as above'},
+{n:19,text:'Synchronized Cardioversion 360J Q2 min'},
+{subhdr:'Pediatric — Stable RRWCT'},
+{n:20,text:'<strong>CALCIUM CHLORIDE 20mg/kg IV/IO over 2 min</strong> (dilute in 50–100mL NS). DO NOT give in same line as Sodium Bicarbonate without flushing.'},
+{n:21,text:'<strong>SODIUM BICARBONATE 1mEq/kg IV/IO over 2 min</strong> max 50mEq/dose. May repeat ×1 in 5 min. Max total 100mEq. DO NOT mix with Calcium Chloride without flushing.'},
+{subhdr:'Pediatric — Unstable RRWCT (Age-Appropriate Hypotension)'},
+{n:22,text:'DO NOT delay cardioversion to establish IV access'},
+{n:23,text:'<strong>ETOMIDATE 0.1mg/kg IV/IO over 30 sec</strong> (max 6mg). May repeat ×1.'},
+{n:24,text:'<strong>SYNCHRONIZED CARDIOVERSION:</strong> 1J/kg → 2J/kg. CI: Irregularly-irregular WCTs.'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Calcium Chloride — Adult',dose:'1g IV/IO over 2 min (dilute 50-100mL NS)'},
+{name:'Calcium Chloride — Peds',dose:'20mg/kg IV/IO over 2 min (dilute 50-100mL NS)'},
+{name:'Sodium Bicarbonate — Adult',dose:'100mEq IV/IO over 2 min'},
+{name:'Sodium Bicarbonate — Peds',dose:'1mEq/kg IV/IO; max 50mEq/dose; max 100mEq total'},
+{name:'Cardioversion — Adult',dose:'100J → 200J → 300J → 360J'},
+{name:'Cardioversion — Peds',dose:'1J/kg → 2J/kg'},
+{name:'Etomidate — Peds',dose:'0.1mg/kg IV/IO over 30 sec (max 6mg)'},
+]}]},
+
+{id:'torsades',num:28,name:'Polymorphic V-Tach / Torsades',cat:'cardiac',icon:'💓',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Adult & Pediatric · Magnesium Sulfate · Amiodarone · Defibrillation',tags:['Torsades','Polymorphic VT','Magnesium','Amiodarone','Long QT','Defibrillation'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'info',text:'Torsades de Pointes: uncommon form of V-Tach with changing amplitude or "twisting" QRS complexes.'},
+{t:'warn',text:'<strong>Risk factors:</strong> Congenital long QT · Female gender · Renal/liver failure · Medications that prolong QT (antidysrhythmics, calcium channel blockers, psychiatric drugs, antihistamines)'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and appropriate oxygen therapy'},
+{n:3,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:4,text:'If chest pain: follow Protocol 22'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Perform and record 12-lead EKG'},
+{n:7,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:8,text:'Begin cardiac monitoring'},
+{n:9,text:'Perform, record and evaluate 12-lead EKG'},
+{n:10,text:'Establish intravascular access'},
+{n:11,text:'Monitor and document vital signs every 5 minutes'},
+{subhdr:'Adult — Stable Polymorphic V-Tach'},
+{n:12,text:'<strong>MAGNESIUM SULFATE 2g in 50mL NS</strong> IV/IO wide open (60 gtt set). CI: 2nd/3rd degree heart blocks. Caution: rapid infusion may cause hypotension.'},
+{n:13,text:'<strong>AMIODARONE 150mg</strong> diluted in 100mL NS or D5W over 10 minutes'},
+{n:14,text:'<strong>LIDOCAINE 1–1.5mg/kg IV/IO</strong> max dose 100mg'},
+{subhdr:'Adult — Unstable Polymorphic V-Tach (Hypotension)'},
+{n:15,text:'DO NOT delay defibrillation to establish IV access'},
+{n:16,text:'Sedation — see Protocol 41'},
+{n:17,text:'<strong>DEFIBRILLATION:</strong> 200J → 300J → 360J. If converts and returns: use last successful energy and increase.'},
+{n:18,text:'After conversion, if Magnesium not yet given: <strong>MAGNESIUM SULFATE 2g in 50mL NS over 10 min IV/IO</strong>'},
+{subhdr:'Pediatric — Stable Polymorphic V-Tach'},
+{n:19,text:'<strong>MAGNESIUM SULFATE 40mg/kg in 50mL NS over 10 min IV/IO</strong>. Max dose 2g. CI: 2nd/3rd degree heart blocks.'},
+{n:20,text:'<strong>AMIODARONE 5mg/kg in 50mL D5W over 25 min</strong> (max 150mg)'},
+{n:21,text:'<strong>LIDOCAINE 1mg/kg IV</strong> (max 100mg)'},
+{subhdr:'Pediatric — Unstable Polymorphic V-Tach (Age-Appropriate Hypotension)'},
+{n:22,text:'DO NOT delay defibrillation to establish IV access'},
+{n:23,text:'Sedation — see Protocol 41'},
+{n:24,text:'<strong>DEFIBRILLATION:</strong> 2J/kg → 4J/kg'},
+{n:25,text:'After conversion, if Magnesium not yet given: <strong>MAGNESIUM SULFATE 40mg/kg in 50mL NS over 10 min</strong> (max 2g)'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Magnesium Sulfate — Adult (stable)',dose:'2g in 50mL NS wide open (60 gtt set)'},
+{name:'Magnesium Sulfate — Adult (post-defib)',dose:'2g in 50mL NS over 10 min'},
+{name:'Magnesium Sulfate — Peds',dose:'40mg/kg in 50mL NS over 10 min; max 2g'},
+{name:'Amiodarone — Adult',dose:'150mg in 100mL NS/D5W over 10 min'},
+{name:'Amiodarone — Peds',dose:'5mg/kg in 50mL D5W over 25 min (max 150mg)'},
+{name:'Lidocaine — Adult',dose:'1-1.5mg/kg IV/IO (max 100mg)'},
+{name:'Lidocaine — Peds',dose:'1mg/kg IV (max 100mg)'},
+{name:'Defibrillation — Adult',dose:'200J → 300J → 360J'},
+{name:'Defibrillation — Peds',dose:'2J/kg → 4J/kg'},
+]}]},
+
+{id:'lvad',num:29,name:'Left Ventricular Assist Devices (LVAD)',cat:'cardiac',icon:'🫀',color:'#c0392b',bg:'#fdecea',level:'all',levelLabel:'All Levels',
+summary:'Heart Pump · Alarms · No LUCAS · Contact LVAD Coordinator',tags:['LVAD','Heart Pump','Driveline','LUCAS','LVAD Coordinator'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'info',text:'LVADs (Heart Pumps) are surgically implanted circulatory support devices. Contact the patient\'s primary caretaker AND the LVAD coordinator immediately. LVAD phone number is on the device and the equipment carrying bag.'},
+{t:'warn',text:'Take ALL equipment associated with the LVAD system to the ED. Assist patient/caretaker in replacing batteries or cables. Locate the emergency bag with backup batteries and charger.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs — use Doppler for blood pressure if available'},
+{n:2,text:'AUSCULTATE: Determine device type, assess alarms, auscultate for pump sounds. Patients with functioning LVAD may NOT have detectable pulse, measurable BP, or accurate SpO2. Continuous humming = pump working.'},
+{n:3,text:'Locate driveline site on patient\'s abdomen'},
+{n:4,text:'DO NOT cause trauma to driveline site or wires'},
+{n:5,text:'If bleeding at driveline site: apply direct pressure'},
+{n:6,text:'Airway management and appropriate oxygen therapy'},
+{n:7,text:'Request ALS assistance (Hatzalah or 1099)'},
+{subhdr:'Unresponsive Patients — EVALUATE FOR REVERSIBLE CAUSES'},
+{n:8,text:'ONLY perform chest compressions when LVAD is not working and no other options exist to restart it'},
+{n:9,text:'Check BGL — if <70: Hypoglycemia Protocol 9'},
+{n:10,text:'Check HGB'},
+{n:11,text:'CHEST COMPRESSIONS: Position hands to the RIGHT of the sternum to avoid LVAD dislodgement. <strong>DO NOT use LUCAS device.</strong> Caution: risk of rupturing ventricular wall.'},
+{subhdr:'ALS Assist'},
+{n:12,text:'Begin cardiac monitoring'},
+{n:13,text:'Perform and record 12-lead EKG'},
+{n:14,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:15,text:'Begin cardiac monitoring'},
+{n:16,text:'Perform, record and evaluate 12-lead EKG'},
+{n:17,text:'Establish intravascular access'},
+{subhdr:'Hypo-Perfusion'},
+{n:18,text:'<strong>NORMAL SALINE 250mL IV/IO</strong> titrate to effect. Call OLMC (305) 990-8950 AND LVAD Coordinator for further instructions.'},
+{subhdr:'Transport'},
+{n:19,text:'Non-LVAD chief complaints: transport per Transport Destinations Protocol. Contact Hatzalah EMS Coordinator and LVAD Coordinator with any questions.'},
+{n:20,text:'LVAD Receiving Facilities: Memorial Regional (954-329-8908) · JFK Medical Center (561-548-5823) · Cleveland Clinic Weston (954-226-9196) · JMH Ryder (all LVAD patients)'},
+]},
+{title:'WARNING',type:'alert',items:[
+{t:'danger',text:'Be aware of cables, controller, and batteries when preparing for transport. Place stretcher straps UNDER LVAD cables to avoid creating torque on the device. DO NOT use the LUCAS compression device.'}]}]},
+
+{id:'ecmo',num:32,name:'ECMO Alert — Memorial Regional ONLY',cat:'cardiac',icon:'🫀',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Out-of-Hospital Cardiac Arrest · Age <70 · VFIB/VTACH/PEA · Witnessed',tags:['ECMO','Memorial Regional','Cardiac Arrest','VFIB','VTACH','PEA'],
+sections:[
+{title:'Adult ECMO — Inclusion Criteria',type:'alert',items:[
+{t:'info',text:'Age <70 · Witnessed arrest · CPR initiated <2 min · Initial rhythm: VFIB, VTACH, or PEA'},
+{t:'danger',text:'<strong>CALL ECMO ALERT: 954-265-CODE (2633)</strong>'}]},
+{title:'Exclusion Criteria',type:'alert',items:[
+{t:'warn',text:'Initial rhythm Asystole · Unknown downtime · Poor baseline neurologic function or DNR · ROSC obtained and sustained after 20 min of conventional CPR · Arrest secondary to Sepsis/active infection · Terminal Cancer'}]},
+{title:'Key Terms',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong>No Flow Time:</strong> Time from arrest until initiation of CPR with chest compressions'},
+{style:'circle',indent:0,text:'<strong>Low Flow Time:</strong> Time of CPR until ROSC or initiation of ECMO'},
+]},
+{title:'CPC Scale',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>Good Cerebral Performance:</strong> Conscious and alert, normal neurologic function or slight disability'},
+{style:'num',n:2,indent:0,text:'<strong>Moderate Cerebral Disability:</strong> Conscious, enough function for part-time work or independent daily activities'},
+{style:'num',n:3,indent:0,text:'<strong>Severe Cerebral Disability:</strong> Conscious but dependent on others for daily support'},
+{style:'num',n:4,indent:0,text:'Coma / Vegetative state'},
+{style:'num',n:5,indent:0,text:'Brain Dead'},
+]},
+{title:'Transport Note',type:'alert',items:[
+{t:'danger',text:'Rapid transport to Memorial Regional Hospital once ECMO criteria are met. Prolonged down time will be an exclusion criterion.'}]}]},
+
+{id:'special-cardiac-arrest',num:33,name:'Special Considerations — Cardiac Arrest',cat:'cardiac',icon:'🫀',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Hyperkalemia · Refractory VF · Double Sequential Defib · Electrocution · Lightning · Cyanide · Hanging · Drowning · Trauma Arrest',tags:['Hyperkalemia','Double Sequential Defib','Refractory VF','Electrocution','Lightning','Cyanide','Drowning','Trauma Arrest','Ultrasound'],
+sections:[
+{title:'Note',type:'alert',items:[
+{t:'info',text:'The below treatments are IN ADDITION to standard cardiac arrest therapy.'}]},
+{title:'Adult — Hyperkalemia in Arrest',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>CALCIUM CHLORIDE 1g IV/IO over 2 min</strong> (dilute in 50–100mL NS). DO NOT mix with Sodium Bicarbonate without flushing.'},
+{style:'num',n:2,indent:0,text:'<strong>ALBUTEROL 10mg via nebulizer</strong> — continuous (in-line neb if advanced airway)'},
+{style:'num',n:3,indent:0,text:'<strong>SODIUM BICARBONATE 100mEq IV/IO</strong> — DO NOT mix with Calcium Chloride without flushing.'},
+]},
+{title:'Adult — Third Trimester in Arrest',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'Manually displace uterus to the left'},
+{style:'num',n:2,indent:0,text:'Transport to closest OB hospital (Exception: Trauma Alerts)'},
+]},
+{title:'Refractory V-Fib / V-Tach',type:'outline',items:[
+{style:'plain',indent:0,text:'Defined as persistent VF/VT with no transient interruption after 5 defibrillations.'},
+{style:'plain',indent:0,text:'If ALL 3 of the following have failed: ≥5 defibrillations · Correctable causes (H\'s & T\'s) addressed · 450mg Amiodarone given:'},
+{style:'num',n:1,indent:0,text:'<strong>DOUBLE SEQUENTIAL DEFIBRILLATION:</strong> Apply second set of defibrillation pads. Verify VF/VT on both monitors. Charge both to maximum. Defibrillate with first Lifepak then immediately with second — brief pause between each. Repeat Q2 min until terminated.'},
+{style:'num',n:2,indent:0,text:'If still in VF/VT: consider transport to ECMO facility — Memorial Regional Hospital'},
+]},
+{title:'Adult & Pediatric — Special Causes',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong>ELECTROCUTION (AC):</strong> Treat as PRIMARY ARREST · Immediate defibrillation · Consider spinal motion restriction · Transport as Trauma Alert'},
+{style:'circle',indent:0,text:'<strong>LIGHTNING (DC):</strong> Treat as SECONDARY ARREST · Immediate defibrillation · Consider spinal motion restriction · Transport as Trauma Alert'},
+{style:'circle',indent:0,text:'<strong>CYANIDE EXPOSURE:</strong> Treat as SECONDARY ARREST · Call 1099 immediately · Any cardiac arrest during or within 6 hours after fire shall be treated for cyanide exposure'},
+{style:'circle',indent:0,text:'<strong>HANGING:</strong> Treat as SECONDARY ARREST · Consider spinal motion restriction · Transport to closest facility'},
+{style:'circle',indent:0,text:'<strong>DROWNING:</strong> Treat as SECONDARY ARREST · No drowning victim to be pronounced dead if possibility of hypothermia · Remove wet clothes, dry, cover with blankets'},
+]},
+{title:'Trauma Arrest',type:'alert',items:[
+{t:'danger',text:'Do NOT attempt resuscitation for injuries incompatible with life: decapitation, massive crush injury, incineration, etc.'},
+{t:'warn',text:'<strong>PEA:</strong> Organized rhythm >20 bpm. <br><strong>Penetrating Chest Trauma:</strong> Bilateral needle decompression may be performed for ROSC.<br><strong>Transport:</strong> If helicopter unavailable and ground >20 min: transport to nearest ED.'}]},
+{title:'ONLY Trained Hatzalah Paramedics — Ultrasound',type:'outline',items:[
+{style:'circle',indent:0,text:'To confirm cardiac motion in PEA:'},
+{style:'alpha',n:'a',indent:1,text:'Cardiac motion PRESENT: Continue resuscitation and treat reversible causes'},
+{style:'alpha',n:'b',indent:1,text:'Cardiac motion NOT PRESENT: Continue resuscitation and transport'},
+]}]},
+
+{id:'overdose-general',num:34,name:'Overdose Emergencies — General',cat:'tox',icon:'💊',color:'#455a64',bg:'#eceff1',level:'all',levelLabel:'All Levels',
+summary:'Poison Control · ABC Support · Scene Safety · Recovery Position',tags:['Overdose','Poison Control','Scene Safety','BGL','Recovery Position'],
+sections:[
+{title:'General Information',type:'alert',items:[
+{t:'info',text:'Contact <strong>Florida Poison Control Center: 1-800-222-1222</strong> as soon as possible for treatment recommendations.'},
+{t:'warn',text:'Assess scene for danger — establish safe zone — utilize appropriate PPE. Document directed treatment and representative name on ePCR.'}]},
+{title:'Goals of Treatment',type:'outline',items:[
+{style:'circle',indent:0,text:'Support the ABCs'},
+{style:'circle',indent:0,text:'Terminate seizures'},
+{style:'circle',indent:0,text:'Terminate any lethal cardiac arrhythmias'},
+{style:'circle',indent:0,text:'Reverse toxic effects with a specific antidote'},
+]},
+{title:'General Management',type:'outline',items:[
+{style:'circle',indent:0,text:'Try to identify the source of the overdose/poisoning'},
+{style:'circle',indent:0,text:'Suction as needed'},
+{style:'circle',indent:0,text:'If unresponsive and spinal injury not suspected: place in recovery position'},
+{style:'circle',indent:0,text:'Check BGL — if <70 mg/dL: see Hypoglycemia Protocol 9'},
+]},
+{title:'Warning — IV Fluids',type:'alert',items:[
+{t:'danger',text:'Use caution supporting BP with fluids. Many medications depress myocardial contractility — patient may develop heart failure with boluses as small as 500mL. Assess lung sounds and BP frequently.'}]}]},
+
+{id:'beta-blocker-od',num:35,name:'Beta Blocker Overdose',cat:'tox',icon:'💊',color:'#455a64',bg:'#eceff1',level:'p',levelLabel:'Paramedic',
+summary:'Adult & Pediatric · Glucagon · Transcutaneous Pacing · Push-Dose Epi',tags:['Beta Blocker','Glucagon','Bradycardia','Hypotension','Atenolol','Metoprolol','Propranolol'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'info',text:'<strong>Common Beta Blockers:</strong> Atenolol, Carvedilol, Metoprolol, Propranolol'},
+{t:'warn',text:'<strong>Signs & Symptoms:</strong> Bradycardia · Hypotension · Cardiac arrhythmias · Hypothermia · Hypoglycemia · Seizures'},
+{t:'info',text:'Call Florida Poison Control: 1-800-222-1222'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'Assess scene for danger'},
+{n:2,text:'ABCs and vital signs'},
+{n:3,text:'Airway management'},
+{n:4,text:'Administer oxygen'},
+{n:5,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+{n:6,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:7,text:'Call Poison Control if time allows'},
+{subhdr:'ALS Assist'},
+{n:8,text:'Begin cardiac monitoring'},
+{n:9,text:'Perform and record 12-lead EKG'},
+{n:10,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:11,text:'Perform advanced airway management as needed'},
+{n:12,text:'Perform and evaluate 12-lead EKG'},
+{n:13,text:'Establish IV access'},
+{subhdr:'Adult — Isolated Hypotension'},
+{n:14,text:'<strong>NORMAL SALINE 500mL IV/IO bolus</strong> titrate to effect. May repeat ×1. Precaution: CHD, CHF, renal failure.'},
+{n:15,text:'<strong>GLUCAGON 5–10mg IV/IO</strong> for refractory hypotension (if available)'},
+{n:16,text:'<strong>TRANSCUTANEOUS PACING:</strong> see Bradycardia Protocol 20 if applicable'},
+{n:17,text:'If hypotension persists: <strong>PUSH-DOSE EPINEPHRINE 1:100,000 (10mcg/mL)</strong> — 1mL over 30 sec IV/IO. May repeat Q3–5 min (max 3 doses). Titrate to MAP ≥65 mmHg.'},
+{subhdr:'Pediatric — Isolated Hypotension'},
+{n:18,text:'<strong>NORMAL SALINE 20mL/kg IV/IO</strong> — assess lung sounds and BP frequently. May repeat ×2 for age-appropriate hypotension.'},
+{n:19,text:'<strong>GLUCAGON 1mg IV/IO Q1 min</strong> until hypotension resolves (0.5mg if <20kg). Max 4mg.'},
+{n:20,text:'Nausea/vomiting: ZOFRAN 2mg (6 mos–2 yrs) or 4mg (>2 yrs) IM/IV/IO. Max 4mg.'},
+{n:21,text:'TRANSCUTANEOUS PACING: see Bradycardia Pediatric Protocol 21 if applicable'},
+{n:22,text:'If hypotension persists: Push-Dose Epinephrine (see above) titrated to age-appropriate SBP'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Normal Saline — Adult',dose:'500mL IV/IO; may repeat ×1'},
+{name:'Normal Saline — Peds',dose:'20mL/kg IV/IO; may repeat ×2'},
+{name:'Glucagon — Adult',dose:'5-10mg IV/IO (refractory hypotension)'},
+{name:'Glucagon — Peds',dose:'1mg IV/IO Q1 min; max 4mg (0.5mg if <20kg)'},
+{name:'Push-Dose Epi 1:100,000 — Adult',dose:'1mL over 30 sec IV/IO; Q3-5 min; max 3 doses'},
+{name:'Zofran — Peds (N/V)',dose:'2mg (<2 yrs) or 4mg (>2 yrs) IM/IV/IO; max 4mg'},
+]}]},
+
+{id:'ccb-od',num:36,name:'Calcium Channel Blocker Overdose',cat:'tox',icon:'💊',color:'#455a64',bg:'#eceff1',level:'p',levelLabel:'Paramedic',
+summary:'Adult & Pediatric · Calcium Chloride · Glucagon · Atropine · Pacing',tags:['Calcium Channel Blocker','Calcium Chloride','Glucagon','Hypotension','Bradycardia','Norvasc','Cardizem'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'info',text:'<strong>Common CCBs:</strong> Norvasc, Cardizem, Cardene, Procardia'},
+{t:'warn',text:'<strong>Signs & Symptoms:</strong> Hypotension · Syncope · Seizure · AMS · Non-cardiogenic Pulmonary Edema · Bradycardia'},
+{t:'info',text:'Call Florida Poison Control: 1-800-222-1222'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'Assess scene for danger'},
+{n:2,text:'ABCs and vital signs'},
+{n:3,text:'Airway management'},
+{n:4,text:'Administer oxygen'},
+{n:5,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+{n:6,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:7,text:'Call Poison Control if time allows'},
+{subhdr:'ALS Assist'},
+{n:8,text:'Begin cardiac monitoring'},
+{n:9,text:'Perform and record 12-lead EKG'},
+{n:10,text:'Establish intravascular access'},
+{subhdr:'Paramedic'},
+{n:11,text:'Perform advanced airway management as needed'},
+{n:12,text:'Establish intravascular access'},
+{n:13,text:'Perform and evaluate 12-lead EKG'},
+{subhdr:'Adult — Isolated Hypotension'},
+{n:14,text:'<strong>NORMAL SALINE 500mL IV/IO</strong> titrate to effect. May repeat ×1. Precaution: CHD, CHF, renal failure.'},
+{n:15,text:'<strong>CALCIUM CHLORIDE 1g IV/IO over 5 minutes</strong> (up to 4g total)'},
+{n:16,text:'<strong>GLUCAGON 5–10mg IV push ×1</strong> (if available)'},
+{n:17,text:'If hypotension persists: <strong>PUSH-DOSE EPINEPHRINE 1:100,000</strong> — 1mL over 30 sec IV/IO. May repeat Q30–60 sec. Titrate to MAP ≥65. Consider Epinephrine drip (Protocol 70).'},
+{n:18,text:'Hypotension with Bradycardia or unresponsive to above: <strong>ATROPINE 1mg IV</strong> repeat PRN up to 3 doses. <strong>TRANSCUTANEOUS PACING:</strong> see Protocol 20 if applicable.'},
+{subhdr:'Pediatric — Isolated Hypotension'},
+{n:19,text:'<strong>NORMAL SALINE 20mL/kg IV/IO</strong> — assess lung sounds and BP frequently. May repeat ×2 for age-appropriate hypotension.'},
+{n:20,text:'<strong>CALCIUM CHLORIDE 20mg/kg IV/IO over 2 min</strong>. May repeat Q10 min until symptoms resolve. Max total 1g.'},
+{n:21,text:'If hypotension persists: Push-Dose Epinephrine (see above) titrated to age-appropriate SBP'},
+{n:22,text:'Hypotension with Bradycardia or unresponsive to above: <strong>TRANSCUTANEOUS PACING</strong> — see Bradycardia Pediatric Protocol 21'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Normal Saline — Adult',dose:'500mL IV/IO; may repeat ×1'},
+{name:'Normal Saline — Peds',dose:'20mL/kg IV/IO; may repeat ×2'},
+{name:'Calcium Chloride — Adult',dose:'1g IV/IO over 5 min; up to 4g total'},
+{name:'Calcium Chloride — Peds',dose:'20mg/kg IV/IO over 2 min; Q10 min; max 1g'},
+{name:'Glucagon — Adult',dose:'5-10mg IV push ×1'},
+{name:'Atropine — Adult',dose:'1mg IV; repeat PRN up to 3 doses'},
+{name:'Push-Dose Epi 1:100,000',dose:'1mL over 30 sec IV/IO; Q30-60 sec; titrate to MAP ≥65'},
+]}]},
+
+{id:'cocaine-od',num:37,name:'Cocaine Overdose',cat:'tox',icon:'💊',color:'#455a64',bg:'#eceff1',level:'p',levelLabel:'Paramedic',
+summary:'Adult & Pediatric · Versed · Ketamine · Excited Delirium',tags:['Cocaine','Versed','Ketamine','Excited Delirium','SVT','Chest Pain','Seizure'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'warn',text:'<strong>Signs & Symptoms:</strong> Tachycardia · SVT/VCT arrhythmias · Chest pain/STEMI · Hypertension · Seizures · Excited delirium · Hyperthermia · Excessive sweating'},
+{t:'info',text:'Assess scene for danger — utilize appropriate PPE. Follow appropriate protocol if symptomatic and treatment not listed.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'Assess scene for danger'},
+{n:2,text:'ABCs and vital signs'},
+{n:3,text:'Airway management'},
+{n:4,text:'Administer oxygen'},
+{n:5,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+{n:6,text:'Request ALS assistance (Hatzalah or 1099)'},
+{subhdr:'ALS Assist'},
+{n:7,text:'Begin cardiac monitoring'},
+{n:8,text:'Perform and record 12-lead EKG'},
+{n:9,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:10,text:'Perform advanced airway management as needed'},
+{n:11,text:'Perform and evaluate 12-lead EKG'},
+{n:12,text:'Establish IV access'},
+{subhdr:'Adult — Stable SVT, WCT, Chest Pain, HTN, or Seizures'},
+{n:13,text:'<strong>VERSED (Midazolam) 5mg IV/IO/IN/IM</strong>. May repeat ×1 in 5 min. Use Benzodiazepine to treat BP (do NOT use Beta Blocker). CI: Hypotension. Monitor for respiratory depression.'},
+{n:14,text:'If unstable cardiac arrhythmia: follow appropriate arrhythmia protocol'},
+{n:15,text:'Excited Delirium: Consider Chemical Restraint Protocol — <strong>KETAMINE 4mg/kg IM</strong> (max 400mg)'},
+{n:16,text:'For Chest Pain: administer Versed as above then refer to Chest Pain Protocol 22'},
+{subhdr:'Pediatric — Stable SVT, WCT, Chest Pain, HTN, or Seizures'},
+{n:17,text:'Call OLMC (305) 990-8950. Consider <strong>VERSED:</strong> 0.1mg/kg IV/IO (max 5mg) OR 0.2mg/kg IN/IM (max 5mg). May repeat ×1. CI: Hypotension. Monitor respiratory depression.'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Midazolam (Versed) — Adult',dose:'5mg IV/IO/IN/IM; may repeat ×1 in 5 min (CI: hypotension)'},
+{name:'Midazolam (Versed) — Peds',dose:'0.1mg/kg IV/IO OR 0.2mg/kg IN/IM; max 5mg; repeat ×1'},
+{name:'Ketamine (Excited Delirium)',dose:'4mg/kg IM (max 400mg)'},
+]}]},
+
+{id:'proc-sedation',num:41,name:'Procedural Sedation',cat:'medical',icon:'💉',color:'#6a1b9a',bg:'#f3e5f5',level:'p',levelLabel:'Paramedic',
+summary:'Adult & Pediatric · Midazolam · Fentanyl · Etomidate · Ketamine',tags:['Procedural Sedation','Midazolam','Fentanyl','Etomidate','Ketamine','Cardioversion','Pacing'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'info',text:'This protocol is for conscious patients requiring short-term analgesic and/or anxiolytic therapy for procedures such as synchronized cardioversion and transcutaneous pacing.'},
+{t:'warn',text:'Consider calling OLMC (305) 990-8950 for consult prior to administering medications.'}]},
+{title:'Paramedic',type:'numbered',items:[
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Monitor using non-invasive capnography when available'},
+{n:3,text:'Begin cardiac and SpO2 monitoring'},
+{n:4,text:'Administer oxygen as appropriate (may be via non-invasive nasal capnography)'},
+{n:5,text:'Obtain intravascular access'},
+{n:6,text:'Monitor vital signs every 5 minutes before and after medication administration'},
+{n:7,text:'Administer one of the following:<br><strong>a. Midazolam 0.1mg/kg IV/IM/IN</strong> (max 5mg)<br><strong>b. Fentanyl 1–2mcg/kg IV</strong> slow push (max 100mcg)<br><strong>c. Etomidate 0.15mg/kg IV</strong> (max 20mg)<br><strong>d. Ketamine 0.5–1mg/kg IV/IM</strong> (max 100mg)'},
+]},
+{title:'Note',type:'alert',items:[
+{t:'info',text:'Due to its short duration of action, consider using <strong>Etomidate as a single sedative agent only for short-term procedures</strong> such as synchronized cardioversion.'}]},
+{title:'Medications',type:'drugs',items:[
+{name:'Midazolam',dose:'0.1mg/kg IV/IM/IN (max 5mg)'},
+{name:'Fentanyl',dose:'1-2mcg/kg IV slow push (max 100mcg)'},
+{name:'Etomidate',dose:'0.15mg/kg IV (max 20mg) — preferred for cardioversion'},
+{name:'Ketamine',dose:'0.5-1mg/kg IV/IM (max 100mg)'},
+]}]},
+
+{id:'pain-mgmt',num:42,name:'Pain Management',cat:'medical',icon:'💊',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Adult & Pediatric · Fentanyl · Morphine · Ketamine · Ketorolac · Acetaminophen · IO Lidocaine',tags:['Fentanyl','Morphine','Ketamine','Ketorolac','Acetaminophen','Lidocaine','IO','Pain Scale','OLMC'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'warn',text:'Severe pain = 7–10 on the 0–10 pain scale. All providers must call OLMC (305) 990-8950 and obtain approval for controlled substances for Mild (1–3) or Moderate (4–6) pain.'},
+{t:'danger',text:'Patient must have SBP >100 mmHg prior to any narcotic administration. Consider Zofran prior to narcotics (see Nausea Protocol 13).'}]},
+{title:'Pain Measurement Scale',type:'painscale'},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and appropriate oxygen therapy'},
+{n:3,text:'Non-pharmacologic pain management: Position of comfort · Cover wounds · Burn dressings · Splint extremities · Cold packs to musculoskeletal injuries · O2 for Sickle Cell Crisis if hypoxic'},
+{n:4,text:'Consider requesting ALS assistance (Hatzalah or 1099)'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring for narcotic administration'},
+{n:6,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:7,text:'Begin cardiac and SpO2 monitoring'},
+{n:8,text:'Establish intravascular access'},
+{n:9,text:'Contact OLMC PRIOR to analgesic medications if: AMS · Hypoventilation · Hemodynamically unstable · Pregnant or suspected pregnant'},
+{n:10,text:'Assess for hypoventilation after opioid administration — treat as needed'},
+{n:11,text:'Monitor with non-invasive capnography'},
+{n:12,text:'Monitor vital signs every 5 minutes'},
+]},
+{title:'Adult Medications',type:'numbered',items:[
+{n:7,text:'Administer one of the following:'},
+{n:8,text:'<strong>FENTANYL IV/IM/IN:</strong> Narcotic naive or elderly: 25–50mcg · Prior narcotic use: 50–100mcg · Max dose 200mcg. CI: Pregnancy ≥32 wks or active labor. Precaution: opiate history, respiratory depression — can be reversed with Narcan.'},
+{n:9,text:'<strong>MORPHINE IV/IM:</strong> Narcotic naive/elderly: 2mg · Prior narcotic use: 4mg · Max dose 8mg. CI: Pregnancy ≥32 wks or active labor. Monitor for respiratory depression.'},
+{n:10,text:'<strong>KETAMINE 25mg IV</strong> mix in 50mL NS over 10 min OR <strong>25mg IN/IM</strong>. May be given with or instead of Fentanyl for severe pain. Contact OLMC for repeat dosing. CI: Allergy · ACS · Dissection · Pregnancy · Penetrating eye injury · Non-traumatic chest pain. Psychotropic side effects — treat with Versed 2mg IV.'},
+{n:11,text:'<strong>KETOROLAC 15mg IV/IM</strong>. May repeat once. CI: Allergy · ACS · Renal failure · Age ≥65 · Pregnancy · Bleeding risk. Precaution: abdominal pain.'},
+{n:12,text:'<strong>ACETAMINOPHEN 1000mg IV over 20 minutes</strong>. CI: Known allergy or liver disease. Precaution: patient may have taken Tylenol prior.'},
+]},
+{title:'Pediatric Medications',type:'numbered',items:[
+{n:13,text:'<strong>FENTANYL:</strong> 1mcg/kg IV/IO over 2 min · 1.5mcg/kg IN/IM · Max single dose 100mcg · May repeat ×1 in 5 min, max total 200mcg. CI: <6 months old.'},
+{n:14,text:'<strong>MORPHINE:</strong> 0.05mg/kg IV or 0.1mg/kg IM · Max single dose 2mg · May repeat once after 15 min if severe pain persists. CI: <6 months old · SBP <90 (>10 yrs) or <70+2×age (1–9 yrs).'},
+{n:15,text:'<strong>KETAMINE 1mg/kg IN/IM</strong> (>2 years old) — Must contact OLMC. May repeat ×1 in 5 min. CI same as adult.'},
+{n:16,text:'<strong>KETOROLAC 0.5mg/kg IV/IM</strong> (>6 months old) — Must contact OLMC. Max dose 15mg. Same CI as adult.'},
+{n:17,text:'<strong>ACETAMINOPHEN 15mg/kg IV over 15 min</strong> — Must contact OLMC. Max dose 750mg. CI: allergy or liver disease.'},
+]},
+{title:'IO Infusion Pain Management',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'<strong>LIDOCAINE — Adult: 40mg IO over 2 min</strong>. Allow to dwell 1 minute. Flush with 10mL NS. May repeat at 20mg ×1.'},
+{style:'num',n:2,indent:0,text:'<strong>LIDOCAINE — Peds: 0.5mg/kg IO over 2 min</strong>. Allow to dwell 1 minute. Flush with 10mL NS. Max total dose 40mg.'},
+]},
+{title:'Medications Summary',type:'drugs',items:[
+{name:'Fentanyl — Adult',dose:'25-50mcg (naive) or 50-100mcg IV/IM/IN; max 200mcg'},
+{name:'Fentanyl — Peds',dose:'1mcg/kg IV (max 100mcg/dose); 1.5mcg/kg IN/IM; max 200mcg total'},
+{name:'Morphine — Adult',dose:'2mg (naive) or 4mg IV/IM; max 8mg'},
+{name:'Morphine — Peds',dose:'0.05mg/kg IV or 0.1mg/kg IM; max 2mg/dose'},
+{name:'Ketamine — Adult',dose:'25mg IV in 50mL NS over 10 min OR 25mg IN/IM'},
+{name:'Ketamine — Peds (>2 yrs, OLMC req)',dose:'1mg/kg IN/IM; repeat ×1 in 5 min'},
+{name:'Ketorolac — Adult',dose:'15mg IV/IM; repeat ×1'},
+{name:'Ketorolac — Peds (>6 mos, OLMC req)',dose:'0.5mg/kg IV/IM; max 15mg'},
+{name:'Acetaminophen — Adult',dose:'1000mg IV over 20 min'},
+{name:'Acetaminophen — Peds (OLMC req)',dose:'15mg/kg IV over 15 min; max 750mg'},
+{name:'Lidocaine IO — Adult',dose:'40mg over 2 min; dwell 1 min; flush NS; repeat 20mg ×1'},
+{name:'Lidocaine IO — Peds',dose:'0.5mg/kg over 2 min; dwell 1 min; flush NS; max 40mg total'},
+]}]},
+
+{id:'decompression-illness',num:43,name:'Decompression Illness',cat:'medical',icon:'🤿',color:'#1565c0',bg:'#e3f2fd',level:'all',levelLabel:'All Levels',
+summary:'SCUBA · Decompression Sickness · Hyperbaric · DAN · St. Mary\'s',tags:['Decompression','SCUBA','Hyperbaric','DAN','Diving','Tension Pneumo'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'warn',text:'<strong>Signs & Symptoms:</strong> Stroke-like symptoms · Visual disturbances · AMS · Paralysis or weakness · Numbness/tingling · Bowel/bladder dysfunction · Pneumothorax · Stroke · Cardiac arrest'},
+{t:'info',text:'Any patient with above signs who used SCUBA or compressed air within 48 hours = possible decompression sickness.'},
+{t:'danger',text:'<strong>Transport:</strong> St. Mary\'s Hyperbaric Chamber or Mercy Hospital Miami (encode prior to confirm availability). If unavailable: closest ED. If ground >20 min: transport by air.'}]},
+{title:'Contact DAN',type:'alert',items:[
+{t:'info',text:'<strong>DAN (Diver Alert Network):</strong> (919) 684-9111 · (919) 684-2948 · 1-800-446-2671. Follow DAN treatment recommendations. Document treatment and representative name on ePCR. Dr. Gutfruend is a DAN referral physician if available.'}]},
+{title:'Dive History',type:'outline',items:[
+{style:'circle',indent:0,text:'Depth of dives · Air mixture type in tanks · Number of dives · Interval between dives'},
+{style:'circle',indent:0,text:'All dive equipment must be brought to the hospital'},
+]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management'},
+{n:3,text:'Apply high-flow oxygen 15L via NRB. If apneic or obtunded: assist with BVM.'},
+{n:4,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:5,text:'Place patient in a supine position'},
+{subhdr:'ALS Assist'},
+{n:6,text:'Begin cardiac monitoring'},
+{n:7,text:'Perform and record 12-lead EKG'},
+{n:8,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:9,text:'Perform advanced airway management as needed'},
+{n:10,text:'Establish intravascular access'},
+{n:11,text:'Treat arrhythmias per appropriate protocols'},
+{n:12,text:'Consider performing and evaluating 12-lead EKG'},
+{n:13,text:'Evaluate for Tension Pneumothorax — see Protocol 68'},
+{n:14,text:'<strong>NORMAL SALINE:</strong> Adult: 500mL IV/IO regardless of BP, repeat ×1. Peds: 10mL/kg IV/IO (max 250mL). Assess lung sounds and BP. If SOB, decreased breath sounds, or hemoptysis: reduce to KVO rate.'},
+{n:15,text:'Transport'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Normal Saline — Adult',dose:'500mL IV/IO; repeat ×1 (KVO rate if pulmonary symptoms)'},
+{name:'Normal Saline — Peds',dose:'10mL/kg IV/IO (max 250mL)'},
+]}]},
+
+{id:'drowning',num:44,name:'Fatal / Non-Fatal Drowning',cat:'trauma',icon:'🌊',color:'#bf360c',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · CPAP · Spinal Restriction · Push-Dose Epi · Hypothermia',tags:['Drowning','CPAP','Hypothermia','Spinal','Push-Dose Epi','Secondary Arrest'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'warn',text:'Consider spinal motion restriction if trauma involved (diving, rough surf, vehicle accident with submersion).'},
+{t:'danger',text:'All non-fatal drowning patients MUST BE TRANSPORTED to the hospital.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management'},
+{n:3,text:'Maintain C-spine precautions'},
+{n:4,text:'Request ALS assistance (Hatzalah or 1099)'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Perform and record 12-lead EKG — transmit to OLMC'},
+{n:7,text:'Establish IV access'},
+{subhdr:'Adult & Pediatric'},
+{n:8,text:'<strong>CPAP 10 cmH2O</strong> for pulmonary edema without hypotension. CI: SBP <90 · No spontaneous respirations · Decreased LOC · Weight <30kg — CALL OLMC (305) 990-8950'},
+{subhdr:'Paramedic'},
+{n:9,text:'Perform advanced airway management as needed'},
+{n:10,text:'Establish intravascular access'},
+{n:11,text:'Transport'},
+{subhdr:'If Hypotensive with Clear Lung Sounds'},
+{n:12,text:'<strong>NORMAL SALINE:</strong> Adult: 1L IV/IO, may repeat ×1. Precaution: CHD, CHF, renal failure. Peds: 20mL/kg IV/IO, may repeat ×2 for age-appropriate hypotension.'},
+{subhdr:'If Hypotensive with Pulmonary Edema'},
+{n:13,text:'<strong>PUSH-DOSE PRESSOR EPINEPHRINE 1:100,000 (10mcg/mL):</strong> Adult: 1mL/min IV/IO (10mcg/min), titrate to SBP 90 or MAP 65–75. May repeat ×2, max total 300mcg (30mL). Peds: 1mL/min IV/IO, titrate to age-appropriate SBP. Same max.'},
+]},
+{title:'Fatal Drowning',type:'alert',items:[
+{t:'danger',text:'Follow appropriate cardiac arrest protocol. Drowning = SECONDARY ARREST. Immediate VENTILATION is the priority.'},
+{t:'warn',text:'No drowning victim is to be pronounced dead at the scene if the possibility of hypothermia exists. Remove wet clothes, dry, and cover with blankets.'}]},
+{title:'Medications',type:'drugs',items:[
+{name:'Normal Saline — Adult (clear lungs)',dose:'1L IV/IO; may repeat ×1'},
+{name:'Normal Saline — Peds (clear lungs)',dose:'20mL/kg IV/IO; may repeat ×2'},
+{name:'Push-Dose Epi 1:100,000',dose:'1mL/min IV/IO; max 30mL total (300mcg)'},
+]}]},
+
+{id:'heat',num:45,name:'Heat Emergencies',cat:'medical',icon:'🌡️',color:'#e65100',bg:'#fff3e0',level:'all',levelLabel:'All Levels',
+summary:'Heat Cramps · Heat Exhaustion · Heat Stroke · Ice Packs · Cold NS',tags:['Heat Stroke','Heat Exhaustion','AMS','Seizure','Ice Packs','Cold Normal Saline'],
+sections:[
+{title:'Signs & Symptoms — Heat Stroke',type:'alert',items:[
+{t:'danger',text:'AMS · Seizures · Hypotension · Sweating may be ABSENT. Patients with heat-related illness + AMS should be considered heat stroke once other causes ruled out (hypoglycemia, drugs, trauma).'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management'},
+{n:3,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+{subhdr:'All Heat Emergencies — Adult & Pediatric'},
+{n:4,text:'Move patient into the back of the ambulance as soon as possible. Decrease the A/C temperature in patient compartment.'},
+{n:5,text:'Obtain a temperature'},
+{n:6,text:'Remove excessive clothing'},
+{n:7,text:'Monitor patient for AMS which may indicate heat stroke'},
+{n:8,text:'Provide oral hydration (preferably water) if patient can swallow and follow commands'},
+{subhdr:'ALS Assist'},
+{n:9,text:'Begin cardiac monitoring'},
+{n:10,text:'Perform and record 12-lead EKG'},
+{n:11,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:12,text:'Perform advanced airway management as needed'},
+{n:13,text:'Establish intravascular access'},
+{n:14,text:'Perform and evaluate 12-lead EKG'},
+{subhdr:'Heat Cramps & Heat Exhaustion'},
+{n:15,text:'<strong>NORMAL SALINE:</strong> Adult: 1L IV/IO, may repeat ×1. Precaution: CHD, CHF, renal failure. Peds: 20mL/kg IV/IO, may repeat ×2 for age-appropriate hypotension.'},
+{subhdr:'Heat Stroke — Temp >103°F or AMS'},
+{n:16,text:'Move patient to colder environment (ambulance or building) as soon as possible'},
+{n:17,text:'Apply ICE PACKS to the axilla and groin area'},
+{n:18,text:'<strong>NORMAL SALINE (cold preferred if available):</strong> Adult: 1L IV/IO, may repeat ×1. Peds: 20mL/kg IV/IO, may repeat ×2 for age-appropriate hypotension.'},
+{n:19,text:'If patient is seizing: see Seizure Protocol 16'},
+{n:20,text:'Transport'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Normal Saline — Adult',dose:'1L IV/IO; may repeat ×1 (Cold NS preferred for heat stroke)'},
+{name:'Normal Saline — Peds',dose:'20mL/kg IV/IO; may repeat ×2'},
+]}]},
+
+{id:'bites-stings',num:46,name:'Bites & Stings',cat:'medical',icon:'🐍',color:'#2e7d32',bg:'#e8f5e9',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · Snake · Insect · Marine · Human · Animal · Poison Control',tags:['Snake Bite','Marine Sting','Jellyfish','Stingray','Benadryl','Solu-Medrol','Poison Control'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'info',text:'Contact Florida Poison Control: <strong>1-800-222-1222</strong> as soon as possible for treatment recommendations.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management'},
+{subhdr:'ALS Assist'},
+{n:3,text:'Begin cardiac monitoring'},
+{n:4,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:5,text:'Perform advanced airway management as needed'},
+{n:6,text:'Establish intravascular access'},
+{n:7,text:'Transport'},
+{subhdr:'All Bites and Stings'},
+{n:8,text:'Clean wound with soap and water or sterile water. Exception: Marine stings (see below). DO NOT use hydrogen peroxide on deep puncture wounds.'},
+{n:9,text:'Refer to Allergic Reaction Protocol 6 if applicable'},
+{n:10,text:'Advise dispatch to contact animal control or police if necessary'},
+{subhdr:'Snake Bites'},
+{n:11,text:'DO NOT apply ice packs, tourniquets or constrictive bands'},
+{n:12,text:'Mark area of edema with a pen'},
+{n:13,text:'Remove constrictive jewelry or clothing'},
+{n:14,text:'Splint extremity and keep below the heart'},
+{n:15,text:'If dead snake on scene: photograph the head (including eyes) with ePCR device'},
+{n:16,text:'Splint extremity below the heart'},
+{n:17,text:'Adult: <strong>BENADRYL 50mg IV/IO/IM</strong> · <strong>SOLU-MEDROL 125mg IV/IO/IM</strong>'},
+{n:18,text:'Consider pain management — see Protocol 42'},
+{n:19,text:'For hypotension: <strong>NORMAL SALINE 1L IV/IO</strong>, assess lung sounds and BP every 500mL'},
+{n:20,text:'Peds: <strong>BENADRYL 1mg/kg IV/IO/IM</strong> · <strong>SOLU-MEDROL 2mg/kg IV/IO/IM</strong>'},
+{n:21,text:'Peds hypotension: <strong>NORMAL SALINE 20mL/kg IV bolus</strong>, may repeat ×2'},
+{subhdr:'Insect Stings'},
+{n:24,text:'Consider Allergic Reaction Protocol 6'},
+{n:25,text:'Remove stinger by SCRAPING with flat surface (credit card). DO NOT pull out — releases more venom.'},
+{n:26,text:'Clean wound with soap and water'},
+{subhdr:'Marine Animal Envenomations (Stingray/Scorpionfish/Lionfish/Catfish/Sea Urchin)'},
+{n:29,text:'Consider Allergic Reaction Protocol 6'},
+{n:30,text:'Immerse punctures in non-scalding HOT WATER for pain relief'},
+{n:31,text:'Gently wash with soap and water, then irrigate vigorously with sterile water (avoid scrubbing)'},
+{subhdr:'Marine Animal Stings (Jellyfish/Man-of-War/Fire Coral)'},
+{n:33,text:'DO NOT use fresh or sterile water · DO NOT apply ice · DO NOT rub — FURTHER ENVENOMATION WILL OCCUR'},
+{n:34,text:'Rinse with SEA WATER if available'},
+{n:35,text:'Apply WHITE VINEGAR topically until pain relieved (lifeguards may carry)'},
+{n:36,text:'Remove large tentacle fragments with forceps with PPE — stay upwind'},
+{subhdr:'Human / Dog / Cat / Wild Animal Bites'},
+{n:38,text:'Clean with soap and water. DO NOT use hydrogen peroxide on deep punctures.'},
+{n:41,text:'Advise dispatch to contact animal control and police for quarantine if necessary'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Benadryl — Adult (snake bite)',dose:'50mg IV/IO/IM'},
+{name:'Solu-Medrol — Adult (snake bite)',dose:'125mg IV/IO/IM'},
+{name:'Normal Saline — Adult (hypotension)',dose:'1L IV/IO; assess Q500mL'},
+{name:'Benadryl — Peds (snake bite)',dose:'1mg/kg IV/IO/IM'},
+{name:'Solu-Medrol — Peds (snake bite)',dose:'2mg/kg IV/IO/IM'},
+{name:'Normal Saline — Peds (hypotension)',dose:'20mL/kg IV bolus; may repeat ×2'},
+]}]},
+
+{id:'co-exposure',num:47,name:'Carbon Monoxide Exposure',cat:'medical',icon:'☁️',color:'#455a64',bg:'#eceff1',level:'all',levelLabel:'All Levels',
+summary:'CO · SpCO · Rainbow Sensor · NRB · Hyperbaric · St. Mary\'s',tags:['Carbon Monoxide','CO','SpCO','Hyperbaric','Rainbow Sensor','Smoke Inhalation'],
+sections:[
+{title:'WARNING — Do NOT Enter',type:'alert',items:[
+{t:'danger',text:'HSF members shall NOT enter any hazardous environment — call 1099 IMMEDIATELY. Patients with CO exposure can have NORMAL pulse oximetry and still be hypoxic. Strong consideration for hyperbaric treatment for all pediatric and obstetrical patients regardless of SpCO level.'}]},
+{title:'Information',type:'alert',items:[
+{t:'info',text:'CO is colorless, odorless, tasteless. Toxic >35 ppm. Consider CO when multiple patients unconscious near combustible engine. Consider Cyanide Exposure especially in a fire — see Protocol 48.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'REMOVE PATIENT AND SELF FROM HAZARDOUS ATMOSPHERE PRIOR TO TREATMENT'},
+{n:2,text:'ABCs and vital signs'},
+{n:3,text:'Airway management'},
+{n:4,text:'Apply rainbow sensor and obtain SpCO readings (Lifepak 15)'},
+{n:5,text:'OXYGEN: SpCO >3% (non-smoker) OR SpCO >10% (smoker): <strong>NRB @ 15 LPM and transport</strong>'},
+{n:6,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+]},
+{title:'If SpCO >20% OR Any of the Following Symptoms',type:'alert',items:[
+{t:'danger',text:'Headache · Nausea/Vomiting · Dizziness · AMS · Chest pain · Dyspnea · Visual disturbances · Seizures · Syncope → Transport to St. Mary\'s or Mercy Hospital Miami Hyperbaric Chamber. If unavailable: closest ED. If CO >20% or pediatric/obstetrical: transport to CLOSEST ED WITH HELIPAD.'}]},
+{title:'Continued Steps',type:'numbered',items:[
+{subhdr:'ALS Assist'},
+{n:10,text:'Begin cardiac monitoring'},
+{n:11,text:'Perform and record 12-lead EKG'},
+{n:12,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:13,text:'Perform advanced airway management as needed'},
+{n:14,text:'Establish intravascular access'},
+{n:15,text:'Perform and evaluate 12-lead EKG'},
+{n:16,text:'Consider Zofran'},
+{n:17,text:'Transport'},
+]}]},
+
+{id:'cyanide',num:48,name:'Cyanide Exposure',cat:'medical',icon:'⚗️',color:'#455a64',bg:'#eceff1',level:'all',levelLabel:'All Levels',
+summary:'Hazmat · 1099 · O2 · Supportive Care · Hyperbaric',tags:['Cyanide','Hazmat','1099','Carbon Monoxide','Fire','Smoke Inhalation'],
+sections:[
+{title:'Signs & Symptoms',type:'alert',items:[
+{t:'warn',text:'AMS · Pupil dilation · General weakness · Confusion · Bizarre behavior · Excessive sleepiness · Coma · Shortness of breath · Headache · Dizziness · Seizures'},
+{t:'danger',text:'Direct cyanide exposure (non-smoke inhalation) is a HAZARDOUS MATERIALS INCIDENT. HSF does NOT have cyanide kits. Call 1099 immediately. Consider CO Exposure — see Protocol 47. Cyanide may be from inhalation, ingestion, or absorption from fire/smoke in enclosed space.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management'},
+{n:3,text:'Inform dispatch to call 1099 — we DO NOT have cyanide kits'},
+{subhdr:'Confirmed or Suspected Cyanide Exposure'},
+{n:4,text:'OXYGEN: <strong>15 LPM via NRB</strong> regardless of SpO2 (unless patient requires ventilatory support)'},
+{n:5,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+{subhdr:'ALS Assist'},
+{n:6,text:'Begin cardiac monitoring'},
+{n:7,text:'Perform and record 12-lead EKG'},
+{n:8,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:9,text:'Perform advanced airway management as needed'},
+{n:10,text:'Establish intravascular access'},
+{n:11,text:'Apply rainbow sensor and obtain SpCO readings (Lifepak 15)'},
+{n:12,text:'Perform and evaluate 12-lead EKG'},
+{n:13,text:'Supportive care until 1099 arrives'},
+{n:14,text:'If 1099 unavailable and directed by 1099 captain or OLMC: transport to St. Mary\'s or Mercy Hospital Miami Hyperbaric Chamber. If unavailable: closest ED.'},
+]}]},
+
+{id:'trauma-general-full',num:49,name:'General Trauma Emergencies',cat:'trauma',icon:'🩹',color:'#bf360c',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · Hemorrhage Control · Fractures · Pelvic · Amputation · Eye Emergencies · FAST Exam',tags:['Trauma','Hemorrhage','CAT','QuickClot','Fracture','Pelvic','Amputation','FAST','Ultrasound','TXA'],
+sections:[
+{title:'Scene Management',type:'alert',items:[
+{t:'danger',text:'Level 1 & Level 2 trauma: transport to closest appropriate Trauma Center. On-scene times for Level 1: ≤10 minutes. Times >10 min: document reason in ePCR.'},
+{t:'warn',text:'IV attempts shall NOT delay transport. Minimum 2 large bore (18G) IVs for Level 1. If unable: IO (preferably Proximal Humerus). Permissive hypotension: SBP 80–90 mmHg to maintain peripheral pulses.'},
+{t:'info',text:'Only interruptions to primary survey: unsafe scene or airway obstruction. Respiratory arrest, dyspnea, and bleeding control should be delegated to crew.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers — Adult & Pediatric'},
+{n:1,text:'Expose — only remove clothing as needed. Cover patient to keep warm.'},
+{n:2,text:'ABCs and vital signs. Uncontrolled bleeding? Reprioritize to <C>ABC.'},
+{n:3,text:'Airway management and O2. Suspected spinal injury: Modified jaw thrust.'},
+{n:4,text:'Circulation and hemorrhage control — assess for uncontrolled hemorrhage, central pulse, skin color/temp/moisture. STOP the bleed.'},
+{n:5,text:'Keep patient warm, apply blankets'},
+{n:6,text:'Request ALS assistance (Hatzalah or 1099)'},
+{subhdr:'ALS Assist'},
+{n:7,text:'Begin cardiac monitoring'},
+{n:8,text:'Perform and record 12-lead EKG'},
+{n:9,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:10,text:'Establish IV access: 2 large bore IVs'},
+{n:11,text:'NORMAL SALINE: maintain peripheral pulses (SBP 80–90 mmHg). Give boluses as needed.'},
+{n:12,text:'Pain management — see Protocol 42'},
+]},
+{title:'FAST Exam (Ultrasound — Trained HSF Paramedics Only)',type:'alert',items:[
+{t:'info',text:'FAST exam can be performed during transport for: blunt/penetrating abdomen or thorax trauma · undifferentiated hypotension with trauma. Shall be prompt — DO NOT delay transport. Communicate findings to receiving facility and document in ePCR.'}]},
+{title:'Closed Fractures',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'Splint in position found. Exception: no pulse present or extremity position prevents transport — max 2 attempts to reposition.'},
+{style:'num',n:2,indent:0,text:'Discontinue if: severe pain OR resistance to movement'},
+{style:'num',n:3,indent:0,text:'Reassess neurovascular status before and after repositioning'},
+]},
+{title:'Open Fractures',type:'outline',items:[
+{style:'circle',indent:0,text:'Remove gross contamination (leaves, gravel) if possible'},
+{style:'circle',indent:0,text:'Cover with moist sterile dressing'},
+{style:'circle',indent:0,text:'Splint in position found. Same repositioning rules as closed fractures.'},
+]},
+{title:'Hip Fractures / Dislocations',type:'outline',items:[
+{style:'circle',indent:0,text:'Consider in elderly patient who fell with knee, hip, or pelvic pain'},
+{style:'circle',indent:0,text:'Use scoop stretcher whenever possible'},
+{style:'circle',indent:0,text:'Sager traction splints SHALL NOT be used on suspected hip fractures or dislocations'},
+{style:'circle',indent:0,text:'Posterior dislocation: leg flexed and internally rotated · Anterior dislocation: external rotation and shortening'},
+]},
+{title:'Pelvic Fracture',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'Assess and treat for shock'},
+{style:'num',n:2,indent:0,text:'DO NOT perform pelvic rock. Apply gentle anterior-posterior and lateral pressure to identify crepitus/instability. DO NOT repeat.'},
+{style:'num',n:3,indent:0,text:'Stabilize if possible — consider sheet wrap'},
+{style:'num',n:4,indent:0,text:'Use scoop stretcher whenever possible'},
+]},
+{title:'Amputation',type:'outline',items:[
+{style:'num',n:1,indent:0,text:'Rinse, wrap in sterile gauze, place in sealed plastic bag'},
+{style:'num',n:2,indent:0,text:'Place sealed bag into a second bag with ice packs'},
+{style:'num',n:3,indent:0,text:'Label with: patient name · date · time of amputation · time part was wrapped and cooled'},
+]},
+{title:'Bleeding Control',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong>Extremity:</strong> Direct pressure → Israeli Bandage → C.A.T. (apply high and tight on single long bone, 2–3" proximal to wound). If bleeding persists: apply second C.A.T. Label with time. Do not remove en route.'},
+{style:'circle',indent:0,text:'<strong>Junctional Hemorrhage (neck/axilla/pelvis/groin):</strong> Direct pressure then pack with hemostatic gauze (QuickClot) — hold minimum 1 minute.'},
+]},
+{title:'Femur Fractures',type:'outline',items:[
+{style:'circle',indent:0,text:'Assess and treat for shock. Cover open fractures with moist sterile dressing.'},
+{style:'circle',indent:0,text:'Apply traction splint for mid-shaft femur fractures UNLESS: other life-threatening injuries · suspected pelvic fracture · open fx with exposed bone · suspected hip fracture · avulsion/amputation of ankle or foot · suspected fracture distal to mid-shaft.'},
+]},
+{title:'Abdominal Trauma',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong>Impaled objects:</strong> Stabilize in place. Control bleeding with direct pressure around object. DO NOT palpate abdomen or remove object.'},
+{style:'circle',indent:0,text:'<strong>Evisceration:</strong> Cover protruding tissue with moist sterile dressing then dry sterile dressing. Do NOT replace or move tissue. Keep patient calm.'},
+]},
+{title:'Eye Emergencies',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong>Chemical:</strong> Remove contact lens. Irrigate with Normal Saline (nasal cannula technique). Do not contaminate unaffected eye.'},
+{style:'circle',indent:0,text:'<strong>Penetrating:</strong> Stabilize object. Cover BOTH eyes with gauze and eye shield. Keep patient calm.'},
+{style:'circle',indent:0,text:'Contact OLMC (305) 990-8950 for appropriate transport. If Trauma Alert criteria: DO NOT delay transport.'},
+]}]},
+
+{id:'start-triage',num:50,name:'START Triage',cat:'trauma',icon:'🚨',color:'#bf360c',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'Mass Casualty · Immediate · Delayed · Minor · Expectant',tags:['START','MCI','Triage','Immediate','Delayed','Minor','Expectant','Walking Wounded'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'info',text:'The goal of the START Program is to provide the "greatest good for the greatest number of patients".'}]},
+{title:'START Adult Triage Algorithm',type:'start-triage'},
+{title:'Triage Categories',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong style="background:#000;color:#fff;padding:1px 6px;border-radius:3px;">EXPECTANT — BLACK</strong>: Victim unlikely to survive given severity of injuries or level of available care. Palliative care and pain relief should be provided.'},
+{style:'circle',indent:0,text:'<strong style="background:#c0392b;color:#fff;padding:1px 6px;border-radius:3px;">IMMEDIATE — RED</strong>: Victim can be helped by immediate intervention and transport. Requires medical attention within minutes (up to 60). Compromised Airway, Breathing, or Circulation.'},
+{style:'circle',indent:0,text:'<strong style="background:#f39c12;color:#fff;padding:1px 6px;border-radius:3px;">DELAYED — YELLOW</strong>: Transport can be delayed. Serious and potentially life-threatening injuries but status not expected to deteriorate significantly over several hours.'},
+{style:'circle',indent:0,text:'<strong style="background:#27ae60;color:#fff;padding:1px 6px;border-radius:3px;">MINOR — GREEN</strong>: Relatively minor injuries. Status unlikely to deteriorate over days. May be able to assist in own care ("Walking Wounded").'},
+]}]},
+
+{id:'jumpstart-triage',num:51,name:'JumpSTART Triage — 1–8 Years',cat:'trauma',icon:'👶',color:'#bf360c',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'Pediatric MCI · 1–8 Years · Palpable Pulse · AVPU · 5 Rescue Breaths',tags:['JumpSTART','Pediatric Triage','MCI','AVPU','Rescue Breaths'],
+sections:[
+{title:'Information',type:'alert',items:[
+{t:'info',text:'Use JumpSTART if the patient appears to be a child. Use an adult system (START) if the patient appears to be a young adult.'}]},
+{title:'JumpSTART Pediatric MCI Triage Algorithm',type:'jumpstart-triage'},
+{title:'Key Difference from START',type:'alert',items:[
+{t:'warn',text:'JumpSTART adds a <strong>palpable pulse check</strong> and <strong>5 rescue breaths</strong> for apneic patients before declaring Expectant. Neurological Assessment uses AVPU (A=Alert, V=Verbal, P=Pain, U=Unresponsive).'}]}]},
+
+{id:'trauma-scorecards',num:52,name:'Trauma Scorecards',cat:'trauma',icon:'📋',color:'#bf360c',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'Broward · Miami-Dade · Palm Beach · Adult & Pediatric · Level 1 & 2 Criteria',tags:['Trauma Alert','Level 1','Level 2','Broward','Miami-Dade','Palm Beach','GCS','BMR'],
+sections:[
+{title:'Paramedic Judgment Considerations',type:'alert',items:[
+{t:'info',text:'Patients who do NOT meet Trauma Alert criteria but meet ≥1 of the following may warrant bypass to nearest Trauma Center: Blunt head/chest/abdominal trauma on blood thinners · Age ≥65 with blunt trauma and borderline criteria or SBP <110 · MVC >20 mph with seatbelt marks on torso · MVC with partial ejection · End stage renal disease on dialysis'}]},
+{title:'Level 2 Trauma — Adult & Pediatric',type:'outline',items:[
+{style:'plain',indent:0,text:'Significant injury PLUS one of the following:'},
+{style:'num',n:1,indent:0,text:'Falls >12ft (adult) or >6ft (pediatric)'},
+{style:'num',n:2,indent:0,text:'Extrication time >15 minutes'},
+{style:'num',n:3,indent:0,text:'Rollover'},
+{style:'num',n:4,indent:0,text:'Death of occupant in same passenger compartment'},
+{style:'num',n:5,indent:0,text:'Major intrusion into passenger compartment'},
+{style:'num',n:6,indent:0,text:'Separation from a bicycle'},
+{style:'num',n:7,indent:0,text:'Fall from ANY height if anticoagulated or antiplatelet (adult >55)'},
+{style:'num',n:8,indent:0,text:'Paramedic judgment'},
+]},
+{title:'Common Anticoagulants / Antiplatelets',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong>Antiplatelets (not Aspirin):</strong> Plavix (Clopidogrel) · Brilinta (Ticagrelor) · Effient (Dipyridamole)'},
+{style:'circle',indent:0,text:'<strong>Anticoagulants:</strong> Coumadin (Warfarin) · Pradaxa (Dabigatran) · Xarelto (Rivaroxaban) · Eliquis (Apixaban) · Lovenox (Enoxaparin) · Arixtra (Fondaparinux)'},
+]},
+{title:'Broward County — Adult Trauma Alert Criteria',type:'alert',items:[
+{t:'danger',text:'<strong>RED (1 Required):</strong> Active airway assistance required · No radial pulse with HR ≥120 or BP <90 systolic · Multiple long bone FX sites · 2°/3° burns >15% BSA or electrical burns · BMR ≤4 or paralysis/spinal injury · GCS ≤12 · Paramedic Judgment'},
+{t:'warn',text:'<strong>BLUE (2 Required):</strong> Sustained RR ≥30 · Sustained HR ≥120 · Single long bone FX (MVA or fall ≥10ft) · Ejection from vehicle or steering wheel deformity · BMR=5 · Major degloving/flap avulsion >5 inches or GSW to extremities · Anticoagulated adult >55 · Blunt abdominal injury'},
+]},
+{title:'Broward County — Pediatric Trauma Alert Criteria',type:'alert',items:[
+{t:'danger',text:'<strong>RED (1 Required):</strong> Assisted or intubated · Altered mental status or paralysis · Faint/non-palpable carotid or femoral pulse or BP <50 · Open long bone FX or multiple FX or multiple dislocations · Major soft tissue disruption · 2°/3° burns >10% BSA · Penetrating injury to head/neck/torso'},
+{t:'warn',text:'<strong>BLUE (2 Required):</strong> Amnesia or reliable LOC history · Carotid/femoral pulse palpable but no radial/pedal · Single closed long bone FX · Size <11kg (<24 lbs)'},
+]},
+{title:'Miami-Dade Adult — RED Criteria (1 Required)',type:'outline',items:[
+{style:'circle',indent:0,text:'Active airway assistance beyond supplemental O2'},
+{style:'circle',indent:0,text:'Best Motor Response (BMR) ≤4, paralysis, suspected spinal cord injury, or GCS <12'},
+{style:'circle',indent:0,text:'No radial pulse AND sustained HR >120 bpm or SBP <90 mmHg'},
+{style:'circle',indent:0,text:'Two or more long bone fracture sites'},
+{style:'circle',indent:0,text:'2°/3° burns >15% TBSA or amputation at/proximal to wrist or ankle or penetrating injury to head/neck/torso'},
+{style:'circle',indent:0,text:'Patient on anticoagulant with head trauma and GCS <15'},
+]},
+{title:'Miami-Dade Adult — BLUE Criteria (2 Required)',type:'outline',items:[
+{style:'circle',indent:0,text:'Age >55 years'},
+{style:'circle',indent:0,text:'Respiratory rate >30'},
+{style:'circle',indent:0,text:'BMR ≤5'},
+{style:'circle',indent:0,text:'Sustained HR >120 bpm'},
+{style:'circle',indent:0,text:'Any long bone fracture in MVC or fall >10 feet'},
+{style:'circle',indent:0,text:'Major degloving, flap avulsion >5 inches, or GSW to extremities'},
+{style:'circle',indent:0,text:'Ejection from vehicle, steering wheel deformity, or death of occupant in same compartment'},
+]},
+{title:'Palm Beach County — Adult Trauma Alert Criteria',type:'alert',items:[
+{t:'danger',text:'<strong>RED (Any 1):</strong> Active airway assistance or RR <10/>29 · No radial pulse with HR >120 or BP <90 · GCS ≤13 or paralysis/spinal injury · 2°/3° burns ≥10% TBSA · Amputation at/above wrist or ankle · Penetrating injury to head/neck/torso · Chest wall instability (flail chest) · Crushing/mangling/degloving/pulseless extremity · Fracture of ≥2 long bones · Unstable pelvic fractures · Pregnancy ≥20 wks with abdominal pain after blunt trauma · Electrocution with LOC'},
+{t:'warn',text:'<strong>BLUE (Any 2):</strong> HR ≥120 · Head injury with LOC/amnesia/AMS · Soft tissue loss · Non-GSW penetrating to extremities distal to elbow/knee · Single long bone FX (MVC) · Single long bone or pelvic FX with bleeding disorder · Age ≥55 · Ejection/thrown from vehicle or horse · Death in same compartment · Major intrusion >12 in. · Fall ≥10 ft · Auto vs. pedestrian with anatomical signs of injury · Motorcycle/golf cart/ATV crash with anatomical injury'},
+]}]},
+
+{id:'head-adult',num:55,name:'Head Injuries — Adult',cat:'trauma',icon:'🧠',color:'#6a1b9a',bg:'#f3e5f5',level:'all',levelLabel:'All Levels',
+summary:'Adult · GCS · ICP/Herniation · Cushing\'s Triad · Airway · NS · Vasopressors',tags:['Head Injury','GCS','ICP','Herniation','Cushing Triad','Intubation'],
+sections:[
+{title:'ICP / Herniation Signs',type:'alert',items:[
+{t:'danger',text:'<strong>Cushing\'s Triad:</strong> Widening pulse pressure (↑ systolic, ↓ diastolic) · Change in respiratory pattern (irregular) · Bradycardia'},
+{t:'warn',text:'Also: GCS decline ≥2 points · Sluggish/nonreactive pupil · Paralysis or weakness on 1 side'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and appropriate oxygen therapy'},
+{n:3,text:'OXYGEN: Hypoxia must be prevented — apply nasal cannula and titrate as needed'},
+{n:4,text:'For severe head trauma: request ALS assistance (Hatzalah or 1099)'},
+{n:5,text:'Assess GCS and pupillary response to light'},
+{n:6,text:'Detailed neurological assessment'},
+{n:7,text:'For severe head trauma: maintain C-spine precautions'},
+{n:8,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+{subhdr:'ALS Assist'},
+{n:9,text:'Begin cardiac monitoring'},
+{n:10,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:11,text:'GCS ≤8 — consider INTUBATION OR ADVANCED AIRWAY'},
+{n:12,text:'<strong>NORMAL SALINE (Adult):</strong> only enough to maintain SBP 110–120. 1L IV/IO, may repeat ×1. Consider vasopressors (Protocol 70). Precaution: CHD, CHF, renal failure.'},
+{n:13,text:'<strong>Pediatric:</strong> maintain age-appropriate SBP. 20mL/kg IV/IO, may repeat ×2. Consider vasopressors.'},
+{subhdr:'Depressed or Open Skull Fracture'},
+{n:14,text:'DO NOT apply pressure dressings to depressed or open skull fractures unless significant hemorrhage — can increase ICP'},
+{subhdr:'ICP / Herniation Management'},
+{n:15,text:'<strong>POSITIONING:</strong> 30° head elevation'},
+{n:16,text:'Maintain EtCO2 30–35 mmHg and SpO2 >90% while continuously monitoring BP'},
+]},
+{title:'CRITICAL WARNING',type:'alert',items:[
+{t:'danger',text:'A SINGLE INSTANCE OF HYPOTENSION OR HYPOXIA (SpO2 <90%) IN PATIENTS WITH BRAIN INJURY MAY INCREASE MORTALITY RATE BY 150%.'}]},
+{title:'Medications',type:'drugs',items:[
+{name:'Normal Saline — Adult',dose:'1L IV/IO (only enough to maintain SBP 110-120); may repeat ×1'},
+{name:'Normal Saline — Peds',dose:'20mL/kg IV/IO (age-appropriate SBP); may repeat ×2'},
+{name:'EtCO2 Target (ICP)',dose:'30-35 mmHg (mild hyperventilation)'},
+]}]},
+
+{id:'head-peds',num:56,name:'Head Injuries — Pediatric',cat:'trauma',icon:'🧠',color:'#6a1b9a',bg:'#f3e5f5',level:'all',levelLabel:'All Levels',
+summary:'Pediatric · GCS · Bulging Fontanelle · ICP/Herniation · Cushing\'s Triad',tags:['Head Injury','Pediatric','GCS','ICP','Herniation','Fontanelle','Cushing Triad'],
+sections:[
+{title:'Pediatric Assessment',type:'alert',items:[
+{t:'info',text:'Infants with a BULGING FONTANELLE are considered to have a more severe head injury.'},
+{t:'danger',text:'<strong>ICP/Herniation Signs:</strong> GCS decline ≥2 points · Sluggish/nonreactive pupil · Paralysis or weakness on 1 side · Cushing\'s Triad: widening pulse pressure, irregular respirations, bradycardia'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and appropriate oxygen therapy'},
+{n:3,text:'OXYGEN: Hypoxia must be prevented — apply nasal cannula and titrate as needed'},
+{n:4,text:'For severe head trauma: request ALS assistance (Hatzalah or 1099)'},
+{n:5,text:'Assess GCS and pupillary response to light'},
+{n:6,text:'Detailed neurological assessment'},
+{n:7,text:'For severe head trauma: maintain C-spine precautions'},
+{n:8,text:'Obtain BGL — if <70: Hypoglycemia Protocol 9'},
+{subhdr:'ALS Assist'},
+{n:9,text:'Begin cardiac monitoring'},
+{n:10,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:11,text:'GCS ≤8 — consider INTUBATION OR ADVANCED AIRWAY'},
+{n:12,text:'<strong>NORMAL SALINE (Pediatric):</strong> only enough to maintain age-appropriate SBP. 20mL/kg IV/IO, may repeat ×2 for age-appropriate hypotension. Consider vasopressors (Protocol 70).'},
+{subhdr:'Depressed or Open Skull Fracture'},
+{n:13,text:'DO NOT apply pressure dressings unless significant hemorrhage — can increase ICP'},
+{subhdr:'ICP / Herniation Management'},
+{n:14,text:'POSITIONING: 30° head elevation'},
+{n:15,text:'Maintain EtCO2 30–35 mmHg and SpO2 >90% while continuously monitoring BP'},
+]},
+{title:'CRITICAL WARNING',type:'alert',items:[
+{t:'danger',text:'A SINGLE INSTANCE OF HYPOTENSION OR HYPOXIA (SpO2 <90%) IN PATIENTS WITH BRAIN INJURY MAY INCREASE MORTALITY RATE BY 150%.'}]}]},
+
+{id:'chest-trauma',num:57,name:'Chest Trauma',cat:'trauma',icon:'🫁',color:'#bf360c',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'Flail Chest · Open Pneumothorax · Tension Pneumo · Needle Decompression',tags:['Flail Chest','Pneumothorax','Tension Pneumothorax','Chest Seal','Needle Decompression','Sucking Chest Wound'],
+sections:[
+{title:'Types',type:'alert',items:[
+{t:'info',text:'<strong>Flail Chest:</strong> ≥3 adjacent ribs fractured in 2+ locations'},
+{t:'warn',text:'<strong>Open Pneumothorax (Sucking Chest Wound):</strong> Air accumulates in pleural space from open chest wound — may cause significant lung collapse'},
+{t:'info',text:'<strong>Closed Pneumothorax:</strong> Air in pleural space without open wound'},
+{t:'danger',text:'<strong>Tension Pneumothorax:</strong> Air continues entering pleural space without exit → ↑ intrathoracic pressure → compression of mediastinal structures → hemodynamic compromise'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers — Adult & Pediatric'},
+{n:1,text:'PENETRATING OBJECTS: Stabilize with bulky dressing'},
+{n:2,text:'FLAIL CHEST: Stabilize with bulky dressing'},
+{n:3,text:'OPEN PNEUMOTHORAX: Apply vented chest seal or occlusive dressing to all open chest wounds. Apply on expiration if possible. Monitor for tension pneumothorax signs.'},
+{n:4,text:'Request ALS assistance (Hatzalah or 1099)'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Perform and record 12-lead EKG'},
+{n:7,text:'Establish IV access'},
+{subhdr:'Paramedic — Tension Pneumothorax'},
+{n:8,text:'Needle decompression when ALL present: Respiratory distress or difficulty ventilating with BVM · Decreased or absent breath sounds on affected side · Decompensated shock (SBP <90 mmHg) → See Needle Decompression Protocol 68'},
+]}]},
+
+{id:'trauma-pregnancy',num:58,name:'Trauma in Pregnancy',cat:'ob',icon:'🤰',color:'#880e4f',bg:'#fce4ec',level:'all',levelLabel:'All Levels',
+summary:'Physiologic Changes · Uterine Displacement · Cardiac Arrest in Pregnancy',tags:['Pregnancy','Trauma','Placental Abruption','Uterine Rupture','Supine Hypotension','OB Trauma'],
+sections:[
+{title:'Physiological Changes',type:'alert',items:[
+{t:'warn',text:'HR increases (up to 15–20 bpm above normal in 3rd trimester). BP drops 5–15 mmHg in 2nd trimester. Cardiac output and blood volume increase — patient may lose 30–35% blood volume before shock signs appear. Supine hypotension occurs in 3rd trimester.'},
+{t:'info',text:'Remember: there are two (or more) patients. Fetal condition depends on maternal condition. Trauma patients >20 weeks pregnant in cardiac arrest: transport to closest Trauma/OB Center, begin CPR, manually displace uterus to LEFT during transport.'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and O2 therapy — 15 LPM NRB for ALL 3rd trimester trauma patients'},
+{n:3,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:4,text:'Maintain body temperature with blankets'},
+{n:5,text:'Assess for vaginal bleeding, leaking fluid, rigid abdomen, painful contractions. In 3rd trimester these may indicate placental abruption or ruptured uterus.'},
+{n:6,text:'Strongly encourage all patients with direct abdominal trauma while visibly pregnant to seek OB ER evaluation even without pain'},
+{n:7,text:'POSITIONING: No spinal restriction: transport on LEFT side. With spinal restriction: place 4–6 inches padding under patient\'s RIGHT side while maintaining anatomical alignment.'},
+{subhdr:'ALS Assist'},
+{n:8,text:'Begin cardiac monitoring'},
+{n:9,text:'Establish IV access'},
+{subhdr:'Paramedic — If Hypotensive'},
+{n:10,text:'Establish bilateral vascular access — largest catheter possible'},
+{n:11,text:'<strong>NORMAL SALINE 1L IV/IO</strong> only enough to maintain peripheral pulses. May repeat ×1. Precaution: CHD, CHF, renal failure.'},
+]}]},
+
+{id:'neurogenic-shock',num:60,name:'Neurogenic Shock',cat:'trauma',icon:'🦴',color:'#bf360c',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'Cervical Spine · Flushed/Warm/Dry Skin · Bradycardia · Vasopressors',tags:['Neurogenic Shock','Spinal Injury','Bradycardia','Hypotension','Vasopressors','Levophed'],
+sections:[
+{title:'Signs & Symptoms',type:'alert',items:[
+{t:'info',text:'Flushed/Warm/Dry skin (especially below injury) · Hypotension with normal heart rate · Bradycardia arrhythmia · Paralysis · Commonly associated with blunt cervical spine injuries'}]},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and appropriate oxygen therapy'},
+{n:3,text:'Maintain C-spine precautions'},
+{n:4,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:5,text:'Maintain body temperature with blankets'},
+{subhdr:'ALS Assist'},
+{n:6,text:'Begin cardiac monitoring'},
+{n:7,text:'Perform and record 12-lead EKG'},
+{n:8,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:9,text:'<strong>NORMAL SALINE:</strong> Adult: 1L IV/IO, may repeat ×1. Precaution: CHD, CHF, renal failure. Peds: 20mL/kg IV/IO, may repeat ×2 for age-appropriate hypotension.'},
+{n:10,text:'If patient remains hypotensive: see vasopressor chart Protocol 70 for Epinephrine or Levophed drip.'},
+]},
+{title:'Medications',type:'drugs',items:[
+{name:'Normal Saline — Adult',dose:'1L IV/IO; may repeat ×1'},
+{name:'Normal Saline — Peds',dose:'20mL/kg IV/IO; may repeat ×2'},
+{name:'Vasopressors',dose:'Epinephrine or Levophed drip — see Protocol 70'},
+]}]},
+
+{id:'normal-delivery',num:63,name:'Normal Delivery',cat:'ob',icon:'👶',color:'#880e4f',bg:'#fce4ec',level:'all',levelLabel:'All Levels',
+summary:'Positioning · Head Delivery · Cord Clamping · APGAR Score · Fundal Massage',tags:['Normal Delivery','APGAR','Cord Clamping','Fundal Massage','Neonate','OB Kit'],
+sections:[
+{title:'Normal Delivery',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong>POSITIONING:</strong> Place patient on her back with knees flexed and feet flat on the floor'},
+{style:'circle',indent:0,text:'Control delivery of the head with gentle perineal pressure'},
+{style:'circle',indent:0,text:'DO NOT apply manual pressure to uterine fundus prior to birth of the child'},
+{style:'circle',indent:0,text:'DO NOT pull or push on the neonate'},
+{style:'circle',indent:0,text:'DO NOT allow sudden hyperextension of the neonate\'s head'},
+{style:'circle',indent:0,text:'Once head delivers: suction mouth THEN nose. Support head as it rotates to align with shoulders. Guide head downward to deliver anterior shoulder. Guide head upward to deliver posterior shoulder and rest of body.'},
+]},
+{title:'Upon Delivery',type:'outline',items:[
+{style:'circle',indent:0,text:'Dry, warm, and stimulate the neonate'},
+{style:'circle',indent:0,text:'Keep neonate at same level as placenta'},
+{style:'circle',indent:0,text:'Once umbilical cord stops pulsating (usually 3–5 min): Clamp 4" from baby → milk cord toward mother → place second clamp 2" from first → cut between clamps'},
+{style:'circle',indent:0,text:'Place neonate on mother\'s chest skin-to-skin and cover with dry blanket'},
+{style:'circle',indent:0,text:'Record and encode APGAR score at 1 and 5 minutes. Document delivery time.'},
+{style:'circle',indent:0,text:'Apply firm continuous fundal massage after placenta delivers'},
+{style:'circle',indent:0,text:'Preserve placenta in OB Kit bag or Red Biohazard bag for receiving hospital'},
+]},
+{title:'APGAR Score',type:'apgar'},
+{title:'APGAR Interpretation',type:'alert',items:[
+{t:'ok',text:'<strong>APGAR 7–10:</strong> Normal'},
+{t:'warn',text:'<strong>APGAR 4–6:</strong> Intervention needed to bring score above 7'},
+{t:'danger',text:'<strong>APGAR 0–3:</strong> Baby requires resuscitation'}]}]},
+
+{id:'delivery-complications',num:64,name:'Delivery Complications',cat:'ob',icon:'🤰',color:'#880e4f',bg:'#fce4ec',level:'all',levelLabel:'All Levels',
+summary:'Meconium · Breech · Shoulder Dystocia · Nuchal Cord · Prolapsed Cord · McRoberts',tags:['Meconium','Breech Birth','Shoulder Dystocia','McRoberts','Nuchal Cord','Prolapsed Cord','OLMC'],
+sections:[
+{title:'Meconium Staining',type:'alert',items:[
+{t:'warn',text:'Yellow to dark green substance in amniotic fluid, from vagina, or covering neonate\'s head. Use bulb syringe to clear mouth then nose before shoulder delivery. Meconium aspirators rarely needed — consider only if airway obstructed by meconium that simpler methods cannot clear.'}]},
+{title:'Breech Birth (Feet or Buttocks Presentation)',type:'outline',items:[
+{style:'circle',indent:0,text:'If head does not deliver within 3 minutes of the body: elevate mother\'s hips (knee-to-chest position)'},
+{style:'circle',indent:0,text:'Insert gloved hand into vagina — push posterior vaginal wall away from neonate\'s nose and mouth'},
+{style:'circle',indent:0,text:'Maintain knee-to-chest position and neonate\'s airway during transport'},
+{style:'circle',indent:0,text:'Alert receiving hospital immediately — OBGYN and NICU on standby'},
+{style:'circle',indent:0,text:'Administer blow-by OXYGEN to the neonate'},
+]},
+{title:'Shoulder Dystocia (McRoberts Procedure)',type:'outline',items:[
+{style:'circle',indent:0,text:'Have mother stop pushing'},
+{style:'circle',indent:0,text:'Call for ALS and notify hospital immediately. Transport to hospital with a Labor Floor.'},
+{style:'circle',indent:0,text:'<strong>Hyperflex</strong> the mother\'s legs tightly to her abdomen'},
+{style:'circle',indent:0,text:'Apply <strong>suprapubic pressure</strong> (lower abdomen) — medial to lateral in direction eyes are facing'},
+{style:'circle',indent:0,text:'Gentle downward traction on the shoulders. <strong>DO NOT pull the head.</strong>'},
+]},
+{title:'Nuchal Cord',type:'outline',items:[
+{style:'circle',indent:0,text:'Call for ALS and rapid transport — DO NOT wait on scene'},
+{style:'circle',indent:0,text:'Check for nuchal cord after delivery of the head'},
+{style:'circle',indent:0,text:'If cord around neck: gently hook finger under loop and pull over neonate\'s head. Repeat if multiple loops.'},
+{style:'circle',indent:0,text:'If unable to free: CALL OLMC (305) 990-8950 FIRST. Then clamp in 2 places, cut between clamps, and deliver baby NOW.'},
+]},
+{title:'Prolapsed Umbilical Cord',type:'outline',items:[
+{style:'circle',indent:0,text:'<strong>POSITIONING:</strong> Insert gloved hand into vagina — push neonate UP and AWAY from cord with two fingers. Maintain position during transport.'},
+{style:'circle',indent:0,text:'Place mother in KNEE-TO-CHEST position'},
+{style:'circle',indent:0,text:'Manually displace uterus to the left if possible'},
+{style:'circle',indent:0,text:'Frequently reassess cord for pulse — contractions may compress cord'},
+{style:'circle',indent:0,text:'Wrap exposed cord in moist sterile dressing'},
+{style:'circle',indent:0,text:'Expedite transport to closest OB facility'},
+]}]},
+
+{id:'neonatal-resus',num:65,name:'Neonatal Resuscitation',cat:'ob',icon:'👶',color:'#880e4f',bg:'#fce4ec',level:'all',levelLabel:'All Levels',
+summary:'Birth · Dry/Stimulate · BVM · Chest Compressions · Epinephrine 0.01mg/kg',tags:['Neonatal','Resuscitation','BVM','Chest Compressions','Epinephrine','APGAR','BGL'],
+sections:[
+{title:'Neonatal Resuscitation Algorithm',type:'neonatal-flowchart'},
+{title:'Key Points',type:'alert',items:[
+{t:'info',text:'Ventilations performed at rate of 40 BPM. Compression-to-ventilation ratio: 3:1. Check BGL on all infants requiring resuscitation.'},
+{t:'warn',text:'If HR <60 after adequate ventilation: initiate Positive Pressure Ventilations + Chest Compressions. If HR remains <60: Administer Epinephrine 0.01mg/kg.'}]}]},
+
+{id:'needle-decompression',num:68,name:'Needle Decompression',cat:'trauma',icon:'💉',color:'#bf360c',bg:'#fbe9e7',level:'p',levelLabel:'Paramedic',
+summary:'Tension Pneumothorax · 2nd ICS MCL · 4th/5th ICS AAL · 14g Adult · 18-20g Peds',tags:['Needle Decompression','Tension Pneumothorax','2nd ICS','Anterior Axillary','COPD'],
+sections:[
+{title:'Paramedic',type:'numbered',items:[
+{n:1,text:'Perform needle decompression for suspected tension pneumothorax as needed. Note: COPD patients may have spontaneous pneumothorax that progresses to tension.'},
+{n:2,text:'<strong>Identify site on the affected side:</strong><br>a. Second intercostal space (ICS) on the midclavicular line (MCL)<br>b. Fourth or Fifth ICS on the anterior axillary line (AAL)'},
+{n:3,text:'<strong>ADULT:</strong> 14 gauge 3.25 inch (8.25 cm) angiocath — insert perpendicular to chest wall just above the rib'},
+{n:4,text:'<strong>PEDIATRIC:</strong> 18–20 gauge 0.8–1.6 inch (2–4 cm) angiocath — insert perpendicular to chest wall just above the rib'},
+{n:5,text:'Remove needle and advance catheter to the hub — secure in place'},
+{n:6,text:'If first attempt unsuccessful: second attempt at the other approved location'},
+{n:7,text:'If tension pneumothorax recurs: perform second needle decompression using a new catheter'},
+]},
+{title:'Indications',type:'alert',items:[
+{t:'danger',text:'ALL of the following must be present: Respiratory distress or difficulty ventilating with BVM · Decreased or absent breath sounds on affected side · Decompensated shock (SBP <90 mmHg)'}]},
+{title:'Sites',type:'drugs',items:[
+{name:'Adult — 2nd ICS MCL',dose:'14g × 3.25 inch (8.25 cm) angiocath'},
+{name:'Adult — 4th/5th ICS AAL',dose:'14g × 3.25 inch (8.25 cm) angiocath'},
+{name:'Pediatric — 2nd ICS MCL',dose:'18-20g × 0.8-1.6 inch (2-4 cm) angiocath'},
+{name:'Pediatric — 4th/5th ICS AAL',dose:'18-20g × 0.8-1.6 inch (2-4 cm) angiocath'},
+]}]},
 
 {id:'allergic-adult',num:6,name:'Allergic Reaction Adult',cat:'medical',icon:'⚠️',color:'#d84315',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
 summary:'Anaphylaxis · Epinephrine · DuoNeb · Benadryl',tags:['Epinephrine','DuoNeb','Benadryl','Solu-Medrol','Anaphylaxis'],
@@ -969,7 +2657,7 @@ function renderList() {
   catOrder.forEach(cat => {
     if (!grouped[cat]) return;
     if (activeCat === 'all' || searchTerm) html += `<div class="section-hdr">${catLabels[cat]}</div>`;
-    grouped[cat].forEach(p => {
+    grouped[cat].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
       const badgeClass = p.level === 'p' ? 'badge-p' : p.level === 'emt' ? 'badge-emt' : 'badge-all';
       html += `<div class="proto-card" onclick="openProtocol('${p.id}')">
         <div class="proto-icon" style="background:${p.bg}">${p.icon}</div>
@@ -1016,6 +2704,47 @@ function openProtocol(id) {
       html += `</div>`;
     } else if (sec.type === 'rass') {
       html += buildRASSTable();
+    } else if (sec.type === 'gcs') {
+      html += buildGCSTable();
+    } else if (sec.type === 'aeiou') {
+      html += buildAEIOUTable();
+    } else if (sec.type === 'pedsvitals') {
+      html += buildPedsVitalsChart();
+    } else if (sec.type === 'painscale') {
+      html += buildPainScale();
+    } else if (sec.type === 'start-triage') {
+      html += buildStartTriage();
+    } else if (sec.type === 'jumpstart-triage') {
+      html += buildJumpStartTriage();
+    } else if (sec.type === 'apgar') {
+      html += buildAPGARTable();
+    } else if (sec.type === 'neonatal-flowchart') {
+      html += buildNeonatalFlowchart();
+    } else if (sec.type === 'tbsa-chart') {
+      html += buildTBSAChart();
+    } else if (sec.type === 'outline') {
+      // Hierarchical outline matching PDF structure
+      // items: array of {style:'num'|'circle'|'square'|'plain', text:str, indent:0|1|2}
+      html += `<div class="dsec-card">`;
+      sec.items.forEach(item => {
+        if (item.divider) {
+          html += `<div style="height:1px;background:#f0f0f0;"></div>`;
+          return;
+        }
+        const pl = item.indent===2?'38px':item.indent===1?'22px':'14px';
+        let marker = '';
+        if (item.style==='num')    marker = `<div style="font-size:13px;font-weight:700;color:#1c1c1e;min-width:20px;flex-shrink:0;">${item.n}.</div>`;
+        if (item.style==='circle') marker = `<div style="font-size:16px;line-height:1;color:#555;min-width:16px;flex-shrink:0;margin-top:1px;">○</div>`;
+        if (item.style==='square') marker = `<div style="font-size:13px;line-height:1;color:#555;min-width:16px;flex-shrink:0;margin-top:2px;">■</div>`;
+        if (item.style==='plain')  marker = `<div style="min-width:16px;flex-shrink:0;"></div>`;
+        if (item.style==='roman')  marker = `<div style="font-size:12px;color:#555;min-width:26px;flex-shrink:0;font-style:italic;">${item.n}.</div>`;
+        if (item.style==='alpha')  marker = `<div style="font-size:13px;color:#555;min-width:20px;flex-shrink:0;">${item.n}.</div>`;
+        html += `<div style="display:flex;align-items:flex-start;gap:6px;padding:5px 12px 5px ${pl};border-bottom:1px solid #f5f5f5;">
+          ${marker}
+          <div style="font-size:13px;line-height:1.55;color:#1c1c1e;flex:1;">${item.text}</div>
+        </div>`;
+      });
+      html += `</div>`;
     } else if (sec.type === 'cincinnati') {
       html += `<div id="inline-cinn-widget" class="dsec-card" style="padding:12px 14px;"></div>`;
     } else if (sec.type === 'rhythm') {
@@ -1321,6 +3050,211 @@ function scFullReset() {
 
 
 
+
+
+// ── MED CHART DATA & RENDERER (Protocol 70) ───────────────────────────
+const MC_SECTIONS = [
+  {
+    title: '⚠️ General Rules',
+    content: `
+      <div class="mc-alert mc-alert-red">
+        <strong>EVERY MEDICATION MUST HAVE A LABEL.</strong> NEVER administer an unlabeled medication.<br>
+        Label must include: Medication name · Medication dose/mL
+      </div>
+      <div class="mc-alert mc-alert-teal" style="margin-top:0;border-top:none;">
+        All vasopressor infusions should preferably be administered via an <strong>18 gauge or larger IV catheter</strong>. Standard IV administration sets are NOT considered to be IV flow regulating devices.
+      </div>`
+  },
+  {
+    title: '1. Push-Dose Epinephrine 1:100,000 (10 mcg/mL)',
+    content: `
+      <div class="mc-info">
+        <strong>Dilution:</strong> Discard 9 mL from Epi 1:10,000 vial → draw up 9 mL Normal Saline → creates Epi 1:100,000 (10 mcg/mL) in 10 mL solution.
+      </div>
+      <div class="mc-info" style="border-bottom:none;">
+        <div style="margin-bottom:8px;"><strong>Adult:</strong> Slow push <strong>1 mL (10 mcg)</strong> every 1–2 min IV/IO · Titrate to MAP 65–75 mmHg</div>
+        <div><strong>Pediatric:</strong> Slow push <strong>0.5 mL (5 mcg)</strong> every 1–2 min IV/IO · Titrate to age-appropriate SBP</div>
+      </div>`
+  },
+  {
+    title: '2. Epinephrine Drip — 4 mcg/mL (1–10 mcg/min)',
+    content: `
+      <div class="mc-info">
+        <strong>Mix:</strong> 1 mg of Epinephrine 1:1000 into a 250 mL bag of NS → creates <strong>4 mcg/mL solution</strong><br>
+        Set flow rate dial between 15–150 mL/hr
+      </div>
+      <div style="overflow-x:auto;padding:0;">
+        <table class="drip-table">
+          <thead><tr><th>Dose (mcg/min)</th><th>1</th><th>2</th><th>4</th><th>6</th><th>8</th><th>10</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Flow Rate (mL/hr)</strong></td><td>15</td><td>30</td><td>60</td><td>90</td><td>120</td><td>150</td></tr>
+          </tbody>
+        </table>
+      </div>`
+  },
+  {
+    title: '3. Dirty Epi Drip',
+    content: `
+      <div class="mc-info" style="border-bottom:none;">
+        Mix <strong>1 mg/mL of Epi 1:1000</strong> into a <strong>1 liter bag of NS</strong>.<br>
+        Using a 10 gtts/mL drip set, titrate to desired effect.<br>
+        Rate of infusion shall <strong>NOT exceed 100 gtts/min</strong>.
+      </div>`
+  },
+  {
+    title: '4. NorEpinephrine (Levophed) Drip — 8 mcg/mL (2–20 mcg/min)',
+    content: `
+      <div class="mc-info">
+        <strong>Mix as follows:</strong>
+        <div style="margin-top:6px;padding-left:4px;line-height:1.8;font-size:12.5px;">
+          a. Draw 2 mL off and discard from a 250 mL bag of D5W (preferred) or NS<br>
+          b. Add <strong>2 mg of Levophed</strong> into 250 mL Dextrose 5% (preferred) or NS. This will create <strong>8 mcg/mL</strong>. <em style="color:#888;">(Normal Saline is not recommended as it decreases potency of the drug.)</em><br>
+          c. Using high contrast sticker, label IV bag with medication name, amount added, date/time added, resulting concentration and provider initials<br>
+          d. Connect and prime a <strong>60 gtts/mL IV set</strong> for medication administration
+        </div>
+      </div>
+      <div style="padding:6px 14px 4px;font-size:12px;font-weight:700;text-align:center;color:#333;">NorEpinephrine (Levophed) drip 8 mcg/mL</div>
+      <div style="overflow-x:auto;padding:0 0 4px;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <tbody>
+            <tr>
+              <td style="padding:9px 10px;font-weight:700;border:1px solid #ccc;background:#f5f5f5;min-width:90px;line-height:1.4;">DOSE<br>(mcg/min)</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">2</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">4</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">6</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">8</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">10</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">12</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">14</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">16</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">18</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">20</td>
+            </tr>
+            <tr>
+              <td style="padding:9px 10px;font-weight:700;border:1px solid #ccc;background:#f5f5f5;line-height:1.4;">FLOW RATE<br>(mL/hr)</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">15</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">30</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">45</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">60</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">80</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">90</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">105</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">120</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">135</td>
+              <td style="padding:9px 8px;text-align:center;border:1px solid #ccc;">150</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>`
+  },
+  {
+    title: '5. Dopamine Drip — 1600 mcg/mL (5–20 mcg/kg/min)',
+    content: `
+      <div class="mc-info">
+        <strong>Mix:</strong> 400 mg into a 250 mL bag of NS → <strong>1600 mcg/mL solution</strong>.<br>
+        Maximum dose: 20 mcg/kg/min. Use a flow meter.<br>
+        <em style="color:#888;">Drops per minute based on microdrip tubing (60 gtts/mL)</em>
+      </div>
+      <div style="overflow-x:auto;padding:0;">
+        <table class="drip-table">
+          <thead>
+            <tr><th>Weight (kg)</th><th>5 mcg/kg/min</th><th>10 mcg/kg/min</th><th>15 mcg/kg/min</th><th>20 mcg/kg/min</th></tr>
+          </thead>
+          <tbody>
+            ${[
+              [40,8,15,23,30],[45,8,17,25,34],[50,9,19,28,38],[55,10,21,31,41],
+              [60,11,23,34,45],[65,12,24,37,49],[70,13,26,39,53],[75,14,28,42,56],
+              [80,15,30,45,60],[85,16,32,48,64],[90,17,34,51,68],[95,18,36,53,71],
+              [100,19,38,56,75],[105,20,39,59,79],[110,21,41,62,83]
+            ].map(r => `<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`
+  },
+  {
+    title: 'Dilutions Reference',
+    content: `
+      <div class="mc-info">
+        <strong>Benadryl IV — Pediatrics:</strong><br>
+        Dilute 50 mg/mL with 9 mL Normal Saline → creates <strong>5 mg/mL solution</strong>
+      </div>
+      <div class="mc-info">
+        <strong>Ketamine:</strong><br>
+        • <strong>Pain control:</strong> Dilute 50 mg in 10 mL NS → <strong>5 mg/mL solution</strong><br>
+        • <strong>Sedation:</strong> Give without dilution OR 1:1 dilution in NS
+      </div>
+      <div class="mc-info">
+        <strong>Sodium Bicarbonate — Infants & Neonates:</strong><br>
+        8.4% — mix 25 mL with 25 mL NS → creates <strong>4.2% sodium bicarbonate solution</strong>
+      </div>
+      <div class="mc-info">
+        <strong>Nitroglycerin IV Push 250 mcg:</strong><br>
+        Draw up 2.5 mg (0.5 mL) from undiluted NTG vial → mix with 9.5 mL NS → creates <strong>250 mcg/mL</strong><br>
+        Administer 1 mL (250 mcg) every 3–5 min until SBP 140–160 mmHg or 20% decrease from original SBP
+      </div>
+      <div class="mc-info" style="border-bottom:none;">
+        <strong>Calcium Chloride:</strong><br>
+        Mix 1 gram into 100 mL NS — administer over 10 minutes
+      </div>`
+  },
+  {
+    title: 'Adult Medication Infusion Reference',
+    content: `
+      <div style="overflow-x:auto;">
+        <table class="inf-table">
+          <thead>
+            <tr><th>Medication</th><th>Mixture</th><th>Dose</th><th>Administration</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Amiodarone</strong><br><em style="font-size:10px;color:#888;">Stable VT/VF with pulse</em></td>
+              <td>150 mg in 100 mL D5W</td>
+              <td>150 mg over 10 min</td>
+              <td><strong>10 drop set</strong><br>~2 drops/sec</td>
+            </tr>
+            <tr>
+              <td><strong>Magnesium Sulfate</strong><br><em style="font-size:10px;color:#888;">Pre/Eclampsia</em></td>
+              <td>4 g in 100 mL D5W</td>
+              <td>4 g over 10 min</td>
+              <td><strong>10 drop set</strong><br>~2 drops/sec</td>
+            </tr>
+            <tr>
+              <td><strong>Magnesium Sulfate</strong><br><em style="font-size:10px;color:#888;">Asthma / Torsades</em></td>
+              <td>2 g in 100 mL D5W</td>
+              <td>2 g over 10 min</td>
+              <td><strong>10 drop set</strong><br>~2 drops/sec</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>`
+  },
+];
+
+let mcInitialized = false;
+
+function mcInit() {
+  if (mcInitialized) return;
+  mcInitialized = true;
+  const body = document.getElementById('mcBody');
+  body.innerHTML = MC_SECTIONS.map((sec, idx) => `
+    <div class="mc-section">
+      <div class="mc-section-hdr" id="mchdr-${idx}" onclick="mcToggle(${idx})">
+        <span>${sec.title}</span>
+        <span class="mc-chev">▼</span>
+      </div>
+      <div class="mc-section-body" id="mcbody-${idx}">${sec.content}</div>
+    </div>`).join('');
+  // Open first section by default
+  mcToggle(0);
+}
+
+function mcToggle(idx) {
+  const hdr = document.getElementById('mchdr-' + idx);
+  const body = document.getElementById('mcbody-' + idx);
+  const isOpen = body.classList.contains('open');
+  hdr.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
 
 // ── GENERAL INFORMATION DATA & RENDERER ───────────────────────────────
 const GEN_INFO_SECTIONS = [
@@ -1783,14 +3717,16 @@ function switchMainView(view) {
   const home = document.getElementById('home');
   const fac  = document.getElementById('facilities');
   const gi   = document.getElementById('geninfo');
+  const mc   = document.getElementById('medchart');
   const btnP = document.getElementById('navProtocols');
   const btnF = document.getElementById('navFacilities');
   const btnG = document.getElementById('navGenInfo');
-  // Hide all
+  const btnM = document.getElementById('navMedChart');
   home.style.display = 'none';
   fac.style.display  = 'none';
   gi.style.display   = 'none';
-  [btnP, btnF, btnG].forEach(b => b.classList.remove('active'));
+  mc.style.display   = 'none';
+  [btnP, btnF, btnG, btnM].forEach(b => b.classList.remove('active'));
   if (view === 'protocols') {
     home.style.display = 'block';
     btnP.classList.add('active');
@@ -1798,6 +3734,10 @@ function switchMainView(view) {
     fac.style.display = 'flex';
     btnF.classList.add('active');
     facInit();
+  } else if (view === 'medchart') {
+    mc.style.display = 'flex';
+    btnM.classList.add('active');
+    mcInit();
   } else {
     gi.style.display = 'flex';
     btnG.classList.add('active');
@@ -1805,6 +3745,478 @@ function switchMainView(view) {
   }
 }
 
+
+
+
+
+// ── PAIN SCALE BUILDER ────────────────────────────────────────────────
+function buildPainScale() {
+  const faces = ['😊','🙂','😐','😕','😟','😭'];
+  const labels = ['No Hurt','Hurts Little Bit','Hurts Little More','Hurts Even More','Hurts Whole Lot','Hurts Worst'];
+  const scores = [0,2,4,6,8,10];
+  const colors = ['#27ae60','#8bc34a','#f9a825','#ef6c00','#e53935','#b71c1c'];
+  let html = `<div class="dsec-card" style="overflow:hidden;">
+    <div style="background:#c0392b;padding:8px 14px;text-align:center;color:#fff;font-size:13px;font-weight:700;">Pain Measurement Scale</div>
+    <div style="display:flex;padding:10px 8px;gap:4px;">`;
+  faces.forEach((f,i) => {
+    html += `<div style="flex:1;text-align:center;">
+      <div style="font-size:26px;">${f}</div>
+      <div style="font-size:11px;font-weight:700;color:${colors[i]};margin:4px 0 2px;">${scores[i]}</div>
+      <div style="font-size:9px;color:#666;line-height:1.2;">${labels[i]}</div>
+    </div>`;
+  });
+  html += `</div>
+    <div style="display:flex;padding:0 12px 10px;align-items:center;gap:4px;">
+      <div style="font-size:11px;color:#666;flex-shrink:0;">0 No pain</div>
+      <div style="flex:1;height:6px;border-radius:3px;background:linear-gradient(to right,#27ae60,#f9a825,#b71c1c);"></div>
+      <div style="font-size:11px;color:#666;flex-shrink:0;">10 Worst</div>
+    </div>
+    <div style="padding:6px 12px 10px;font-size:11px;color:#888;text-align:center;">Use <strong>Faces scale</strong> for pediatric patients</div>
+  </div>`;
+  return html;
+}
+
+// ── START TRIAGE FLOWCHART ────────────────────────────────────────────
+function buildStartTriage() {
+  return `<div class="dsec-card" style="overflow:hidden;padding:12px 14px;">
+    <div style="font-size:12px;font-weight:700;color:#333;margin-bottom:10px;text-align:center;">START Adult Triage Algorithm</div>
+    <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;">
+      <div style="background:#e8f5e9;border-radius:8px;padding:8px 10px;border-left:4px solid #27ae60;">
+        <strong>Able to walk? YES →</strong> <span style="background:#27ae60;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">MINOR</span> → Secondary Triage
+      </div>
+      <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 10px;">
+        <strong>No → Spontaneous breathing?</strong>
+        <div style="margin-top:6px;padding-left:12px;">
+          <div>NO → Position airway → Spontaneous breathing? YES → <span style="background:#e53935;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">IMMEDIATE</span></div>
+          <div style="margin-top:4px;">NO (Apnea) → <span style="background:#000;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">EXPECTANT</span> <em style="color:#666;font-size:11px;">(except lightning strike)</em></div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 10px;">
+        <strong>Breathing YES → Respiratory Rate</strong>
+        <div style="margin-top:6px;padding-left:12px;">
+          <div>≥30 → <span style="background:#e53935;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">IMMEDIATE</span></div>
+          <div style="margin-top:4px;">&lt;30 → Perfusion check</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 10px;">
+        <strong>Perfusion → Radial pulse absent OR capillary refill ≥2 sec</strong>
+        <div style="margin-top:6px;padding-left:12px;">
+          <div>YES → <span style="background:#e53935;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">IMMEDIATE</span></div>
+          <div style="margin-top:4px;">NO → Mental Status check</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 10px;">
+        <strong>Mental Status → Doesn't obey commands</strong>
+        <div style="margin-top:6px;padding-left:12px;">
+          <div>YES → <span style="background:#e53935;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">IMMEDIATE</span></div>
+          <div style="margin-top:4px;">Obeys commands → <span style="background:#f39c12;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">DELAYED</span></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── JUMPSTART TRIAGE FLOWCHART ────────────────────────────────────────
+function buildJumpStartTriage() {
+  return `<div class="dsec-card" style="overflow:hidden;padding:12px 14px;">
+    <div style="font-size:12px;font-weight:700;color:#333;margin-bottom:10px;text-align:center;">JumpSTART Pediatric MCI Triage (1–8 years)</div>
+    <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;">
+      <div style="background:#e8f5e9;border-radius:8px;padding:8px 10px;border-left:4px solid #27ae60;">
+        <strong>Able to walk? YES →</strong> <span style="background:#27ae60;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">MINOR</span> → Secondary Triage
+      </div>
+      <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 10px;">
+        <strong>NO → Spontaneous breathing?</strong>
+        <div style="margin-top:6px;padding-left:12px;">
+          <div>YES → Check Respiratory Rate</div>
+          <div style="margin-top:4px;">NO → Position airway → Spontaneous breathing? YES → <span style="background:#e53935;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">IMMEDIATE</span></div>
+          <div style="margin-top:4px;">Still Apnea → Palpable pulse?<br>
+            &nbsp;&nbsp;NO → <span style="background:#000;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">EXPECTANT</span><br>
+            &nbsp;&nbsp;YES → 5 rescue breaths → Still Apnea → <span style="background:#000;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">EXPECTANT</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Spontaneous breathing → <span style="background:#e53935;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">IMMEDIATE</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 10px;">
+        <strong>Respiratory Rate</strong>
+        <div style="margin-top:6px;padding-left:12px;">
+          <div>&lt;15 or &gt;45 → <span style="background:#e53935;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">IMMEDIATE</span></div>
+          <div style="margin-top:4px;">15–45 → Check Palpable Pulse</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 10px;">
+        <strong>Palpable Pulse?</strong>
+        <div style="margin-top:6px;padding-left:12px;">
+          <div>NO → <span style="background:#e53935;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">IMMEDIATE</span></div>
+          <div style="margin-top:4px;">YES → Neurological Assessment (AVPU)</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 10px;">
+        <strong>Neurological (AVPU)</strong>
+        <div style="margin-top:6px;padding-left:12px;">
+          <div>Inappropriate "P" (posturing) or "U" → <span style="background:#e53935;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">IMMEDIATE</span></div>
+          <div style="margin-top:4px;">"A," "V," or Appropriate "P" (withdrawal) → <span style="background:#f39c12;color:#fff;padding:1px 8px;border-radius:3px;font-weight:700;">DELAYED</span></div>
+        </div>
+      </div>
+      <div style="background:#eceff1;border-radius:8px;padding:8px 10px;font-size:11px;color:#555;">
+        <strong>AVPU:</strong> A=Alert · V=Responds to Verbal · P=Responds to Painful Stimuli · U=Unresponsive to Noxious Stimuli
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── APGAR TABLE BUILDER ───────────────────────────────────────────────
+function buildAPGARTable() {
+  const rows = [
+    {letter:'A',word:'ppearance',s0:'Blue all over',s1:'Blue only at extremities',s2:'No blue coloration'},
+    {letter:'P',word:'ulse',s0:'No pulse',s1:'<100 beats/min',s2:'>100 beats/min'},
+    {letter:'G',word:'rimace',s0:'No response to stimulation',s1:'Grimace or feeble cry when stimulated',s2:'Sneezing, coughing, or pulling away when stimulated'},
+    {letter:'A',word:'ctivity',s0:'No movement',s1:'Some movement',s2:'Active movement'},
+    {letter:'R',word:'espiration',s0:'No breathing',s1:'Weak, slow, or irregular breathing',s2:'Strong cry'},
+  ];
+  let html = `<div class="dsec-card" style="overflow:hidden;">
+    <div style="background:#6a1b9a;padding:9px 14px;display:flex;align-items:center;gap:10px;">
+      <div style="color:#fff;font-size:15px;font-weight:700;">APGAR Score</div>
+      <div style="color:rgba(255,255,255,.8);font-size:11px;">Record at 1 minute and 5 minutes after birth</div>
+    </div>
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;">
+      <div style="flex:1.4;padding:6px 10px;font-size:11px;font-weight:700;border-right:1px solid #e0e0e0;">Sign</div>
+      <div style="flex:1;padding:6px 10px;font-size:11px;font-weight:700;text-align:center;border-right:1px solid #e0e0e0;background:#eceff1;">Score 0</div>
+      <div style="flex:1;padding:6px 10px;font-size:11px;font-weight:700;text-align:center;border-right:1px solid #e0e0e0;background:#e3f2fd;">Score 1</div>
+      <div style="flex:1;padding:6px 10px;font-size:11px;font-weight:700;text-align:center;background:#e8f5e9;">Score 2</div>
+    </div>`;
+  rows.forEach((r,i) => {
+    const bg = i%2===0?'#fff':'#fafafa';
+    html += `<div style="display:flex;border-bottom:1px solid #f0f0f0;background:${bg};">
+      <div style="flex:1.4;padding:8px 10px;border-right:1px solid #e0e0e0;">
+        <span style="font-size:16px;font-weight:800;color:#6a1b9a;">${r.letter}</span><span style="font-size:13px;color:#333;">${r.word}</span>
+      </div>
+      <div style="flex:1;padding:8px 10px;font-size:11.5px;color:#555;text-align:center;border-right:1px solid #e0e0e0;">${r.s0}</div>
+      <div style="flex:1;padding:8px 10px;font-size:11.5px;color:#1565c0;text-align:center;border-right:1px solid #e0e0e0;">${r.s1}</div>
+      <div style="flex:1;padding:8px 10px;font-size:11.5px;color:#2e7d32;text-align:center;">${r.s2}</div>
+    </div>`;
+  });
+  html += `<div style="padding:8px 12px;background:#f3e5f5;font-size:11.5px;color:#6a1b9a;line-height:1.4;">
+    <strong>7–10:</strong> Normal &nbsp;|&nbsp; <strong>4–6:</strong> Intervention needed &nbsp;|&nbsp; <strong>0–3:</strong> Resuscitation required
+  </div></div>`;
+  return html;
+}
+
+// ── NEONATAL RESUSCITATION FLOWCHART ──────────────────────────────────
+function buildNeonatalFlowchart() {
+  return `<div class="dsec-card" style="overflow:hidden;padding:12px 14px;">
+    <div style="font-size:12px;font-weight:700;color:#880e4f;text-align:center;margin-bottom:10px;">Neonatal Resuscitation Algorithm</div>
+    <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;">
+      <div style="background:#880e4f;color:#fff;border-radius:8px;padding:8px 12px;text-align:center;font-weight:700;">BIRTH</div>
+      <div style="background:#e8f5e9;border-radius:8px;padding:8px 10px;border-left:4px solid #27ae60;">
+        <strong>Clear of meconium · Breathing/crying · Good muscle tone · Color pink · Term?</strong><br>
+        YES → <strong>Routine Care:</strong> Provide warmth · Clear airway · Dry
+      </div>
+      <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 10px;">
+        <strong>NO (Any issue) → Initial Steps (30 seconds)</strong>
+        <div style="margin-top:4px;padding-left:8px;color:#555;">
+          Provide warmth · Position/clear airway · Dry, stimulate, reposition · Oxygen prn
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 10px;">
+        <strong>Evaluate: Respirations · HR · Color</strong>
+        <div style="margin-top:4px;padding-left:8px;">
+          <div style="color:#27ae60;"><strong>Breathing, HR >100 & Pink →</strong> Supportive care / Ongoing care</div>
+          <div style="margin-top:4px;"><strong>Apnea or HR &lt;100</strong> → Positive Pressure Ventilations (PPV) — 30 seconds</div>
+        </div>
+      </div>
+      <div style="background:#fff3e0;border-radius:8px;padding:8px 10px;border-left:4px solid #e65100;">
+        <strong>After PPV — HR still &lt;60?</strong>
+        <div style="margin-top:4px;padding-left:8px;">
+          YES → <strong>PPV + Chest Compressions</strong> (ratio 3:1 · rate 40 BPM)
+        </div>
+      </div>
+      <div style="background:#fdecea;border-radius:8px;padding:8px 10px;border-left:4px solid #c0392b;">
+        <strong>HR still &lt;60 after PPV + Compressions?</strong>
+        <div style="margin-top:4px;padding-left:8px;">
+          → <strong>Administer Epinephrine 0.01mg/kg</strong>
+        </div>
+      </div>
+      <div style="background:#e3f2fd;border-radius:8px;padding:8px 10px;border-left:4px solid #1565c0;">
+        <div style="font-size:11px;color:#1565c0;">
+          <strong>Resuscitation Pyramid (escalation):</strong><br>
+          Dry/Suction/Stimulate → BVM Ventilation → Chest Compressions → Intubation → Drugs
+        </div>
+      </div>
+      <div style="background:#f3e5f5;border-radius:8px;padding:7px 10px;font-size:11px;color:#6a1b9a;">
+        <strong>⚠️ Check BGL on ALL infants requiring resuscitation</strong>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── TBSA BURN CHART BUILDER ───────────────────────────────────────────
+function buildTBSAChart() {
+  return `<div class="dsec-card" style="overflow:hidden;padding:12px 14px;">
+    <div style="font-size:12px;font-weight:700;color:#bf360c;text-align:center;margin-bottom:10px;">TBSA (Total Body Surface Area) — Rule of Nines</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div style="background:#fff3e0;border-radius:8px;padding:10px;border:1px solid #ffe0b2;">
+        <div style="font-size:12px;font-weight:700;color:#e65100;margin-bottom:6px;text-align:center;">Adult</div>
+        <div style="font-size:11px;color:#333;line-height:1.8;">
+          Head: <strong>9%</strong><br>
+          Each Arm: <strong>9%</strong><br>
+          Chest (ant): <strong>9%</strong><br>
+          Abdomen (ant): <strong>9%</strong><br>
+          Upper Back: <strong>9%</strong><br>
+          Lower Back: <strong>9%</strong><br>
+          Each Thigh: <strong>9%</strong><br>
+          Each Lower Leg: <strong>9%</strong><br>
+          Genitalia: <strong>1%</strong>
+        </div>
+      </div>
+      <div style="background:#e8f5e9;border-radius:8px;padding:10px;border:1px solid #c8e6c9;">
+        <div style="font-size:12px;font-weight:700;color:#2e7d32;margin-bottom:6px;text-align:center;">Child</div>
+        <div style="font-size:11px;color:#333;line-height:1.8;">
+          Head: <strong>7% each side</strong><br>
+          Each Arm: <strong>4.5%</strong><br>
+          Chest (ant): <strong>10%</strong><br>
+          Abdomen (ant): <strong>10%</strong><br>
+          Each Thigh: <strong>4.5%</strong><br>
+          Each Lower Leg: <strong>8%</strong><br>
+          (Head proportionally larger)
+        </div>
+      </div>
+    </div>
+    <div style="background:#e3f2fd;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <div style="font-size:12px;font-weight:700;color:#1565c0;margin-bottom:4px;">Infant</div>
+      <div style="font-size:11px;color:#333;">Head: <strong>18%</strong> · Each arm: <strong>9%</strong> · Trunk: <strong>18%</strong> (ant) / <strong>18%</strong> (post) · Each leg: <strong>13.5%</strong></div>
+    </div>
+    <div style="background:#fce4ec;border-radius:8px;padding:10px;">
+      <div style="font-size:12px;font-weight:700;color:#880e4f;margin-bottom:4px;">🖐 Palm Method</div>
+      <div style="font-size:11px;color:#333;">The <strong>palm and fingers of the patient = 1% TBSA</strong>. Useful for estimating irregular or small burns.</div>
+    </div>
+    <div style="margin-top:8px;padding:8px 10px;background:#fdecea;border-radius:8px;font-size:11px;color:#c0392b;line-height:1.5;">
+      <strong>Transport to Burn Center if:</strong> Adults ≥15% TBSA (2°) · Peds ≥10% TBSA (2°) · Any 3° burn · Face/hands/feet/genitalia/joints · Electrical · Chemical · Respiratory burns
+    </div>
+  </div>`;
+}
+
+// ── PEDIATRIC VITAL SIGNS CHART BUILDER ──────────────────────────────
+function buildPedsVitalsChart() {
+  const hdr = (text, bg, col='#fff') =>
+    `<div style="background:${bg};color:${col};padding:7px 10px;font-size:11px;font-weight:700;text-align:center;">${text}</div>`;
+
+  const row = (cells, bg='#fff', bold=false) => {
+    const fw = bold ? '600' : '400';
+    return `<div style="display:flex;border-bottom:1px solid #e0e0e0;background:${bg};">
+      ${cells.map((c,i)=>`<div style="flex:${i===0?'1.4':'1'};padding:6px 8px;font-size:11px;font-weight:${fw};color:#1c1c1e;text-align:${i===0?'left':'center'};border-right:${i<cells.length-1?'1px solid #e0e0e0':'none'};">${c}</div>`).join('')}
+    </div>`;
+  };
+
+  const subhdr = (text) =>
+    `<div style="background:#1565c0;color:#fff;padding:6px 10px;font-size:11px;font-weight:700;text-align:center;">${text}</div>`;
+
+  const ref = (text) =>
+    `<div style="padding:5px 10px;font-size:10px;color:#888;text-align:center;font-style:italic;">${text}</div>`;
+
+  return `<div class="dsec-card" style="overflow:hidden;">
+    <div style="background:#1565c0;padding:10px 12px;text-align:center;">
+      <div style="color:#fff;font-size:13px;font-weight:700;">Pediatric Vital Signs Reference Chart</div>
+      <div style="color:rgba(255,255,255,.8);font-size:10px;margin-top:2px;">Protocol 69 · PALS Guidelines 2015</div>
+    </div>
+
+    ${hdr('Heart Rate (beats/min)', '#e53935')}
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;">
+      <div style="flex:1.4;padding:5px 8px;font-size:11px;font-weight:700;text-align:center;border-right:1px solid #e0e0e0;">Age</div>
+      <div style="flex:1;padding:5px 8px;font-size:11px;font-weight:700;text-align:center;border-right:1px solid #e0e0e0;">Awake</div>
+      <div style="flex:1;padding:5px 8px;font-size:11px;font-weight:700;text-align:center;">Asleep</div>
+    </div>
+    ${row(['Neonate (&lt;28 d)','100–205','90–160'])}
+    ${row(['Infant (1–12 mos)','100–190','90–160'],'#f5f5f5')}
+    ${row(['Toddler (1–2 y)','98–140','80–120'])}
+    ${row(['Preschool (3–5 y)','80–120','65–100'],'#f5f5f5')}
+    ${row(['School-age (6–11 y)','75–118','58–90'])}
+    ${row(['Adolescent (12–15 y)','60–100','50–90'],'#f5f5f5')}
+
+    ${hdr('Respiratory Rate (breaths/min)', '#43a047')}
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;">
+      <div style="flex:1.4;padding:5px 8px;font-size:11px;font-weight:700;text-align:center;border-right:1px solid #e0e0e0;">Age</div>
+      <div style="flex:1;padding:5px 8px;font-size:11px;font-weight:700;text-align:center;">Normal</div>
+    </div>
+    ${row(['Infant (&lt;1 y)','30–53'])}
+    ${row(['Toddler (1–2 y)','22–37'],'#f5f5f5')}
+    ${row(['Preschool (3–5 y)','20–28'])}
+    ${row(['School-age (6–11 y)','18–25'],'#f5f5f5')}
+    ${row(['Adolescent (12–15 y)','12–20'])}
+
+    ${subhdr('Blood Pressure (mmHg)')}
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;">
+      <div style="flex:1.6;padding:5px 8px;font-size:10px;font-weight:700;text-align:center;border-right:1px solid #e0e0e0;">Age</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;font-weight:700;text-align:center;border-right:1px solid #e0e0e0;">Systolic</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;font-weight:700;text-align:center;border-right:1px solid #e0e0e0;">Diastolic</div>
+      <div style="flex:1.4;padding:5px 8px;font-size:10px;font-weight:700;text-align:center;">Systolic Hypotension</div>
+    </div>
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;">
+      <div style="flex:1.6;padding:5px 8px;font-size:10px;color:#1c1c1e;border-right:1px solid #e0e0e0;">Birth (12h) &lt;1kg<br>Birth (12h) 3kg</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">39–59<br>60–76</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">16–36<br>31–45</div>
+      <div style="flex:1.4;padding:5px 8px;font-size:10px;text-align:center;">&lt;40–50<br>&lt;50</div>
+    </div>
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;background:#f5f5f5;">
+      <div style="flex:1.6;padding:5px 8px;font-size:10px;color:#1c1c1e;border-right:1px solid #e0e0e0;">Neonate (96 h)</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">67–84</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">35–53</div>
+      <div style="flex:1.4;padding:5px 8px;font-size:10px;text-align:center;">&lt;60</div>
+    </div>
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;">
+      <div style="flex:1.6;padding:5px 8px;font-size:10px;color:#1c1c1e;border-right:1px solid #e0e0e0;">Infant (1–12 mos)</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">72–104</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">37–56</div>
+      <div style="flex:1.4;padding:5px 8px;font-size:10px;text-align:center;">&lt;70</div>
+    </div>
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;background:#f5f5f5;">
+      <div style="flex:1.6;padding:5px 8px;font-size:10px;color:#1c1c1e;border-right:1px solid #e0e0e0;">Toddler (1–2 y)</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">86–106</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">42–63</div>
+      <div style="flex:1.4;padding:5px 8px;font-size:10px;text-align:center;"></div>
+    </div>
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;">
+      <div style="flex:1.6;padding:5px 8px;font-size:10px;color:#1c1c1e;border-right:1px solid #e0e0e0;">Preschool (3–5 y)</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">89–112</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">46–72</div>
+      <div style="flex:1.4;padding:5px 8px;font-size:10px;text-align:center;">&lt;70 + (age × 2)</div>
+    </div>
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;background:#f5f5f5;">
+      <div style="flex:1.6;padding:5px 8px;font-size:10px;color:#1c1c1e;border-right:1px solid #e0e0e0;">School-age (6–9 y)</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">97–115</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">57–76</div>
+      <div style="flex:1.4;padding:5px 8px;font-size:10px;text-align:center;"></div>
+    </div>
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;">
+      <div style="flex:1.6;padding:5px 8px;font-size:10px;color:#1c1c1e;border-right:1px solid #e0e0e0;">Preadolescent (10–11 y)</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">102–120</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">61–80</div>
+      <div style="flex:1.4;padding:5px 8px;font-size:10px;text-align:center;">&lt;90</div>
+    </div>
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;background:#f5f5f5;">
+      <div style="flex:1.6;padding:5px 8px;font-size:10px;color:#1c1c1e;border-right:1px solid #e0e0e0;">Adolescent (12–15 y)</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">110–131</div>
+      <div style="flex:1;padding:5px 8px;font-size:10px;text-align:center;border-right:1px solid #e0e0e0;">64–83</div>
+      <div style="flex:1.4;padding:5px 8px;font-size:10px;text-align:center;">&lt;90</div>
+    </div>
+    ${ref('Reference: PALS Guidelines, 2015. For hypertension diagnosis refer to 2017 AAP guidelines Table 4 &amp; 5.')}
+
+    ${hdr('Temperature (°C)', '#f57c00', '#fff')}
+    <div style="display:flex;border-bottom:1px solid #e0e0e0;">
+      <div style="flex:1;padding:5px 8px;font-size:11px;font-weight:700;text-align:center;border-right:1px solid #e0e0e0;">Method</div>
+      <div style="flex:1;padding:5px 8px;font-size:11px;font-weight:700;text-align:center;">Normal</div>
+    </div>
+    ${row(['Rectal','36.6–38.0'])}
+    ${row(['Tympanic','35.8–38.0'],'#f5f5f5')}
+    ${row(['Oral','35.5–37.5'])}
+    ${row(['Axillary','36.5–37.5'],'#f5f5f5')}
+    <div style="padding:6px 10px;font-size:10px;color:#555;line-height:1.4;border-bottom:1px solid #e0e0e0;">
+      Ranges do not vary with age.<br>
+      <strong>Screening:</strong> axillary, temporal, tympanic (↓ accuracy)<br>
+      <strong>Definitive:</strong> rectal &amp; oral (↑ reflection of core temp.)
+    </div>
+
+    ${hdr('Oxygen Saturation (SpO₂)', '#0288d1', '#fff')}
+    <div style="padding:8px 10px;font-size:11px;color:#1c1c1e;line-height:1.5;">
+      SpO₂ is lower in the immediate newborn period. Beyond this period, a SpO₂ of <strong>&lt;90–92%</strong> may suggest a <strong>respiratory condition</strong> or <strong>cyanotic heart disease</strong>.
+    </div>
+  </div>`;
+}
+
+// ── GCS TABLE BUILDER ─────────────────────────────────────────────────
+function buildGCSTable() {
+  const eyeRows = [
+    {score:4, desc:'Spontaneous — open with blinking at baseline'},
+    {score:3, desc:'To verbal stimuli, command, speech'},
+    {score:2, desc:'To pain only (not applied to face)'},
+    {score:1, desc:'No response'},
+  ];
+  const verbalRows = [
+    {score:5, desc:'Oriented'},
+    {score:4, desc:'Confused, but able to answer questions'},
+    {score:3, desc:'Inappropriate words'},
+    {score:2, desc:'Incomprehensible speech'},
+    {score:1, desc:'No response'},
+  ];
+  const motorRows = [
+    {score:6, desc:'Obeys commands for movement'},
+    {score:5, desc:'Purposeful movement to painful stimulus'},
+    {score:4, desc:'Withdraws in response to pain'},
+    {score:3, desc:'Flexion in response to pain (decorticate posturing)'},
+    {score:2, desc:'Extension response in response to pain (decerebrate posturing)'},
+    {score:1, desc:'No response'},
+  ];
+
+  function colHtml(rows, color) {
+    return rows.map(r => `
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-bottom:1px solid #f0f0f0;">
+        <div style="width:22px;height:22px;border-radius:50%;background:${color};color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">+${r.score}</div>
+        <div style="font-size:12px;line-height:1.45;color:#1c1c1e;">${r.desc}</div>
+      </div>`).join('');
+  }
+
+  const maxRows = Math.max(eyeRows.length, verbalRows.length, motorRows.length);
+
+  return `<div class="dsec-card" style="overflow:hidden;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;">
+      <div style="background:#1565c0;padding:8px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.2);">
+        <div style="color:#fff;font-size:11px;font-weight:700;line-height:1.3;">Best Eye<br>Response</div>
+        <div style="color:rgba(255,255,255,.7);font-size:10px;">Max +4</div>
+      </div>
+      <div style="background:#1565c0;padding:8px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.2);">
+        <div style="color:#fff;font-size:11px;font-weight:700;line-height:1.3;">Best Verbal<br>Response</div>
+        <div style="color:rgba(255,255,255,.7);font-size:10px;">Max +5</div>
+      </div>
+      <div style="background:#1565c0;padding:8px 10px;text-align:center;">
+        <div style="color:#fff;font-size:11px;font-weight:700;line-height:1.3;">Best Motor<br>Response</div>
+        <div style="color:rgba(255,255,255,.7);font-size:10px;">Max +6</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;align-items:start;">
+      <div style="border-right:1px solid #f0f0f0;">${colHtml(eyeRows, '#1a73e8')}</div>
+      <div style="border-right:1px solid #f0f0f0;">${colHtml(verbalRows, '#1a73e8')}</div>
+      <div>${colHtml(motorRows, '#1a73e8')}</div>
+    </div>
+    <div style="padding:9px 12px;background:#e8f0fe;display:flex;align-items:center;gap:8px;">
+      <div style="font-size:12px;color:#1565c0;line-height:1.4;"><strong>GCS Total: 3–15.</strong> Normal = 15. Mild TBI = 13–15 · Moderate = 9–12 · Severe ≤8 (consider airway). Hypotension defined as SBP &lt;90 mmHg.</div>
+    </div>
+  </div>`;
+}
+
+// ── AEIOU-TIPS TABLE BUILDER ──────────────────────────────────────────
+function buildAEIOUTable() {
+  const items = [
+    {letter:'A', color:'#c0392b', label:'Alcohol'},
+    {letter:'E', color:'#c0392b', label:'Epilepsy', sub:'Seizure'},
+    {letter:'I', color:'#c0392b', label:'Insulin', sub:'Hyper-/Hypoglycemia'},
+    {letter:'O', color:'#c0392b', label:'Overdose / Oxygenation'},
+    {letter:'U', color:'#c0392b', label:'Uremia', sub:'Kidney Failure'},
+    {letter:'divider'},
+    {letter:'T', color:'#1565c0', label:'Trauma'},
+    {letter:'I', color:'#1565c0', label:'Infection', sub:'Sepsis'},
+    {letter:'P', color:'#1565c0', label:'Psychiatric'},
+    {letter:'S', color:'#1565c0', label:'Stroke / Shock'},
+  ];
+
+  const rows = items.map(item => {
+    if (item.letter === 'divider') {
+      return `<div style="height:1px;background:#e0e0e0;margin:2px 0;"></div>`;
+    }
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 13px;border-bottom:1px solid #f5f5f5;">
+      <div style="width:30px;height:30px;border-radius:8px;background:${item.color};color:#fff;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${item.letter}</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#1c1c1e;">${item.label}</div>
+        ${item.sub ? `<div style="font-size:11px;color:#888;">${item.sub}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="dsec-card" style="overflow:hidden;">
+    <div style="background:#37474f;padding:9px 13px;">
+      <div style="color:#fff;font-size:12px;font-weight:700;">Patient with Altered Mental Status — Consider:</div>
+    </div>
+    ${rows}
+  </div>`;
+}
 
 // ── RASS SCORE TABLE BUILDER ──────────────────────────────────────────
 function buildRASSTable() {
