@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HSF EMS Protocols</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c0392b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HSF EMS">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+<meta name="description" content="Hatzalah South Florida EMS Protocols - Field Reference Guide">
+<meta name="application-name" content="HSF EMS Protocols">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f2f2f7;color:#1c1c1e;font-size:16px;}
+:root{
+  --red:#c0392b;--red-light:#fdecea;--red-mid:#e74c3c;
+  --blue:#1a73e8;--blue-light:#e8f0fe;
+  --green:#2e7d32;--green-light:#e8f5e9;
+  --amber:#e65100;--amber-light:#fff3e0;
+  --purple:#6a1b9a;--purple-light:#f3e5f5;
+  --teal:#00695c;--teal-light:#e0f2f1;
+  --gray:#455a64;--gray-light:#eceff1;
+  --orange:#bf360c;--orange-light:#fbe9e7;
+}
+/* HEADER */
+.app-header{background:var(--red);color:#fff;padding:16px 16px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+.header-top{display:flex;align-items:center;gap:10px;padding-bottom:12px;}
+.header-top h1{font-size:20px;font-weight:700;letter-spacing:.2px;}
+.header-top p{font-size:12px;opacity:.85;margin-top:1px;}
+.back-btn{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.search-bar{background:rgba(255,255,255,.18);border-radius:10px;display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:10px;}
+.search-bar svg{opacity:.8;flex-shrink:0;}
+.search-bar input{background:none;border:none;color:#fff;font-size:15px;width:100%;outline:none;}
+.search-bar input::placeholder{color:rgba(255,255,255,.65);}
+/* TABS */
+.tabs-wrap{background:#fff;border-bottom:1px solid #e0e0e0;overflow-x:auto;scrollbar-width:none;white-space:nowrap;padding:0 8px;}
+.tabs-wrap::-webkit-scrollbar{display:none;}
+.tab{display:inline-block;padding:10px 14px;font-size:13px;font-weight:500;color:#666;cursor:pointer;border-bottom:3px solid transparent;transition:all .15s;}
+.tab.active{color:var(--red);border-bottom-color:var(--red);}
+/* LIST */
+.proto-list{padding:12px 12px 80px;}
+.section-hdr{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.6px;margin:16px 0 6px 4px;}
+.section-hdr:first-child{margin-top:4px;}
+.proto-card{background:#fff;border-radius:13px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.07);transition:transform .1s;}
+.proto-card:active{transform:scale(.98);}
+.proto-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.proto-info{flex:1;min-width:0;}
+.proto-name{font-size:14px;font-weight:600;color:#1c1c1e;margin-bottom:2px;line-height:1.3;}
+.proto-sub{font-size:12px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.proto-badge{font-size:10px;font-weight:600;padding:3px 7px;border-radius:6px;flex-shrink:0;text-align:center;}
+.badge-p{background:#fdecea;color:#c0392b;}
+.badge-all{background:#e8f5e9;color:#2e7d32;}
+.badge-emt{background:#e8f0fe;color:#1a73e8;}
+.chevron{color:#c7c7cc;font-size:14px;flex-shrink:0;margin-left:2px;}
+/* DETAIL */
+#detail{display:none;flex-direction:column;min-height:100vh;}
+#detail.show{display:flex;}
+.detail-header{padding:16px;color:#fff;}
+.detail-icon-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.detail-icon-circle{width:50px;height:50px;border-radius:13px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.detail-title{font-size:19px;font-weight:700;line-height:1.25;}
+.detail-sub{font-size:12px;opacity:.85;margin-top:2px;}
+.detail-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+.dtag{background:rgba(255,255,255,.18);border-radius:6px;padding:3px 9px;font-size:11px;}
+.detail-body{flex:1;padding:14px 14px 80px;background:#f2f2f7;}
+/* SECTIONS */
+.dsec{margin-bottom:14px;}
+.dsec-title{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
+.dsec-card{background:#fff;border-radius:12px;overflow:hidden;}
+/* Steps */
+.step-row{display:flex;gap:10px;padding:10px 14px;border-bottom:1px solid #f2f2f7;align-items:flex-start;}
+.step-row:last-child{border-bottom:none;}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-text{font-size:13px;line-height:1.55;color:#1c1c1e;}
+.step-text strong{font-weight:600;}
+/* Alert boxes */
+.alert-box{padding:10px 13px;border-left:4px solid;margin-bottom:6px;border-radius:0 8px 8px 0;}
+.alert-box:last-child{margin-bottom:0;}
+.alert-box p{font-size:12.5px;line-height:1.5;}
+.alert-box strong{font-weight:600;}
+.alert-danger{background:var(--red-light);border-color:var(--red);}
+.alert-warn{background:var(--amber-light);border-color:var(--amber);}
+.alert-info{background:var(--blue-light);border-color:var(--blue);}
+.alert-ok{background:var(--green-light);border-color:var(--green);}
+/* Drug table */
+.drug-row{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 14px;border-bottom:1px solid #f2f2f7;gap:10px;}
+.drug-row:last-child{border-bottom:none;}
+.drug-name{font-size:13px;font-weight:600;color:#1c1c1e;}
+.drug-dose{font-size:12px;color:#555;text-align:right;flex:1;max-width:55%;}
+/* Info boxes */
+.info-box{background:var(--blue-light);border-radius:12px;padding:12px 14px;}
+.info-box p{font-size:13px;line-height:1.55;color:#1a1a2e;}
+/* No results */
+.no-res{text-align:center;padding:60px 20px;color:#aaa;}
+.no-res .icon{font-size:48px;display:block;margin-bottom:12px;}
+/* Floating olmc */
+.olmc-btn{position:fixed;bottom:20px;right:16px;background:var(--red);color:#fff;border:none;border-radius:50px;padding:11px 18px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(192,57,43,.45);z-index:200;display:flex;align-items:center;gap:6px;}
+/* Stroke scorer button */
+.score-stroke-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--purple);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:14px;}
+/* Stroke calculator screen */
+#stroke-calc{display:none;flex-direction:column;min-height:100vh;}
+.sc-header{background:var(--purple);color:#fff;padding:16px 16px 12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.sc-header-row{display:flex;align-items:center;gap:10px;}
+.sc-title{font-size:17px;font-weight:700;}
+.sc-sub{font-size:11px;opacity:.85;margin-top:2px;}
+.sc-body{flex:1;padding:14px 14px 80px;background:#f2f2f7;}
+.sc-tabs{display:flex;background:#fff;border-bottom:1px solid #e0e0e0;}
+.sc-tab{flex:1;padding:11px 4px;font-size:12px;font-weight:600;color:#888;cursor:pointer;border-bottom:3px solid transparent;text-align:center;transition:all .15s;}
+.sc-tab.on{color:var(--purple);border-bottom-color:var(--purple);}
+.sc-panel{display:none;padding:14px 0 0;}
+.sc-panel.on{display:block;}
+/* Question blocks */
+.qb{background:#fff;border-radius:12px;margin-bottom:10px;overflow:hidden;border:1px solid #f0f0f0;}
+.qb-head{padding:10px 13px 7px;border-bottom:1px solid #f5f5f5;}
+.qb-label{font-size:13px;font-weight:600;color:#1c1c1e;}
+.qb-cat{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;margin-left:6px;}
+.qb-cat.motor{background:#e8f0fe;color:#1a73e8;}
+.qb-cat.cortical{background:var(--purple-light);color:var(--purple);}
+.qb-instr{font-size:11.5px;color:#888;margin-top:3px;line-height:1.45;}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:8px 13px;cursor:pointer;border-bottom:1px solid #f5f5f5;transition:background .1s;}
+.opt:last-child{border-bottom:none;}
+.opt:active{background:#f9f9f9;}
+.opt-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid #ccc;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.opt-dot.sel{border-color:var(--purple);background:var(--purple);}
+.opt-dot.sel::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;}
+.opt-body{flex:1;}
+.opt-desc{font-size:12.5px;color:#1c1c1e;line-height:1.4;}
+.opt-pts{font-size:11px;color:#aaa;margin-top:2px;}
+/* Score result */
+.sc-result{background:#fff;border-radius:12px;padding:14px;margin-top:4px;}
+.sc-score-row{display:flex;align-items:baseline;gap:6px;margin-bottom:2px;}
+.sc-score-big{font-size:42px;font-weight:700;line-height:1;}
+.sc-score-den{font-size:16px;color:#888;}
+.sc-score-lbl{font-size:12px;color:#888;margin-bottom:8px;}
+.sc-verdict{border-radius:8px;padding:10px 12px;font-size:12.5px;line-height:1.5;}
+.sv-red{background:var(--red-light);color:var(--red);}
+.sv-amber{background:var(--amber-light);color:var(--amber);}
+.sv-green{background:var(--green-light);color:var(--green);}
+.sv-blue{background:var(--blue-light);color:var(--blue);}
+.sc-progress{height:5px;background:#eee;border-radius:3px;margin:6px 0 3px;overflow:hidden;}
+.sc-prog-fill{height:100%;border-radius:3px;background:var(--purple);transition:width .3s;}
+/* Cortical toggle */
+.cortical-row{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:11px 13px;margin-bottom:10px;}
+.ctoggle{width:42px;height:24px;border-radius:12px;border:1.5px solid #ccc;background:#fff;cursor:pointer;position:relative;flex-shrink:0;transition:background .15s;}
+.ctoggle.on{background:var(--purple);border-color:var(--purple);}
+.ctoggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.ctoggle.on::after{left:19px;}
+.ctoggle-text{font-size:12.5px;color:#1c1c1e;line-height:1.4;flex:1;}
+/* BE FAST */
+.befast-card{background:#fff;border-radius:12px;margin-bottom:10px;overflow:hidden;border:1px solid #f0f0f0;}
+.befast-hdr{padding:10px 13px 7px;border-bottom:1px solid #f5f5f5;font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;}
+.bf-row{display:flex;align-items:flex-start;gap:10px;padding:8px 13px;cursor:pointer;border-bottom:1px solid #f5f5f5;transition:background .1s;}
+.bf-row:last-child{border-bottom:none;}
+.bf-row:active{background:#f9f9f9;}
+.bf-box{width:22px;height:22px;border-radius:6px;border:1.5px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .12s;font-size:13px;}
+.bf-box.on{background:var(--purple);border-color:var(--purple);color:#fff;}
+.bf-letter{font-size:14px;font-weight:700;color:var(--purple);width:15px;flex-shrink:0;}
+.bf-text{font-size:12px;color:#1c1c1e;line-height:1.4;flex:1;}
+.befast-pos{background:var(--red-light);color:var(--red);border-radius:8px;padding:9px 12px;font-size:12.5px;margin:8px 13px 10px;}
+/* Reset btn */
+.sc-reset{width:100%;padding:10px;font-size:13px;font-weight:500;border:1px solid #ddd;border-radius:10px;background:#fff;color:#888;cursor:pointer;margin-top:10px;}
+/* County picker buttons */
+.county-pick-btn{display:flex;flex-direction:column;align-items:flex-start;width:100%;background:#fff;border:1.5px solid #e0e0e0;border-radius:13px;padding:14px 16px;cursor:pointer;text-align:left;transition:all .12s;}
+.county-pick-btn:active{background:#f5f5f5;transform:scale(.98);}
+</style>
+</head>
+<body>
+
+<!-- HOME SCREEN -->
+<div id="home">
+  <div class="app-header">
+    <div class="header-top">
+      <div>
+        <h1>🚑 HSF EMS Protocols</h1>
+        <p>Hatzalah South Florida · REV. 02/2025</p>
+      </div>
+    </div>
+    <div class="search-bar">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Search protocols, drugs, conditions..." autocomplete="off">
+    </div>
+  </div>
+  <div class="tabs-wrap" id="tabsWrap"></div>
+  <div class="proto-list" id="protoList"></div>
+</div>
+
+<!-- DETAIL SCREEN -->
+<div id="detail">
+  <div class="app-header">
+    <div class="header-top">
+      <button class="back-btn" id="backBtn">&#8592;</button>
+      <div id="detailHeaderText"></div>
+    </div>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<!-- STROKE CALCULATOR SCREEN -->
+<div id="stroke-calc">
+  <div class="sc-header">
+    <div class="sc-header-row">
+      <button class="back-btn" id="scBackBtn">&#8592;</button>
+      <div>
+        <div class="sc-title">&#x1F9E0; Stroke Scale Calculator</div>
+        <div class="sc-sub" id="sc-header-sub">Step 1 of 3 — Cincinnati Screen</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:5px;margin-top:10px;padding-bottom:4px;">
+      <div style="height:4px;border-radius:2px;flex:1;background:#fff;opacity:1;" id="sdot1"></div>
+      <div style="height:4px;border-radius:2px;flex:1;background:#fff;opacity:.3;" id="sdot2"></div>
+      <div style="height:4px;border-radius:2px;flex:1;background:#fff;opacity:.3;" id="sdot3"></div>
+    </div>
+  </div>
+  <div class="sc-body">
+
+    <!-- STEP 1: Cincinnati -->
+    <div id="sc-step1">
+      <div style="font-size:11.5px;color:#888;margin-bottom:12px;">Initial screen — all counties. Score all 3 items. Any abnormal finding confirms stroke and triggers the county-specific scale.</div>
+      <div id="sc-cinn-qs"></div>
+      <div id="sc-cinn-res" style="display:none;margin-top:10px;"></div>
+      <button class="sc-reset" style="margin-top:10px;" onclick="scFullReset()">&#x21BA; Start over</button>
+    </div>
+
+    <!-- STEP 2: County picker -->
+    <div id="sc-step2" style="display:none;">
+      <div style="background:#fdecea;border-radius:12px;padding:12px 14px;margin-bottom:16px;border-left:4px solid #c0392b;">
+        <div style="font-size:13px;font-weight:700;color:#c0392b;margin-bottom:4px;">&#x1F6A8; Stroke Alert Confirmed</div>
+        <div style="font-size:12px;color:#c0392b;line-height:1.5;" id="sc-cinn-summary"></div>
+      </div>
+      <div style="font-size:14px;font-weight:700;color:#1c1c1e;margin-bottom:4px;">Which county are you in?</div>
+      <div style="font-size:11.5px;color:#888;margin-bottom:14px;">The correct stroke scale will load automatically.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="county-pick-btn" onclick="scPickCounty('broward')">
+          <div style="font-size:15px;font-weight:700;color:#1c1c1e;">Broward County</div>
+          <div style="font-size:11px;color:#888;margin-top:2px;">&#x2192; RACE+ Scale (score 0&#x2013;9)</div>
+        </button>
+        <button class="county-pick-btn" onclick="scPickCounty('palmbeach')">
+          <div style="font-size:15px;font-weight:700;color:#1c1c1e;">Palm Beach County</div>
+          <div style="font-size:11px;color:#888;margin-top:2px;">&#x2192; RACE+ Scale (score 0&#x2013;9)</div>
+        </button>
+        <button class="county-pick-btn" onclick="scPickCounty('miamidade')">
+          <div style="font-size:15px;font-weight:700;color:#1c1c1e;">Miami-Dade County</div>
+          <div style="font-size:11px;color:#888;margin-top:2px;">&#x2192; FAST-ED Scale (score 0&#x2013;9)</div>
+        </button>
+      </div>
+      <button class="sc-reset" style="margin-top:14px;" onclick="scFullReset()">&#x21BA; Start over</button>
+    </div>
+
+    <!-- STEP 3a: RACE+ -->
+    <div id="sc-step3-race" style="display:none;">
+      <div style="background:#fdecea;border-radius:10px;padding:10px 13px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;">&#x1F6A8;</span>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#c0392b;">Stroke Alert Active</div>
+          <div style="font-size:11px;color:#c0392b;" id="sc-race-county-label"></div>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:#888;margin-bottom:10px;">Score all 6 items. If cortical signs are present (Aphasia or Agnosia &gt; 0), toggle the switch below to add "+" to the total.</div>
+      <div id="sc-race-qs"></div>
+      <div class="cortical-row">
+        <div class="ctoggle" id="sc-cortical" onclick="scToggleCortical()"></div>
+        <div class="ctoggle-text"><strong>Cortical signs present</strong><br><span style="font-size:11px;color:#aaa;">Aphasia or Agnosia &gt; 0 scored above — appends "+" to total</span></div>
+      </div>
+      <div class="sc-result" id="sc-race-res"></div>
+      <button class="sc-reset" style="margin-top:10px;" onclick="scFullReset()">&#x21BA; Start over</button>
+    </div>
+
+    <!-- STEP 3b: FAST-ED -->
+    <div id="sc-step3-fasted" style="display:none;">
+      <div style="background:#fdecea;border-radius:10px;padding:10px 13px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;">&#x1F6A8;</span>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#c0392b;">Stroke Alert Active</div>
+          <div style="font-size:11px;color:#c0392b;">Miami-Dade County &#xB7; FAST-ED Scale</div>
+        </div>
+      </div>
+      <div class="befast-card">
+        <div class="befast-hdr">Step A — BE FAST screen</div>
+        <div class="bf-row" onclick="scToggleBF('b')"><div class="bf-box" id="scbf-b"></div><div class="bf-letter">B</div><div class="bf-text"><strong>Balance</strong> &#x2014; bilateral finger-to-nose/heel-to-shin; sudden loss of balance, coordination, or dizziness</div></div>
+        <div class="bf-row" onclick="scToggleBF('e')"><div class="bf-box" id="scbf-e"></div><div class="bf-letter">E</div><div class="bf-text"><strong>Eyes</strong> &#x2014; 4-quadrant visual field; trouble seeing out of one/both eyes or sudden double vision</div></div>
+        <div class="bf-row" onclick="scToggleBF('f')"><div class="bf-box" id="scbf-f"></div><div class="bf-letter">F</div><div class="bf-text"><strong>Face</strong> &#x2014; ask to smile or show teeth; uneven, sudden drooping or numbness on one side</div></div>
+        <div class="bf-row" onclick="scToggleBF('a')"><div class="bf-box" id="scbf-a"></div><div class="bf-letter">A</div><div class="bf-text"><strong>Arms</strong> &#x2014; raise and extend palms up; sudden numbness/weakness or one arm drifts</div></div>
+        <div class="bf-row" onclick="scToggleBF('s')"><div class="bf-box" id="scbf-s"></div><div class="bf-letter">S</div><div class="bf-text"><strong>Speech</strong> &#x2014; "You can't teach an old dog new tricks"; slurred, confused, or unable to speak</div></div>
+        <div id="sc-bf-result" style="display:none;padding:0 13px 10px;"></div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:1px solid #f0f0f0;overflow:hidden;margin-bottom:10px;">
+        <div class="befast-hdr">Step B &#x2014; FAST-ED score</div>
+        <div id="sc-fasted-qs"></div>
+      </div>
+      <div class="sc-result" id="sc-fasted-res" style="display:none;"></div>
+      <button class="sc-reset" style="margin-top:10px;" onclick="scFullReset()">&#x21BA; Start over</button>
+    </div>
+
+  </div>
+</div>
+<button class="olmc-btn" id="olmcBtn">📞 OLMC (305) 990-8950</button>
+
+<script>
+const PROTOCOLS = [
+{id:'pt-assess',num:1,name:'Patient Assessment',cat:'general',icon:'🩺',color:'#455a64',bg:'#eceff1',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · AVPU · GCS · SAMPLE · OPQRST',tags:['AVPU','GCS','SAMPLE','OPQRST','DNRO','BGL'],
+sections:[
+{title:'Mental Status (AVPU)',type:'steps',items:['Alert: Patient is awake','Verbal: Responds only to verbal stimuli','Pain: Responds only to painful stimuli','Unresponsive: Does not respond to any stimuli','Determine orientation: Self, Place, Time, Situation','Assess GCS (Eye 1-4, Verbal 1-5, Motor 1-6)']},
+{title:'AMS Mnemonic — AEIOU-TIPS',type:'alert',items:[
+{t:'info',text:'<strong>A</strong>lcohol · <strong>E</strong>pilepsy · <strong>I</strong>nsulin (Glucose) · <strong>O</strong>verdose/Oxygenation · <strong>U</strong>remia (Kidney)'},
+{t:'info',text:'<strong>T</strong>rauma · <strong>I</strong>nfection (Sepsis) · <strong>P</strong>sychiatric · <strong>S</strong>troke/Shock'}]},
+{title:'Vital Signs',type:'steps',items:['Pulse (rate, rhythm, quality)','Respirations (rate, quality)','Skin (color, condition, temperature)','Blood Pressure (manual if abnormal)','BGL · Temperature · SpO2 · Pupils','ALL patients: minimum 2 sets of vitals','Priority 2 patients: vitals every 5 minutes','BP before and after every medication']},
+{title:'SAMPLE History',type:'steps',items:['Signs & Symptoms','Allergies','Medications (prescribed, OTC, or not prescribed)','Past Medical History (patient & family)','Last Oral Intake','Events Preceding']},
+{title:'OPQRSTA Pain History',type:'steps',items:['Onset: Sudden or gradual?','Palliative: What makes it better?','Provoke: What makes it worse?','Quality: Pressure, squeezing, aching, dull, sharp?','Radiation: Does pain radiate? Where?','Severity: 0-10 scale (Faces scale for peds)','Time: When did it begin?','Associated: Other signs and symptoms?']},
+{title:'DNRO — Florida',type:'alert',items:[
+{t:'warn',text:'<strong>Valid Florida DNRO:</strong> DH Form 1896 on YELLOW paper, signed, with "DO NOT RESUSCITATE ORDER" across the top.'},
+{t:'danger',text:'Contact Medical Control immediately if DNR is presented. Verify patient identity via photo ID or witness.'}]},
+{title:'BGL Requirements',type:'steps',items:['All Priority 1 and 2 patients','Any Priority 3 with: diabetes, general weakness, lightheadedness, dizziness, poisoning, stroke']},
+]},
+
+{id:'allergic-adult',num:6,name:'Allergic Reaction Adult',cat:'medical',icon:'⚠️',color:'#d84315',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'Anaphylaxis · Epinephrine · DuoNeb · Benadryl',tags:['Epinephrine','DuoNeb','Benadryl','Solu-Medrol','Anaphylaxis'],
+sections:[
+{title:'Recognition',type:'alert',items:[
+{t:'warn',text:'<strong>Signs:</strong> Urticaria (hives), airway swelling, respiratory distress, bronchospasm, tongue/lip/facial swelling, wheezing, stridor, loss of radial pulse, cyanosis, hypotension, AMS, tachycardia, abdominal pain/N/V.'},
+{t:'info',text:'Identify allergen source (insect, food, medications). Anaphylaxis = respiratory or cardiac compromise OR 2+ body systems involved.'}]},
+{title:'All Providers — Adult',type:'steps',items:['ABCs and vital signs','Airway management and appropriate oxygen therapy','If respiratory/cardiac compromise or 2+ systems: Request ALS (Hatzalah or 1099)','<strong>EPINEPHRINE 1:1,000 (1mg/mL):</strong> 0.3mg (0.3mL) IM lateral thigh. May repeat ×1 in 5 min. Do NOT give within 5 min of Epi-pen.','<strong>DuoNeb:</strong> Ipratropium Bromide 0.02% 2.5mL + Albuterol Sulfate 0.083% 3mL nebulized. Additional doses: contact OLMC (305) 990-8950.']},
+{title:'ALS Assist',type:'steps',items:['Begin cardiac monitoring','12-lead EKG','Establish IV access']},
+{title:'Paramedic',type:'steps',items:['Advanced airway management as needed','For MILD urticaria only — <strong>Benadryl 50mg IV/IO/IM</strong> over 2 min (dilute in 9mL NS)','<strong>Solu-Medrol 125mg</strong> IV/IO/IM/PO over 2 min. OR Decadron 10mg IV/IO/IM/PO. (Use Solu-Medrol for diabetic patients)','<strong>Normal Saline 1L IV/IO bolus</strong> — may repeat ×1 to maintain SBP >90 (caution: CHF, CHD, renal failure)','Consider RaceEPI for continued wheezing/stridor','For signs of SHOCK: Repeat Epi 0.3mg ×2 prn; consider IV vasopressors (Protocol 70)','Vitals every 5 minutes · Transport']},
+{title:'Medications Summary',type:'drugs',items:[
+{name:'Epinephrine 1:1,000',dose:'0.3mg (0.3mL) IM lateral thigh; repeat ×1 in 5 min'},
+{name:'DuoNeb (Albuterol + Ipratropium)',dose:'Full dose nebulized; for additional doses contact OLMC'},
+{name:'Diphenhydramine (Benadryl)',dose:'50mg IV/IO/IM over 2 min (dilute in 9mL NS)'},
+{name:'Methylprednisolone (Solu-Medrol)',dose:'125mg IV/IO/IM/PO over 2 min'},
+{name:'Dexamethasone (Decadron)',dose:'10mg IV/IO/IM/PO over 2 min (not for diabetics)'},
+{name:'Normal Saline',dose:'1L IV/IO bolus; may repeat ×1 for SBP <90'},
+]}]},
+
+{id:'allergic-peds',num:7,name:'Allergic Reaction Pediatric',cat:'medical',icon:'⚠️',color:'#d84315',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'Peds Anaphylaxis · Weight-based Epi · DuoNeb',tags:['Epinephrine','Benadryl','Pediatric','Anaphylaxis'],
+sections:[
+{title:'Pediatric Epinephrine Dosing',type:'alert',items:[
+{t:'warn',text:'<strong>&lt;15kg:</strong> Epi 0.01mg/kg IM lateral thigh, max single dose 0.15mg'},
+{t:'warn',text:'<strong>15–30kg:</strong> Epi 0.15mg IM'},
+{t:'warn',text:'<strong>&gt;30kg:</strong> Epi 0.3mg IM'},
+{t:'info',text:'May repeat ×1 in 5 minutes. Do NOT give within 5 min of Epi-pen.'}]},
+{title:'All Providers',type:'steps',items:['ABCs and vital signs','Airway management and O2 therapy','If respiratory/cardiac compromise or 2+ systems: Request ALS','Epinephrine IM per weight-based dosing above','<strong>DuoNeb:</strong> Children <6 yrs: Ipratropium 1.25mL + Albuterol 3mL neb. Children ≥6 yrs: Ipratropium 2.5mL + Albuterol 3mL neb.']},
+{title:'Paramedic',type:'steps',items:['Advanced airway management as needed','For MILD urticaria — <strong>Benadryl 1mg/kg IV/IO/IM</strong> max 50mg over 2 min (dilute 9mL NS; contact OLMC if Benadryl given in last 2h)','<strong>Solu-Medrol 2mg/kg IV/IO/IM/PO</strong> max 125mg. OR Decadron 0.6mg/kg max 10mg.','<strong>NS 20mL/kg IV bolus</strong>: maintain SBP >70+(2×age) for 1–10 yr; >90 for >10 yr. Assess lung sounds Q 250mL.','For SHOCK: Repeat Epi 0.01mg/kg ×2 (max 0.3mg); consider vasopressors (Protocol 70)']},
+{title:'Medications Summary',type:'drugs',items:[
+{name:'Epinephrine 1:1,000',dose:'Weight-based IM (see above)'},
+{name:'Diphenhydramine (Benadryl)',dose:'1mg/kg IV/IO/IM max 50mg over 2 min'},
+{name:'Methylprednisolone (Solu-Medrol)',dose:'2mg/kg IV/IO/IM/PO max 125mg'},
+{name:'Dexamethasone (Decadron)',dose:'0.6mg/kg IV/IO/IM/PO max 10mg'},
+{name:'Normal Saline',dose:'20mL/kg IV bolus for age-appropriate hypotension'},
+]}]},
+
+{id:'ams',num:8,name:'Altered Mental Status',cat:'medical',icon:'🧠',color:'#6a1b9a',bg:'#f3e5f5',level:'all',levelLabel:'All Levels',
+summary:'AEIOU-TIPS · BGL · Airway · ALS',tags:['AEIOU-TIPS','BGL','Glucose','Naloxone'],
+sections:[
+{title:'All Providers',type:'steps',items:['ABCs and vital signs','Airway management and O2 therapy','Obtain BGL — if <70: go to Diabetic Emergencies (Protocol 9)','Request ALS assistance (Hatzalah or 1099)','Consider underlying causes via AEIOU-TIPS — see appropriate protocol','If pupils constricted: consider Opioid/Narcotic Overdose (Protocol 38)','Do NOT administer oral solutions to unconscious patients or head injury patients']},
+{title:'AEIOU-TIPS Causes',type:'alert',items:[
+{t:'info',text:'<strong>A</strong>lcohol · <strong>E</strong>pilepsy · <strong>I</strong>nsulin (Hypo/Hyperglycemia) · <strong>O</strong>verdose/Oxygenation · <strong>U</strong>remia (Kidney Failure)'},
+{t:'info',text:'<strong>T</strong>rauma · <strong>I</strong>nfection (Sepsis) · <strong>P</strong>sychiatric · <strong>S</strong>troke/Shock'}]}]},
+
+{id:'diabetes',num:9,name:'Diabetic Emergencies',cat:'medical',icon:'💉',color:'#2e7d32',bg:'#e8f5e9',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · Hypo/Hyperglycemia · DKA',tags:['BGL','Oral Glucose','D50','D10','Glucagon','DKA'],
+sections:[
+{title:'Recognition',type:'alert',items:[
+{t:'warn',text:'<strong>Hypoglycemia:</strong> AMS, slurred speech, dilated pupils, seizures, coma, irritability.'},
+{t:'info',text:'<strong>Hyperglycemia/DKA:</strong> N/V, abdominal pain, general weakness, Kussmaul respirations, AMS, hypotension, tachycardia, acetone breath.'},
+{t:'danger',text:'Diabetic patients on oral hypoglycemics (Glyburide, Glimepiride, Glipizide) or long-acting insulin must ALWAYS be transported if treated.'}]},
+{title:'All Providers',type:'steps',items:['ABCs and vital signs · Airway management','Obtain BGL','<strong>Hypoglycemia:</strong> BGL <70mg/dL → Oral glucose 15g PO if conscious and able to swallow. May repeat ×1.','<strong>Hyperglycemia:</strong> BGL >300mg/dL → Consider ALS.','Consider ALS assistance']},
+{title:'ALS Assist',type:'steps',items:['Cardiac monitoring · 12-lead EKG · IV access']},
+{title:'Paramedic — ADULT',type:'steps',items:['Advanced airway as needed','If no IV: Glucagon 1mg IM/IN','<strong>HYPOGLYCEMIA (BGL <70):</strong> D10 250mL IV/IO rapid bolus, OR D50 25g (50mL) + 20mL NS flush. Retest in 10 min. May repeat ×1.','<strong>HYPERGLYCEMIA/DKA (BGL >300 with S&S):</strong> NS 1L IV/IO, assess lung sounds and BP frequently. May repeat ×1.']},
+{title:'Paramedic — PEDIATRIC',type:'steps',items:['<strong>HYPOGLYCEMIA (BGL <60):</strong> Oral glucose 15g if conscious (not <2 yrs). D10 5mL/kg IV (max 100mL) OR D25% 2mL/kg. Retest in 10 min.','<strong>HYPERGLYCEMIA/DKA (BGL >300):</strong> NS 20mL/kg IV/IO. May repeat ×2.']},
+{title:'Medications',type:'drugs',items:[
+{name:'Oral Glucose Gel',dose:'15g PO if conscious and able to swallow (not <2 yr peds)'},
+{name:'Glucagon',dose:'1mg IM/IN (adult & peds) if no IV access'},
+{name:'Dextrose 10% (D10)',dose:'Adult: 250mL IV/IO rapid | Peds: 5mL/kg (max 100mL)'},
+{name:'Dextrose 50% (D50)',dose:'Adult: 25g (50mL) IV followed by 20mL NS flush'},
+{name:'Dextrose 25%',dose:'Peds: 2mL/kg IV'},
+{name:'Normal Saline (Hyperglycemia)',dose:'Adult: 1L IV/IO | Peds: 20mL/kg IV/IO'},
+]}]},
+
+{id:'resp-adult',num:14,name:'Respiratory Distress Adult',cat:'airway',icon:'🫁',color:'#1565c0',bg:'#e3f2fd',level:'all',levelLabel:'All Levels',
+summary:'COPD · Asthma · DuoNeb · CPAP · Magnesium',tags:['DuoNeb','CPAP','Albuterol','Solu-Medrol','Magnesium','ETCO2'],
+sections:[
+{title:'Key Assessment Points',type:'alert',items:[
+{t:'warn',text:'Immediate airway management for: AMS, tachypnea, cyanosis, RR <10 or >24, SpO2 <95%, EtCO2 outside 35-45mmHg.'},
+{t:'danger',text:'<strong>Silent chest = respiratory failure is IMMINENT.</strong>'},
+{t:'info',text:'COPD: maintain SpO2 90–92%. All others: maintain SpO2 >95%. Do NOT withhold O2 for any patient in respiratory distress.'}]},
+{title:'All Providers',type:'steps',items:['ABCs and vital signs','Airway management · Position of comfort','Administer O2 — maintain SpO2 >95% (COPD: 90–92%)','Request ALS','<strong>For COPD/Asthma bronchospasm:</strong> DuoNeb — Ipratropium 0.02% 2.5mL + Albuterol 0.083% 3mL nebulized over 5–15 min. Additional doses: OLMC.','Check BGL — if <70: Hypoglycemia Protocol 9']},
+{title:'ALS Assist',type:'steps',items:['Cardiac monitoring · ETCO2 · SpO2','12-lead EKG · IV access','<strong>CPAP 10 cm H2O</strong> for moderate/severe distress (COPD, asthma, pneumonia)']},
+{title:'CPAP Contraindications',type:'alert',items:[
+{t:'danger',text:'SBP <90 · No spontaneous respirations · Decreased LOC (lethargic) · Weight <30kg · Immediately remove CPAP if asthmatic worsens.'}]},
+{title:'Paramedic',type:'steps',items:['Advanced airway as needed · Repeat DuoNeb as needed','Additional IV access','<strong>Solu-Medrol 125mg IV/IO/IM/PO</strong> over 2 min (or Dexamethasone 10mg)','<strong>Magnesium Sulfate 2g</strong> in 50mL NS over 10 min IV/IO (CI: 2nd/3rd degree heart blocks; caution: hypotension with rapid infusion)','<strong>Severe asthma not responding:</strong> Epinephrine 1:1,000 0.3mg IM lateral thigh. May repeat ×2 in 5-min intervals.','Assist ventilation via BVM or advanced airway as needed']},
+{title:'Medications',type:'drugs',items:[
+{name:'DuoNeb (Albuterol + Ipratropium)',dose:'Ipratropium 2.5mL + Albuterol 3mL neb (adult full dose)'},
+{name:'Methylprednisolone (Solu-Medrol)',dose:'125mg IV/IO/IM/PO over 2 min'},
+{name:'Dexamethasone',dose:'10mg IV/IO/IM/PO over 2 min'},
+{name:'Magnesium Sulfate',dose:'2g in 50mL NS over 10 min IV/IO'},
+{name:'Epinephrine 1:1,000',dose:'0.3mg IM × 3 (severe asthma only), 5 min apart'},
+]}]},
+
+{id:'resp-peds',num:15,name:'Respiratory Distress Pediatric',cat:'airway',icon:'🫁',color:'#1565c0',bg:'#e3f2fd',level:'all',levelLabel:'All Levels',
+summary:'Asthma · Bronchiolitis · Croup · Epiglottitis',tags:['DuoNeb','Albuterol','Croup','Epiglottitis','RaceEpi','Dexamethasone'],
+sections:[
+{title:'Key Points',type:'alert',items:[
+{t:'info',text:'<strong>Bronchiolitis (&lt;2 yrs, first wheezing episode):</strong> No Albuterol, Ipratropium, or steroids. Use humidified O2, IV fluids for severe dehydration, ventilatory support as needed.'},
+{t:'danger',text:'<strong>Silent chest = respiratory failure is IMMINENT.</strong>'}]},
+{title:'All Providers',type:'steps',items:['ABCs and vital signs · Airway · Position of comfort','O2 — maintain SpO2 >95% (COPD/known: 90–92%)','Request ALS','<strong>Asthma/COPD bronchospasm:</strong> <6 yr: Ipratropium 1.25mL + Albuterol 3mL neb. ≥6 yr: Ipratropium 2.5mL + Albuterol 3mL neb. Additional: OLMC.','<strong>Severe asthma not responding:</strong> Epi 1:1,000 — <15kg: 0.01mg/kg IM (max 0.15mg); 15–30kg: 0.15mg IM; >30kg: 0.3mg IM. Repeat ×2 in 5 min.','BGL — if <70: Hypoglycemia Protocol 9']},
+{title:'Paramedic',type:'steps',items:['Advanced airway · Cardiac monitoring · ETCO2 · Repeat DuoNeb','<strong>Solu-Medrol 2mg/kg IV/IO/IM/PO</strong> max 125mg (or Dexamethasone 0.6mg/kg max 10mg)','<strong>Magnesium Sulfate 40mg/kg</strong> in 50mL NS/D5W over 25 min (CI: 2nd/3rd degree heart blocks)','<strong>Croup/Epiglottitis:</strong> Dexamethasone 0.6mg/kg max 10mg. If stridor: RaceEpi mixed 1:1 with NS, nebulized. OR Epinephrine 1:1,000 3mg (3mL) via neb.']},
+{title:'Croup vs Epiglottitis',type:'alert',items:[
+{t:'info',text:'<strong>Croup:</strong> Usually <3 yrs old. Sick for days. Low-grade fever. Not toxic appearing. Barky cough.'},
+{t:'danger',text:'<strong>Epiglottitis:</strong> Usually 3–6 yrs. Sudden onset. HIGH fever. Poor impression. Drooling. Tripod position. Do NOT attempt OPA/NPA placement — transport emergently to Comprehensive Pediatric ED.'}]},
+]},
+
+{id:'seizure',num:16,name:'Seizure',cat:'neuro',icon:'⚡',color:'#6a1b9a',bg:'#f3e5f5',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · Versed · Status Epilepticus',tags:['Versed','Midazolam','Status Epilepticus','BGL','Febrile'],
+sections:[
+{title:'Key Information',type:'alert',items:[
+{t:'warn',text:'<strong>Status epilepticus</strong> is a critical emergency. Anticonvulsant should be given ASAP, no later than 5 min after seizure onset.'},
+{t:'info',text:'If IV already established: use IV route. If not: intranasal (IN) preferred over IM.'},
+{t:'info',text:'Consider causes: VITAMINS D — Vascular, Infection, Trauma, Autoimmune, Metabolic, Idiopathic, Neoplasm, Syndromes, Drugs.'}]},
+{title:'All Providers',type:'steps',items:['Protect patient from injury — do NOT forcibly restrain','ABCs and vital signs · Position to maintain airway patency','Do NOT place OPA during active convulsions · NPA acceptable','BGL — if <70: Hypoglycemia Protocol 9','Request ALS']},
+{title:'ALS Assist',type:'steps',items:['Cardiac monitoring · ETCO2 · SpO2','Consider 12-lead EKG · IV access']},
+{title:'Paramedic — ADULT (Actively Seizing)',type:'steps',items:['<strong>VERSED (Midazolam) 5mg IV/IO</strong> OR <strong>10mg IN/IM</strong>. May repeat in 5 min if seizure continues. Contact OLMC (305) 990-8950 for further dosing.','Caution: Hypotension (relative CI). Monitor for respiratory depression.','Advanced airway as needed · ETCO2 monitoring','NS KVO IV/IO · Maintain SBP >90']},
+{title:'Paramedic — PEDIATRIC',type:'steps:',items:['<strong>Febrile seizure:</strong> Remove clothing for active cooling. No wet towels. No ice packs.','<strong>VERSED:</strong> 0.1mg/kg IV/IO (max 5mg) OR 0.2mg/kg IN/IM (max 5mg). May repeat in 5 min. Contact OLMC for further dosing.','<strong>For hypotension:</strong> NS 20mL/kg IV — maintain SBP >70+(2×age) for 1–10 yr; >90 for >10 yr.']},
+{title:'Medications',type:'drugs',items:[
+{name:'Midazolam (Versed) — Adult',dose:'5mg IV/IO OR 10mg IN/IM; repeat in 5 min'},
+{name:'Midazolam (Versed) — Peds',dose:'0.1mg/kg IV/IO (max 5mg) OR 0.2mg/kg IN/IM (max 5mg)'},
+]}]},
+
+{id:'sepsis',num:17,name:'Sepsis',cat:'medical',icon:'🦠',color:'#e65100',bg:'#fff3e0',level:'all',levelLabel:'All Levels',
+summary:'SIRS · Sepsis Alert · Fluid Resuscitation · Vasopressors',tags:['SIRS','Sepsis Alert','NS','Vasopressors','EtCO2'],
+sections:[
+{title:'SIRS Criteria — Adult',type:'alert',items:[
+{t:'warn',text:'<strong>HR &gt;90 bpm</strong> AND/OR <strong>RR &gt;20 bpm</strong> AND/OR <strong>SBP &lt;90 mmHg</strong> AND/OR <strong>Temp &gt;38°C (100.4°F) or &lt;36°C (96.8°F)</strong>'}]},
+{title:'Sepsis Alert Criteria (notify hospital)',type:'alert',items:[
+{t:'danger',text:'Patient ≥18 yrs + suspected infection + ≥2 of: Hypotension (SBP <90 or MAP <65), AMS (GCS ≤14), Tachypnea (RR >20), Tachycardia (HR >90), Temp >38°C or <36°C, EtCO2 <25.'},
+{t:'warn',text:'Transport ALL Sepsis Alerts as Priority 2.'}]},
+{title:'Sources to Consider',type:'alert',items:[
+{t:'info',text:'UTI, Pneumonia, Infected wounds/lines, Antibiotics + diarrhea, Recent surgery/procedure, AMS + poor oral intake (elderly), Bed sores, cellulitis, immobility.'}]},
+{title:'All Providers',type:'steps',items:['ABCs and vital signs','Airway management · High-flow O2 (maintain SpO2 >95%)','Request ALS','BGL — if <70: Hypoglycemia Protocol 9']},
+{title:'Paramedic',type:'steps',items:['Advanced airway · Intravascular access · 12-lead EKG','<strong>NS 1L IV/IO</strong> — may repeat ×1 to maintain SBP >90 or MAP ≥65. (Caution: CHD, CHF, renal failure)','If hypotensive after fluids: start vasopressors — see Protocol 70','Monitor EtCO2 and SpO2 during fluid administration']},
+{title:'WARNING',type:'alert',items:[
+{t:'danger',text:'Once sepsis identified: prevent hypotension — even one episode significantly increases morbidity and mortality. Pneumonia patients with rales STILL require IV fluids.'}]},
+{title:'Medications',type:'drugs',items:[
+{name:'Normal Saline',dose:'1L IV/IO; may repeat ×1 (SBP >90 or MAP ≥65)'},
+{name:'Vasopressors',dose:'See Protocol 70 for Epi drip / Levophed / Dopamine'},
+]}]},
+
+{id:'stroke',num:18,name:'Stroke',cat:'neuro',icon:'🧠',color:'#6a1b9a',bg:'#f3e5f5',level:'all',levelLabel:'All Levels',
+summary:'Cincinnati Scale · RACE · FAST-ED · LKW · Stroke Alert',tags:['LKW','Cincinnati','RACE','FAST-ED','Stroke Alert','Comprehensive Stroke Center'],
+sections:[
+{title:'CRITICAL — Last Known Well Time',type:'alert',items:[
+{t:'danger',text:'You MUST document "Last Known Normal" (LKW) time precisely. All witnessed strokes within 24 hours and all unwitnessed strokes are Stroke Alerts. Witnessed >24 hours are NOT stroke alerts.'},
+{t:'warn',text:'<strong>Transport to COMPREHENSIVE STROKE CENTER ONLY</strong> — may mean passing a primary stroke center. Notify hospital with LKW, RACE+/FAST-ED score, GCS, BGL, BP, blood thinners.'}]},
+{title:'Cincinnati Stroke Scale',type:'cincinnati'},
+{title:'All Providers',type:'steps',items:['ABCs and vital signs · Airway management','O2 2L/min NC if SpO2 <95%; increase to maintain SpO2 ≥95%','BGL — if <70: Hypoglycemia Protocol 9','Request ALS','Obtain/document RACE+ (Broward/Palm Beach) or FAST-ED (Miami-Dade) score','Document: Last Known Well, witness name and phone number, patient medications','Position: 30° head elevation (supine if tolerated). Diagnosed ICH or SOB: 30° elevation required.']},
+{title:'ALS Assist',type:'steps',items:['Cardiac monitoring · 12-lead EKG','IV access — 2 large-bore IVs 18G bilateral AC if possible']},
+{title:'Paramedic — Adult',type:'steps',items:['Advanced airway as needed','2 large-bore IVs 18G bilateral AC — DO NOT delay transport for IV access','12-lead EKG','NS KVO IV/IO regardless of BP','BP >220/120: Contact OLMC. Consider Labetalol 10mg IV over 2 min. CAUTION: Do NOT aggressively treat HTN in stroke.']},
+{title:'Pediatric Transport',type:'alert',items:[
+{t:'info',text:'Pediatric Stroke Alerts: transport to Joe DiMaggio Children\'s Hospital, JMH Holtz Children\'s Hospital, or St. Mary\'s Children\'s Hospital.'}]},
+]},
+
+{id:'afib',num:19,name:'Rapid A-Fib / A-Flutter',cat:'cardiac',icon:'💓',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Adult · Rate >150 bpm · Cardioversion · Cardizem · Amiodarone',tags:['Cardizem','Cardioversion','Amiodarone','12-lead','WPW','Metoprolol'],
+sections:[
+{title:'Definition',type:'alert',items:[
+{t:'info',text:'Rapid atrial fibrillation and atrial flutter are defined as ventricular rates <strong>greater than 150 bpm</strong>. Consider treatment for HR 120–150 with symptoms.'}]},
+{title:'Rhythm Recognition',type:'rhythm'},
+{title:'Protocol Steps',type:'numbered',items:[
+{subhdr:'All Providers'},
+{n:1,text:'ABCs and vital signs'},
+{n:2,text:'Airway management and appropriate oxygen therapy'},
+{n:3,text:'Request ALS assistance (Hatzalah or 1099)'},
+{n:4,text:'If the patient complains of chest pain follow <strong>Protocol 22</strong>'},
+{subhdr:'ALS Assist'},
+{n:5,text:'Begin cardiac monitoring'},
+{n:6,text:'Perform and record 12-lead EKG'},
+{n:7,text:'Establish IV access'},
+{subhdr:'Paramedic'},
+{n:8,text:'Begin cardiac monitoring'},
+{n:9,text:'Perform, record and evaluate 12-lead EKG <strong>prior to any other interventions</strong>'},
+{n:10,text:'Establish intravascular access'},
+{n:11,text:'Monitor and document vital signs every 5 minutes'},
+{n:12,text:'If concern for imminent decompensation, place pads on the patient’s bare chest for possibly synchronized cardioversion if needed'},
+{warn:'<strong>WARNING:</strong> Cardioversion of unstable A-fib/A-flutter may put the patient at high risk for embolic stroke.<br>If patient presents with signs and symptoms of heart failure in the setting of unstable Atrial Fibrillation, consider immediate synchronized <strong>CARDIOVERSION</strong> and avoid IV fluids.',cls:'danger'},
+{subhdr:'Stable A-Fib/Flutter — Paramedic'},
+{n:13,text:'<strong>Normal Saline 1L IV</strong> — may repeat ×1 for total of 2L. <em>Precaution: particular care must be taken in the presence of significant CHD, CHF, and renal failure patients</em>'},
+{n:14,text:'<strong>Cardizem (Diltiazem) 0.25mg/kg IV push over 2 minutes</strong> (max dose 20mg). If HR remains >130 bpm after 5 minutes, may repeat second dose 0.25mg/kg IV over 2 min (max 20mg)'},
+{warn:'<strong>Cardizem Contraindications:</strong> Hypotension · Wide complex QRS (unless due to RBBB or LBBB) · History of WPW · Sick sinus syndrome · Heart blocks<br><strong>Cardizem Precautions:</strong> Use with caution in liver/kidney disease, CHF, AV conduction abnormalities, hypotension. Weight-based dose should be reduced to half; consider pre-treating with 1g Calcium Chloride slow IVP to counteract hypotensive effects of diltiazem.',cls:'warn'},
+{subhdr:'If hypotension develops post-Cardizem administration'},
+{n:15,text:'Consider administering <strong>Calcium Chloride 1g slow IV push</strong> and 1 liter of Normal Saline'},
+{n:16,text:'<strong>Metoprolol 5mg IV push over 5 minutes</strong> — repeat every 5 minutes for a total of 15mg. <em>Consider metoprolol if patient is already on a beta blocker.</em> Do NOT give Metoprolol for SBP less than 120 mmHg — contact OLMC (305) 990-8950 with any concerns'},
+{n:17,text:'<strong>Amiodarone 150mg IV infusion over 10 minutes</strong> — mix 150mg in 100mL D5W. Utilizing a 10 gtts/mL drip set = ~1.5 gtts/sec'},
+{subhdr:'Unstable Atrial Fibrillation/Atrial Flutter'},
+{warn:'<strong>Unstable</strong> is defined as a dysrhythmia associated with one or more of the following: Hypotension (SBP <90 or MAP <65), Altered mental status, chest pain, or Shortness of Breath.',cls:'info'},
+{n:18,text:'Consider procedural sedation (Protocol 41) — <strong>do NOT delay cardioversion for sedation</strong>'},
+{n:19,text:'Cardiovert with Lifepak recommended: <strong>100J → 200J → 300J → 360J</strong>'},
+{n:20,text:'Repeat 12-lead EKG after any rhythm change — do NOT delay transport'},
+{n:21,text:'For hypotension after fluid resuscitation consider <strong>Calcium Chloride 500mg IVP over 2 minutes</strong>. For sustained hypotension consider vasopressors — see Protocol 70'},
+]},
+{title:'Medications Summary',type:'drugs',items:[
+{name:'Normal Saline',dose:'1L IV; repeat ×1 (total 2L). Caution: CHF, CHD, renal failure'},
+{name:'Cardizem (Diltiazem)',dose:'0.25mg/kg IV over 2 min (max 20mg); repeat ×1 in 5 min if HR >130'},
+{name:'Calcium Chloride',dose:'1g slow IVP (pre-treat or post-Cardizem hypotension)'},
+{name:'Metoprolol',dose:'5mg IV over 5 min; repeat Q5min to total 15mg (SBP >120 only)'},
+{name:'Amiodarone',dose:'150mg in 100mL D5W over 10 min (~1.5 gtts/sec)'},
+{name:'Cardioversion (unstable)',dose:'Do not delay for sedation — 100J → 200J → 300J → 360J'},
+]}]},
+
+{id:'bradycardia',num:20,name:'Bradycardia Adult',cat:'cardiac',icon:'💓',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Adult · Atropine · Pacing · Epinephrine',tags:['Atropine','Pacing','Epinephrine','Dopamine'],
+sections:[
+{title:'All Providers',type:'steps',items:['ABCs and vital signs · Airway and O2','Request ALS','If hemodynamically unstable: immediate ALS']},
+{title:'Paramedic — Stable (No S&S)',type:'steps',items:['Cardiac monitoring · 12-lead EKG · IV access · Vitals Q5min','Identify and treat cause']},
+{title:'Paramedic — Unstable (AMS, Hypotension, Chest Pain, Acute HF)',type:'steps',items:['<strong>ATROPINE 0.5mg IV/IO</strong> — may repeat Q3–5min. Max total dose 3mg.','If no IV: Atropine 0.5mg IV while establishing access','If no improvement or Atropine not indicated: <strong>Transcutaneous Pacing (TCP)</strong>','For hypotension with TCP: <strong>Epinephrine drip or Dopamine drip</strong> — see Protocol 70']},
+{title:'Medications',type:'drugs',items:[
+{name:'Atropine',dose:'0.5mg IV/IO; repeat Q3-5min; max 3mg'},
+{name:'Epinephrine drip',dose:'See vasopressor chart Protocol 70'},
+{name:'Dopamine drip',dose:'See vasopressor chart Protocol 70'},
+]}]},
+
+{id:'stemi',num:22,name:'Chest Pain / STEMI',cat:'cardiac',icon:'❤️',color:'#c0392b',bg:'#fdecea',level:'p',levelLabel:'Paramedic',
+summary:'Adult · 12-Lead · STEMI Alert · Aspirin · NTG',tags:['12-Lead','STEMI','Aspirin','Nitroglycerin','Fentanyl','Heparin'],
+sections:[
+{title:'Critical',type:'alert',items:[
+{t:'danger',text:'12-lead EKG within 10 minutes of patient contact. STEMI = ST elevation ≥1mm in ≥2 contiguous leads. Activate STEMI Alert immediately.'},
+{t:'warn',text:'Obtain right-sided leads (V4R) if inferior STEMI to assess for RV infarct.'}]},
+{title:'All Providers',type:'steps',items:['ABCs and vital signs · Airway and O2','Request ALS · If cardiac compromise: immediate ALS','Position of comfort']},
+{title:'ALS Assist',type:'steps',items:['Cardiac monitoring · 12-lead EKG · IV access']},
+{title:'Paramedic',type:'steps',items:['Cardiac monitoring · 12-lead EKG (prior to any intervention)','Establish IV access (×2 large bore)','Transmit 12-lead to hospital · Activate STEMI Alert','<strong>Aspirin 324mg PO (chewed)</strong>','<strong>Nitroglycerin 0.4mg SL</strong> — may repeat Q5min (see contraindications below)','Pain management per Protocol 42 (Fentanyl or Morphine)','Vitals Q5min · Transport rapidly']},
+{title:'NTG Contraindications',type:'alert',items:[
+{t:'danger',text:'SBP &lt;90 · HR &lt;50 or &gt;100 · Suspected RV infarct (inferior STEMI — check right-sided leads first) · PDE5 inhibitor (Viagra/Cialis/Levitra) within 24–48h · Do NOT give NTG for cardiogenic shock.'}]},
+{title:'Medications',type:'drugs',items:[
+{name:'Aspirin',dose:'324mg PO chewed (first dose)'},
+{name:'Nitroglycerin',dose:'0.4mg SL Q5min (SBP >90, no CI)'},
+{name:'Fentanyl/Morphine',dose:'Per Pain Management Protocol 42'},
+]}]},
+
+{id:'cardiac-arrest-adult',num:30,name:'Cardiac Arrest Adult',cat:'cardiac',icon:'🫀',color:'#c0392b',bg:'#fdecea',level:'all',levelLabel:'All Levels',
+summary:'VF/VT/PEA/Asystole · AED · LUCAS · ROSC · DNR',tags:['CPR','AED','LUCAS','Epinephrine','Amiodarone','H&Ts','ROSC','DNRO'],
+sections:[
+{title:'All Providers — BLS',type:'steps',items:['Begin CPR per AHA: 30:2 (or continuous with NC 10–15 LPM if OPA/NPA placed) · Suction prn','AED on as soon as available — minimal interruptions (<10 sec)','Follow AED prompts · Continue CPR · Re-analyze Q2min · Shock as indicated','Apply LUCAS (minimal interruptions)','Request ALS immediately']},
+{title:'Paramedic',type:'steps',items:['Transition from AED to ALS monitor after AED analysis','<strong>VF/pVT: Defibrillate 360J</strong> → continue CPR immediately','Establish IV or IO access','<strong>Epinephrine 1mg IV/IO</strong> (10mL of 1:10,000) — repeat Q3–5min until ROSC. Give during compressions; flush ≥10mL after each med.','Advanced airway (iGel preferred; ETI for angioedema or airway-cause arrest) — once secured: continuous compressions, 1 breath Q6sec, ETCO2 required','<strong>VF/pVT persists: Amiodarone 300mg IV/IO</strong> OR Lidocaine 100mg IV/IO','<strong>Recurring VF/pVT: Amiodarone 150mg IV/IO</strong> OR Lidocaine 50mg IV/IO','BGL — if <60: D50 1 amp or D10 250mL wide open','Crystalloid fluids 1L (max 2L)']},
+{title:'H\'s and T\'s — Reversible Causes',type:'alert',items:[
+{t:'ok',text:'<strong>H\'s:</strong> Hypovolemia (fluids) · Hypoxia (O2) · H+ Acidosis (Na Bicarb) · Hypothermia (warm) · Hypoglycemia (dextrose) · Hyperkalemia (Ca Chloride + Na Bicarb)'},
+{t:'ok',text:'<strong>T\'s:</strong> Tension Pneumo (needle decompression, Protocol 68) · Tamponade (fluids 20mL/kg + pressor) · Toxins (see specific protocols) · Thrombosis (PE/coronary)'}]},
+{title:'Special Medications',type:'drugs',items:[
+{name:'Epinephrine 1:10,000',dose:'1mg (10mL) IV/IO Q3-5min until ROSC'},
+{name:'Amiodarone (VF/pVT)',dose:'300mg IV/IO first dose; 150mg second dose'},
+{name:'Lidocaine (alt. to Amiodarone)',dose:'100mg IV/IO first; 50mg second'},
+{name:'Calcium Chloride',dose:'1g IV for suspected hyperkalemia or CCB OD'},
+{name:'Sodium Bicarbonate',dose:'1-2 amps IV for TCA OD, salicylates, hyperkalemia'},
+{name:'Magnesium Sulfate',dose:'2g IV diluted (Torsades, asthmaticus, hypomagnesemia)'},
+]},
+{title:'ROSC Management',type:'steps',items:['Ventilate: goal ETCO2 35–45mmHg, SpO2 ≥94%','NS infusion to maintain MAP >65 or SBP >90 — vasopressors as needed (Protocol 70)','12-lead EKG — transmit to hospital regardless of STEMI','For bradycardia: Protocol 20. For sedation: Midazolam 2–4mg Q2–3min prn.','Transport all ROSC to cardiac center.']},
+{title:'Termination of CPR Criteria',type:'alert',items:[
+{t:'danger',text:'May terminate after ≥20 min ALS, advanced airway confirmed, IV/IO meds given, persistent asystole (ETCO2 <10mmHg), no reversible causes, family agreeable. Contact Medical Control for order.'},
+{t:'warn',text:'Suspected hypothermia or initial shockable rhythm (VF/VT) = full ALS and transport required.'}]},
+]},
+
+{id:'cardiac-arrest-peds',num:31,name:'Cardiac Arrest Pediatric',cat:'cardiac',icon:'🫀',color:'#c0392b',bg:'#fdecea',level:'all',levelLabel:'All Levels',
+summary:'Peds · AED · Weight-based · Broselow',tags:['CPR','AED','Epinephrine','Amiodarone','IO','Broselow','Peds'],
+sections:[
+{title:'Key Differences from Adult',type:'alert',items:[
+{t:'warn',text:'Most pediatric cardiac arrests are SECONDARY (hypoxia/respiratory). Prioritize airway and oxygenation.'},
+{t:'info',text:'1 rescuer: 30:2. 2+ rescuers: 15:2. Use Broselow tape for weights and drug doses. LUCAS only for patients ≥12 years old.'},
+{t:'info',text:'Place padding under shoulders (not head) to open airway. Do NOT hyperextend neck.'}]},
+{title:'All Providers',type:'steps',items:['CPR per AHA (30:2 single rescuer; 15:2 two+ rescuers)','OPA/NPA placement · Padding under shoulders','Suction prn · Request ALS immediately','AED — apply appropriately-sized pads. If only adult pads: anterior-posterior placement.','Re-analyze Q2min · Shock as indicated · Rotate compressors Q2min','Obtain BGL']},
+{title:'Paramedic',type:'steps',items:['IV or IO access (IO first-line in critical peds)','<strong>VF/pVT: Defibrillate 2J/kg</strong> initial → continue CPR','<strong>Epinephrine 0.01mg/kg IV/IO</strong> (max 1mg) Q3–5min until ROSC','<strong>VF/pVT persists: Amiodarone 5mg/kg IV/IO</strong> (max 300mg) OR Lidocaine 1mg/kg','Advanced airway: use Broselow-sized iGel/ETT','Continuous compressions once airway secured; 1 breath Q6sec; ETCO2 required']},
+{title:'Medications',type:'drugs',items:[
+{name:'Epinephrine 1:10,000',dose:'0.01mg/kg IV/IO Q3-5min (max 1mg/dose)'},
+{name:'Amiodarone (VF/pVT)',dose:'5mg/kg IV/IO (max 300mg first dose)'},
+{name:'Lidocaine (alternative)',dose:'1mg/kg IV (max 100mg)'},
+{name:'Defibrillation',dose:'2J/kg initial; 4J/kg subsequent'},
+]}]},
+
+{id:'overdose-narcotic',num:38,name:'Narcotic Overdose',cat:'tox',icon:'💊',color:'#455a64',bg:'#eceff1',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · Naloxone · Respiratory Depression',tags:['Naloxone','Narcan','IN','IV','IM','Respiratory Depression'],
+sections:[
+{title:'Indication for Naloxone',type:'alert',items:[
+{t:'danger',text:'Administer Naloxone when opioid OD is SUSPECTED <strong>AND</strong> respiratory rate is INADEQUATE (&lt;11 breaths/minute). Anticipate vomiting — have suction ready.'}]},
+{title:'All Providers',type:'steps',items:['ABCs and vital signs · Airway management · O2','<strong>Naloxone IN (All Providers):</strong> Adult: 4mg IN — may repeat Q5min until RR adequate or SpO2 >92%. Peds: 4mg IN prefilled OR 1mg IN — may repeat Q5min.','Request ALS · Assess for shock']},
+{title:'Paramedic',type:'steps',items:['Advanced airway · IV access · 12-lead EKG','<strong>Naloxone IV/IO/IM:</strong> 1–2mg — repeat Q2min prn until spontaneous breathing or SpO2 >92%','ALS transport']},
+{title:'Medications',type:'drugs',items:[
+{name:'Naloxone (Narcan) — Adult IN',dose:'4mg IN; repeat Q5min prn'},
+{name:'Naloxone — Pediatric IN',dose:'4mg prefilled IN OR 1mg IN; repeat Q5min prn'},
+{name:'Naloxone IV/IO/IM (Paramedic)',dose:'1–2mg; repeat Q2min until adequate respirations'},
+]}]},
+
+{id:'trauma-general',num:49,name:'General Trauma',cat:'trauma',icon:'🩹',color:'#bf360c',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · Hemorrhage Control · Permissive Hypotension · TXA',tags:['Tourniquet','TXA','Needle-D','Hemorrhage','Permissive Hypotension'],
+sections:[
+{title:'Key Principles',type:'alert',items:[
+{t:'danger',text:'Keep on-scene times <10 minutes for major trauma. Rapid transport is the priority.'},
+{t:'warn',text:'<strong>Permissive hypotension:</strong> maintain SBP 80–90 mmHg (just enough to maintain peripheral pulses) to avoid worsening hemorrhage.'},
+{t:'info',text:'<strong>TXA within 3 hours</strong> of injury onset only.'}]},
+{title:'All Providers',type:'steps',items:['ABCs and vital signs · Airway and O2','Control all major external bleeding (direct pressure, tourniquet 2–3" proximal)','Maintain body temperature — hypothermia is a significant risk','Request ALS']},
+{title:'Paramedic',type:'steps',items:['Bilateral large-bore IV access','NS permissive hypotension — Adult: 500mL IV/IO, repeat ×1 prn. Peds: 20mL/kg IV/IO, repeat ×2 prn.','Consider vasopressors for sustained hypotension (Protocol 70)','Rapid transport — minimize scene time']},
+{title:'Medications',type:'drugs',items:[
+{name:'Tranexamic Acid (TXA)',dose:'Adult: 1g IV over 10 min (within 3h of injury)'},
+{name:'Normal Saline',dose:'Adult: 500mL IV/IO (permissive hypotension) | Peds: 20mL/kg IV/IO'},
+{name:'Vasopressors',dose:'See Protocol 70 if sustained hypotension'},
+]}]},
+
+{id:'burns',num:53,name:'Burn Injuries',cat:'trauma',icon:'🔥',color:'#bf360c',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'1st/2nd/3rd Degree · TBSA · Burn Center · Airway',tags:['TBSA','Burn Center','Airway','Proparacaine','NS','CO'],
+sections:[
+{title:'Burn Classification',type:'alert',items:[
+{t:'info',text:'<strong>1st Degree:</strong> Epidermis only — red, painful.'},
+{t:'warn',text:'<strong>2nd Degree:</strong> Epidermis + dermis — blistering.'},
+{t:'danger',text:'<strong>3rd Degree:</strong> Full thickness — thick, dry, white/leathery, regardless of skin color.'}]},
+{title:'Transport to Burn Center',type:'alert',items:[
+{t:'danger',text:'2nd degree burns: Adults ≥15% TBSA, Peds ≥10% TBSA. Full thickness (3rd degree) any age. Burns to face, hands, feet, genitalia, perineum, major joints. Electrical, chemical, or respiratory burns.'},
+{t:'warn',text:'Burns + trauma involvement: transport to Level 1 Trauma Center (Ryder Trauma or Kendall Regional).'}]},
+{title:'All Providers',type:'steps',items:['Scene safety · Decontamination for chemical/HAZMAT burns','ABCs and vital signs · High-flow O2 via NRB if airway involvement','<strong>STOP burning process:</strong> irrigate with room-temp water or NS for 2 min. NO ice directly on burns.','Determine TBSA % · Remove non-adherent clothing · Remove rings/constrictors','Do NOT remove tar or adhered clothing','Maintain body temperature — hypothermia is a major risk','Place bandages between burned surfaces in fingers/toes','Request ALS early — do NOT wait']},
+{title:'Paramedic',type:'steps',items:['Advanced airway for respiratory involvement (singed nasal hairs, hoarse voice, stridor, carbonaceous sputum, facial burns). Smaller ETT (0.5–1.0mm less) may be needed due to swelling.','Cardiac monitoring · SpCO monitoring','<strong>NS: Adult 500mL IV/IO; Peds 10mL/kg IV/IO (max 250mL)</strong> regardless of BP','For chemical eye burns: Proparacaine 0.5% 1–2 gtts topically OR Tetracaine 0.5% 1–2 gtts — consult OLMC first.','Consider CO and/or Cyanide Poisoning Protocol']},
+{title:'Medications',type:'drugs',items:[
+{name:'Normal Saline',dose:'Adult: 500mL IV/IO | Peds: 10mL/kg IV/IO (max 250mL)'},
+{name:'Proparacaine 0.5% (eye burns)',dose:'1-2 gtts topically; consult OLMC'},
+{name:'Tetracaine 0.5% (eye burns alt)',dose:'1-2 gtts topically; consult OLMC'},
+]}]},
+
+{id:'ob-emergency',num:61,name:'OB Emergencies',cat:'ob',icon:'🤰',color:'#880e4f',bg:'#fce4ec',level:'all',levelLabel:'All Levels',
+summary:'Ectopic · Abruption · Previa · Field Delivery',tags:['Obstetric','Ectopic Pregnancy','Abruption','Previa','OB Kit','Left Lateral'],
+sections:[
+{title:'Key Physiologic Changes',type:'alert',items:[
+{t:'info',text:'HR is normally elevated in pregnancy (up to 15–20 bpm above normal in 3rd trimester). SBP/DBP drop 5–15 mmHg in 2nd trimester.'},
+{t:'danger',text:'Pregnant patients may lose 30–35% blood volume before signs/symptoms of shock appear. Treat early.'},
+{t:'warn',text:'Patients ≥20 weeks gestation: most hospitals will evaluate on labor floor, not ED (except Jackson). Patients 16–20 weeks are still OB emergencies.'}]},
+{title:'All Providers',type:'steps',items:['ABCs and vital signs · Airway and O2 (SpO2 >95%)','Document any water broke or bleeding: time, color, volume','Check for crowning if contractions with urge to push or bowel sensation — prepare OB kit','Obtain OB history: GRAVIDA, PARA, LMP, due date, gestational diabetes, narcotic use, contraction frequency/duration','If delivery not imminent: left lateral recumbent position','Assess and treat for shock (consider supine hypotension syndrome)','For active bleeding: pad loosely over vagina to estimate blood loss. DO NOT pack vagina.','Request ALS if delivery imminent · Give advanced report EARLY to ER']},
+{title:'Complication Alerts',type:'alert',items:[
+{t:'danger',text:'<strong>Ectopic Pregnancy:</strong> Sudden severe lower abdominal pain in fertile female = emergency regardless of other signs. Referred pain to left shoulder. Cullen\'s/Grey Turner\'s signs. Treat for shock.'},
+{t:'danger',text:'<strong>Placenta Abruptio:</strong> Sudden severe abdominal pain, painful contractions, dark red vaginal bleeding, shock.'},
+{t:'warn',text:'<strong>Placenta/Vasa Previa:</strong> Painless vaginal bleeding (bright red). Treat for shock.'},
+{t:'warn',text:'<strong>Uterine Rupture:</strong> Sudden intense abdominal pain + vaginal bleeding.'}]},
+{title:'SBP >160 or DBP >110',type:'alert',items:[
+{t:'danger',text:'Request ALS for possible pre-eclampsia — see Protocol 62 (Pre-Eclampsia/Eclampsia).'}]},
+{title:'Paramedic',type:'steps',items:['Bilateral large-bore IV access','NS IV/IO (permissive — only enough to maintain peripheral pulses). 1L, may repeat ×1.','Transport rapidly to OB/GYN facility — see Hospital Matrix Protocol 71']},
+]},
+
+{id:'preeclampsia',num:62,name:'Pre-Eclampsia / Eclampsia',cat:'ob',icon:'🤰',color:'#880e4f',bg:'#fce4ec',level:'p',levelLabel:'Paramedic',
+summary:'BP >160/110 · Seizures · Magnesium Sulfate',tags:['Magnesium Sulfate','Eclampsia','Seizure','HTN','Postpartum'],
+sections:[
+{title:'Recognition',type:'alert',items:[
+{t:'danger',text:'<strong>PRE-ECLAMPSIA with Severe Features:</strong> New onset persistent SBP >160 OR DBP >110 after 20 weeks, with AMS, visual disturbances, headache, or pulmonary edema.'},
+{t:'danger',text:'<strong>ECLAMPSIA:</strong> Severe pre-eclampsia features + Seizures OR Coma. Either condition can occur up to 6 weeks POSTPARTUM.'}]},
+{title:'Paramedic Treatment',type:'steps',items:['ABCs and vital signs · Airway · O2','Establish IV access','<strong>Magnesium Sulfate 4–6g IV</strong> over 20 minutes for eclampsia/seizures','Monitor for respiratory depression with Mag (have Calcium Gluconate/Chloride available as antidote)','For persistent seizures: Versed per Seizure Protocol 16','Rapid transport']},
+{title:'Medications',type:'drugs',items:[
+{name:'Magnesium Sulfate',dose:'4-6g IV over 20 minutes (eclampsia/seizures)'},
+{name:'Calcium Gluconate/Chloride',dose:'Antidote for Mag toxicity if respiratory depression'},
+]}]},
+
+{id:'hemorrhagic-shock',num:59,name:'Hemorrhagic Shock',cat:'trauma',icon:'🩸',color:'#bf360c',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'Adult & Pediatric · Permissive Hypotension · Rapid Transport',tags:['Permissive Hypotension','NS','Tourniquet','Vasopressors'],
+sections:[
+{title:'Shock Recognition',type:'alert',items:[
+{t:'warn',text:'<strong>Compensated:</strong> Anxiety, agitation, normotensive, tachycardia, capillary refill normal to delayed.'},
+{t:'danger',text:'<strong>Decompensated:</strong> Decreased LOC, hypotension, peripheral cyanosis, delayed capillary refill, severe tachycardia, inequality of central/distal pulses.'}]},
+{title:'All Providers',type:'steps',items:['ABCs and vitals · Airway and O2','Maintain body temperature · Blankets','Control all major external bleeding','Request ALS']},
+{title:'Paramedic',type:'steps',items:['Bilateral large-bore IV access','<strong>NS Permissive Hypotension:</strong> Adult 500mL IV/IO — maintain SBP 80–90 (peripheral pulses). May repeat ×1. Peds 20mL/kg IV/IO. May repeat ×2.','Consider vasopressors (Protocol 70)','Rapid transport — on-scene time <10 minutes']},
+]},
+
+{id:'tca-od',num:39,name:'TCA Overdose',cat:'tox',icon:'💊',color:'#455a64',bg:'#eceff1',level:'p',levelLabel:'Paramedic',
+summary:'Tricyclic Antidepressants · Sodium Bicarb · Wide QRS',tags:['Sodium Bicarb','Wide QRS','TCA','Anticholinergic','Seizure'],
+sections:[
+{title:'Signs & Symptoms — "MAD HOT BLIND"',type:'alert',items:[
+{t:'warn',text:'<strong>MAD</strong> as a hatter (AMS) · <strong>RED</strong> as a beet (skin flushing) · <strong>HOT</strong> as hell (hyperthermia) · <strong>DRY</strong> as a bone (urinary retention, no sweat) · <strong>BLIND</strong> as a bat (dilated pupils)'},
+{t:'danger',text:'Also: tachycardia, coma, seizures, cardiac arrhythmia, acidosis. TCA causes death via lethal arrhythmias and refractory hypotension.'},
+{t:'info',text:'Common TCAs: Amitriptyline (Elavil), Desipramine (Norpramin), Doxepin (Sinequan), Nortriptyline (Pamelor). Call Poison Control: 1-800-222-1222.'}]},
+{title:'EKG — What to Look For',type:'alert',items:[
+{t:'danger',text:'Tachycardia, Wide QRS, long QT, Right Axis Deviation, Wide R-wave in aVR, Terminal R-wave in aVR. QRS >100ms = seizure risk. QRS >160ms = ventricular arrhythmia risk.'},
+{t:'warn',text:'GET EKG EARLY — cardiac toxicity develops early. Treatment indicated when QRS >0.10 sec (2.5 small boxes).'}]},
+{title:'All Providers',type:'steps',items:['Scene safety · ABCs and vitals · Airway and O2','BGL — if <70: Hypoglycemia Protocol 9','Request ALS · Call Poison Control (time permitting)']},
+{title:'Paramedic',type:'steps',items:['Advanced airway · 12-lead EKG EARLY · IV access','<strong>Adult Seizures: Versed 5mg IV or 10mg IM</strong>','<strong>QRS >0.10 sec (Adult): Sodium Bicarb 100mEq (2 amps) IV over 2 min</strong>. If no change in 5 min: 50mEq IV. Max total 150mEq. Stop when QRS <0.10 sec.','For hypotension: NS 500mL IV — may repeat ×1.','<strong>Pediatric QRS >0.10 sec: NaBicarb 1mEq/kg IV over 2 min</strong>, max 50mEq/dose. May repeat ×2 in 5 min. Max 150mEq. Stop when QRS <0.08 sec.','Peds hypotension: NS 20mL/kg IV. Repeat ×2. Contact Poison Control.']},
+{title:'Medications',type:'drugs',items:[
+{name:'Sodium Bicarbonate — Adult',dose:'100mEq (2 amps) IV over 2 min; max 150mEq total'},
+{name:'Sodium Bicarbonate — Peds',dose:'1mEq/kg IV; max 50mEq/dose; max 150mEq total'},
+{name:'Midazolam (Versed) — Seizure',dose:'Adult: 5mg IV or 10mg IM | Peds: 0.1mg/kg IV (max 5mg)'},
+{name:'Normal Saline — Hypotension',dose:'Adult: 500mL IV | Peds: 20mL/kg IV'},
+]}]},
+
+{id:'excited-delirium',num:40,name:'Excited Delirium / Psychosis',cat:'medical',icon:'🚨',color:'#6a1b9a',bg:'#f3e5f5',level:'p',levelLabel:'Paramedic',
+summary:'Ketamine · Physical Restraint · Temperature Monitoring',tags:['Ketamine','Versed','Physical Restraint','Excited Delirium'],
+sections:[
+{title:'Key Safety Rules',type:'alert',items:[
+{t:'danger',text:'Restrained patients SHALL NOT be placed in a PRONE position. Keep patient upright/supine to allow adequate ventilation.'},
+{t:'danger',text:'Never compress head or neck. Restrained patients must NOT be left unattended. Frequently monitor vitals, airway, neurovascular status.'},
+{t:'warn',text:'Signs: elevated temperature, nudity, profuse sweating, then sudden "instant tranquility" — monitor for cardiac/respiratory changes.'}]},
+{title:'Paramedic — Violent/Combative/Excited Delirium',type:'steps',items:['Law enforcement must gain physical control first','<strong>KETAMINE 3mg/kg IM</strong> (max 300mg). Or 1mg/kg IV if already in place. May repeat ×1 in 5 min.','After sedation: maintain SpO2 ≥95%, EtCO2 35–45. Obtain IV access. BE PREPARED FOR RESPIRATORY DEPRESSION.','<strong>Special populations (>65, head trauma, <50kg, already sedated): Ketamine 2mg/kg IM</strong> (max 200mg). May repeat ×3 in 5 min.','Obtain temperature early and monitor throughout.']},
+{title:'After Ketamine — If Patient Wakes Up',type:'steps',items:['<strong>Versed (Midazolam) 5mg IV/IO/IN/IM</strong>. May repeat ×1 in 5 min. (CI: hypotension; monitor for respiratory depression.)']},
+{title:'Rapid Cooling (Temp >103°F)',type:'steps',items:['Ice packs to axilla and groin area','Cold Normal Saline (if available): 1L IV/IO. May repeat ×1. (Caution: CHD, CHF, renal failure.)']},
+{title:'Ketamine Side Effects',type:'alert',items:[
+{t:'warn',text:'<strong>Laryngospasm:</strong> High-flow O2, BVM ventilation, consider advanced airway. Usually self-limiting.'},
+{t:'info',text:'<strong>Hypersalivation:</strong> Atropine 0.5mg IV/IO, repeat Q3min, max 3mg. (CI: bradycardia in MI setting.)'}]},
+{title:'Medications',type:'drugs',items:[
+{name:'Ketamine — Standard',dose:'3mg/kg IM (max 300mg) or 1mg/kg IV; repeat ×1 in 5 min'},
+{name:'Ketamine — Special Populations',dose:'2mg/kg IM (max 200mg); repeat ×3 in 5 min'},
+{name:'Midazolam (Versed)',dose:'5mg IV/IO/IN/IM; repeat ×1 in 5 min'},
+{name:'Atropine (hypersalivation)',dose:'0.5mg IV/IO Q3min; max 3mg'},
+]}]},
+
+{id:'spinal',num:54,name:'Spinal Motion Restriction',cat:'trauma',icon:'🦴',color:'#bf360c',bg:'#fbe9e7',level:'all',levelLabel:'All Levels',
+summary:'SIP Quik · C-Collar · No Backboard Required',tags:['C-Collar','SMR','Backboard','Neutral Alignment'],
+sections:[
+{title:'Indications for Spinal Motion Restriction',type:'alert',items:[
+{t:'info',text:'Apply SIP Quik vacuum cervical stabilization if: focal neurologic deficit, pain to neck/back, distracting injury, AMS with concerning MOI, intoxication with concerning MOI.'}]},
+{title:'Key Points',type:'steps',items:['Perform manual Spinal Motion Restriction — use SIP Quik vacuum cervical device when indicated','If C-collar does not fit: rolled towels secured with tape on sides of head/neck','Place patient supine on stretcher — <strong>BACKBOARD IS NOT REQUIRED</strong>','Secure patient with manufacturer approved stretcher straps','Scoop stretcher may be used for patient movement — REMOVE once on stretcher','All obtunded patients: assume spinal injury — most anatomically neutral position possible']},
+{title:'IMPORTANT Notes',type:'alert',items:[
+{t:'warn',text:'THE BACKBOARD DOES NOT PROVIDE SPINAL IMMOBILIZATION. It can be used for extrication/movement only.'},
+{t:'danger',text:'PRONE position is CONTRAINDICATED due to asphyxiation risk. Document and maintain airway if prone position is unavoidable (impalement, etc.).'}]},
+]},
+];
+
+const CATS = [
+{id:'all',label:'All'},
+{id:'cardiac',label:'Cardiac'},
+{id:'airway',label:'Airway'},
+{id:'neuro',label:'Neuro'},
+{id:'medical',label:'Medical'},
+{id:'tox',label:'Tox'},
+{id:'trauma',label:'Trauma'},
+{id:'ob',label:'OB'},
+{id:'general',label:'General'},
+];
+
+let activeCat = 'all';
+let searchTerm = '';
+
+function init() {
+  const tw = document.getElementById('tabsWrap');
+  CATS.forEach(c => {
+    const t = document.createElement('span');
+    t.className = 'tab' + (c.id === 'all' ? ' active' : '');
+    t.textContent = c.label;
+    t.onclick = () => { activeCat = c.id; searchTerm = ''; document.getElementById('searchInput').value = ''; document.querySelectorAll('.tab').forEach(el => el.classList.remove('active')); t.classList.add('active'); renderList(); };
+    tw.appendChild(t);
+  });
+  renderList();
+}
+
+function renderList() {
+  const list = document.getElementById('protoList');
+  const filtered = PROTOCOLS.filter(p => {
+    const catOk = activeCat === 'all' || p.cat === activeCat;
+    const q = searchTerm.toLowerCase();
+    const searchOk = !q || p.name.toLowerCase().includes(q) || p.summary.toLowerCase().includes(q) || p.tags.some(t => t.toLowerCase().includes(q));
+    return catOk && searchOk;
+  });
+  if (!filtered.length) {
+    list.innerHTML = `<div class="no-res"><span class="icon">🔍</span><p>No protocols found for "${searchTerm}"</p></div>`;
+    return;
+  }
+  const catOrder = ['general','cardiac','airway','neuro','medical','tox','trauma','ob'];
+  const grouped = {};
+  filtered.forEach(p => { if (!grouped[p.cat]) grouped[p.cat] = []; grouped[p.cat].push(p); });
+  const catLabels = {general:'General',cardiac:'Cardiac',airway:'Airway',neuro:'Neurological',medical:'Medical',tox:'Toxicology / Overdose',trauma:'Trauma',ob:'Obstetric'};
+  let html = '';
+  catOrder.forEach(cat => {
+    if (!grouped[cat]) return;
+    if (activeCat === 'all' || searchTerm) html += `<div class="section-hdr">${catLabels[cat]}</div>`;
+    grouped[cat].forEach(p => {
+      const badgeClass = p.level === 'p' ? 'badge-p' : p.level === 'emt' ? 'badge-emt' : 'badge-all';
+      html += `<div class="proto-card" onclick="openProtocol('${p.id}')">
+        <div class="proto-icon" style="background:${p.bg}">${p.icon}</div>
+        <div class="proto-info">
+          <div class="proto-name">${p.name}</div>
+          <div class="proto-sub">Protocol ${p.num} · ${p.summary}</div>
+        </div>
+        <span class="proto-badge ${badgeClass}">${p.levelLabel}</span>
+        <span class="chevron">›</span>
+      </div>`;
+    });
+  });
+  list.innerHTML = html;
+}
+
+function openProtocol(id) {
+  const p = PROTOCOLS.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('home').style.display = 'none';
+  const det = document.getElementById('detail');
+  det.style.display = 'flex';
+  det.querySelector('.app-header').style.background = p.color;
+  document.getElementById('detailHeaderText').innerHTML = `<div class="detail-title">${p.name}</div><div class="detail-sub">Protocol ${p.num} · ${p.levelLabel}</div>`;
+  const body = document.getElementById('detailBody');
+  let html = `<div class="detail-tags" style="margin-bottom:14px;">${p.tags.map(t=>`<span class="dtag" style="background:${p.bg};color:${p.color};font-size:11px;padding:3px 9px;border-radius:6px;font-weight:600;">${t}</span>`).join('')}</div>`;
+  p.sections.forEach(sec => {
+    html += `<div class="dsec"><div class="dsec-title">${sec.title}</div>`;
+    if (sec.type === 'steps' || sec.type === 'steps:') {
+      html += `<div class="dsec-card">`;
+      sec.items.forEach((item, i) => {
+        html += `<div class="step-row"><div class="step-num" style="background:${p.color}">${i+1}</div><div class="step-text">${item}</div></div>`;
+      });
+      html += `</div>`;
+    } else if (sec.type === 'alert') {
+      sec.items.forEach(item => {
+        const cls = item.t === 'danger' ? 'alert-danger' : item.t === 'warn' ? 'alert-warn' : item.t === 'ok' ? 'alert-ok' : 'alert-info';
+        html += `<div class="alert-box ${cls}"><p>${item.text}</p></div>`;
+      });
+    } else if (sec.type === 'drugs') {
+      html += `<div class="dsec-card">`;
+      sec.items.forEach(drug => {
+        html += `<div class="drug-row"><div class="drug-name">${drug.name}</div><div class="drug-dose">${drug.dose}</div></div>`;
+      });
+      html += `</div>`;
+    } else if (sec.type === 'cincinnati') {
+      html += `<div id="inline-cinn-widget" class="dsec-card" style="padding:12px 14px;"></div>`;
+    } else if (sec.type === 'rhythm') {
+      html += buildRhythmStrips();
+    } else if (sec.type === 'numbered') {
+      // Continuous numbered list with optional subheaders and inline alerts
+      // items: array of {n:int, text:str} or {subhdr:str} or {warn:str,cls:'danger'|'warn'|'info'}
+      html += `<div class="dsec-card">`;
+      sec.items.forEach(item => {
+        if (item.subhdr) {
+          html += `<div style="padding:7px 14px 5px;font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #f5f5f5;background:#fafafa;">${item.subhdr}</div>`;
+        } else if (item.warn) {
+          const bg = item.cls==='danger'?'#fdecea':item.cls==='warn'?'#fff3e0':'#e8f0fe';
+          const bc = item.cls==='danger'?'#c0392b':item.cls==='warn'?'#e65100':'#1a73e8';
+          html += `<div style="padding:9px 13px;background:${bg};border-left:4px solid ${bc};margin:0;"><p style="font-size:12.5px;line-height:1.5;color:#1c1c1e;">${item.warn}</p></div>`;
+        } else {
+          html += `<div class="step-row"><div class="step-num" style="background:${p.color}">${item.n}</div><div class="step-text">${item.text}</div></div>`;
+        }
+      });
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+  html += `<div style="background:#fff3e0;border-radius:12px;padding:12px 14px;margin-top:8px;"><p style="font-size:11.5px;color:#bf360c;line-height:1.5;"><strong>⚕️ Medical Control:</strong> OLMC (305) 990-8950 · These protocols are for HSF EMS approved Paramedics and EMTs only. These are not a substitute for good clinical judgment. REV. 02/2025</p></div>`;
+  body.innerHTML = html;
+  body.scrollTop = 0;
+  if (id === 'stroke') renderInlineCinn();
+}
+
+document.getElementById('backBtn').onclick = () => {
+  document.getElementById('detail').style.display = 'none';
+  document.getElementById('home').style.display = 'block';
+};
+document.getElementById('scBackBtn').onclick = () => {
+  document.getElementById('stroke-calc').style.display = 'none';
+  document.getElementById('detail').style.display = 'flex';
+  // Re-render inline widget so it reflects any state from the wizard
+  renderInlineCinn();
+};
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchTerm = e.target.value.trim();
+  if (searchTerm) { activeCat = 'all'; document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); document.querySelector('.tab').classList.add('active'); }
+  renderList();
+});
+document.getElementById('olmcBtn').addEventListener('click', () => { window.location.href = 'tel:+13059908950'; });
+
+document.getElementById('backBtn').onclick = () => {
+  document.getElementById('detail').style.display = 'none';
+  document.getElementById('home').style.display = 'block';
+};
+document.getElementById('scBackBtn').onclick = () => {
+  document.getElementById('stroke-calc').style.display = 'none';
+  document.getElementById('detail').style.display = 'flex';
+};
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchTerm = e.target.value.trim();
+  if (searchTerm) { activeCat = 'all'; document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); document.querySelector('.tab').classList.add('active'); }
+  renderList();
+});
+document.getElementById('olmcBtn').addEventListener('click', () => { window.location.href = 'tel:+13059908950'; });
+
+// ── STROKE WIZARD ─────────────────────────────────────────────────────
+const SC_CINN = [
+  {id:'sc_face',   label:'Facial droop',   instr:'Ask the patient to smile or show their teeth.',
+   opts:[{pts:0,desc:'Normal — both sides of face move equally'},{pts:1,desc:'Abnormal — one side does not move well'}]},
+  {id:'sc_arm',    label:'Arm drift',      instr:'Eyes closed — hold both arms out for 10 seconds.',
+   opts:[{pts:0,desc:'Normal — both arms move equally or not at all'},{pts:1,desc:'Abnormal — one arm drifts or does not move at all'}]},
+  {id:'sc_speech', label:'Speech',         instr:'Ask the patient to repeat a simple sentence.',
+   opts:[{pts:0,desc:'Normal — correct words, no slurring'},{pts:1,desc:'Abnormal — slurred, wrong words, or mute'}]},
+];
+
+const SC_RACE = [
+  {id:'sc_rfacial',  label:'Facial palsy',          cat:'Motor',    instr:'Ask the patient to show their teeth: "Smile"',
+   opts:[{pts:0,desc:'Absent — symmetrical movement'},{pts:1,desc:'Mild — slightly asymmetrical'},{pts:2,desc:'Moderate to severe — completely asymmetrical'}]},
+  {id:'sc_rarm',     label:'Arm motor function',    cat:'Motor',    instr:'Extend arm 90° (sitting) or 45° (supine), palms up',
+   opts:[{pts:0,desc:'Normal to mild — arm upheld >10 sec'},{pts:1,desc:'Moderate — arm upheld <10 sec'},{pts:2,desc:'Severe — unable to raise arm against gravity'}]},
+  {id:'sc_rleg',     label:'Leg motor function',    cat:'Motor',    instr:'Extend leg 30° (supine), one leg at a time',
+   opts:[{pts:0,desc:'Normal to mild — leg upheld >5 sec'},{pts:1,desc:'Moderate — leg upheld <5 sec'},{pts:2,desc:'Severe — unable to raise leg against gravity'}]},
+  {id:'sc_rgaze',    label:'Head and gaze deviation',cat:'Cortical', instr:'Eyes deviated or head turning to one side',
+   opts:[{pts:0,desc:'Absent — eyes move to both sides, no head deviation'},{pts:1,desc:'Present — eyes and/or head deviated to one side'}]},
+  {id:'sc_raphasia', label:'Aphasia',               cat:'Cortical', instr:'Follow two verbal orders. Name objects (watch, pen). Repeat "today is a sunny day". Do not count slurring.',
+   opts:[{pts:0,desc:'Normal — no difficulty with commands or talking'},{pts:1,desc:'Moderate — difficulty with commands OR talking'},{pts:2,desc:'Severe — cannot follow commands AND unable to talk'}]},
+  {id:'sc_ragnosia', label:'Agnosia (neglect)',      cat:'Cortical', instr:'Show weak arm — "Whose arm is this?" / "Can you move your arm?"',
+   opts:[{pts:0,desc:'Normal — recognizes arm and is aware of impairment'},{pts:1,desc:'Moderate — does not recognize arm OR denies impairment'},{pts:2,desc:'Severe — does not recognize arm AND denies impairment'}]},
+];
+
+const SC_FASTED = [
+  {id:'sc_fface',   label:'Facial palsy',    instr:'Ask the patient to show their teeth or smile.',
+   opts:[{pts:0,desc:'Both sides move equally or not at all'},{pts:1,desc:'One side droops or is clearly asymmetric'}]},
+  {id:'sc_farm',    label:'Arm weakness',    instr:'Eyes closed — hold arms out palms up for 10 sec.',
+   opts:[{pts:0,desc:'Both arms up >5 sec or drift equally'},{pts:1,desc:'One arm drifts down in <10 sec'},{pts:2,desc:'One or both arms fall rapidly or no movement at all'}]},
+  {id:'sc_fspeech', label:'Speech changes',  instr:'Expressive: name 3 common items. Receptive: follow simple command ("show me two fingers").',
+   opts:[{pts:0,desc:'Names 2–3 items AND follows simple command'},{pts:1,desc:'Names 0–1 items OR cannot follow command'}]},
+  {id:'sc_feye',    label:'Eye deviation',   instr:'Observe resting eye position and tracking to both sides.',
+   opts:[{pts:0,desc:'No deviation — eyes move equally to both sides'},{pts:1,desc:'Difficulty looking to one side (left or right)'},{pts:2,desc:'Eyes deviated to one side and cannot move to the other'}]},
+  {id:'sc_fdenial', label:'Denial / neglect',instr:'Show affected arm: "Do you feel weakness?" then "Whose arm is this?"',
+   opts:[{pts:0,desc:'Recognizes weakness AND recognizes arm as theirs'},{pts:1,desc:'Does NOT recognize weakness OR does not recognize arm'}]},
+];
+
+const scState = {
+  cinn:   { sc_face:null, sc_arm:null, sc_speech:null },
+  race:   { sc_rfacial:null, sc_rarm:null, sc_rleg:null, sc_rgaze:null, sc_raphasia:null, sc_ragnosia:null, cortical:false },
+  fasted: { sc_fface:null, sc_farm:null, sc_fspeech:null, sc_feye:null, sc_fdenial:null, bf:{b:false,e:false,f:false,a:false,s:false} },
+  county: null,
+};
+
+function openStrokeCalc() {
+  document.getElementById('detail').style.display = 'none';
+  document.getElementById('stroke-calc').style.display = 'flex';
+  scFullReset();
+}
+
+function scSetStep(step) {
+  ['sc-step1','sc-step2','sc-step3-race','sc-step3-fasted'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  const labels = {'1':'Step 1 of 3 - Cincinnati Screen','2':'Step 2 of 3 - Confirm County','3a':'Step 3 of 3 - RACE+ Scale','3b':'Step 3 of 3 - FAST-ED Scale'};
+  document.getElementById('sc-header-sub').textContent = labels[String(step)] || '';
+  const dots = ['sdot1','sdot2','sdot3'];
+  const stepNum = (step === '3a' || step === '3b') ? 3 : parseInt(step);
+  dots.forEach((id, i) => {
+    document.getElementById(id).style.opacity = i < stepNum ? '1' : '.3';
+  });
+  if (step === 1)   document.getElementById('sc-step1').style.display = 'block';
+  if (step === 2)   document.getElementById('sc-step2').style.display = 'block';
+  if (step === '3a') document.getElementById('sc-step3-race').style.display = 'block';
+  if (step === '3b') document.getElementById('sc-step3-fasted').style.display = 'block';
+  document.getElementById('stroke-calc').querySelector('.sc-body').scrollTop = 0;
+}
+
+function scBuildQs(questions, stateObj, containerId) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  c.innerHTML = '';
+  questions.forEach(q => {
+    const val = stateObj[q.id];
+    const catBadge = q.cat ? `<span class="qb-cat ${q.cat.toLowerCase()}">${q.cat}</span>` : '';
+    const optsHtml = q.opts.map(o => `
+      <div class="opt" onclick="scSelect('${containerId}','${q.id}',${o.pts})">
+        <div class="opt-dot${val===o.pts?' sel':''}"></div>
+        <div class="opt-body">
+          <div class="opt-desc">${o.desc}</div>
+          <div class="opt-pts">${o.pts} pt${o.pts!==1?'s':''}</div>
+        </div>
+      </div>`).join('');
+    c.innerHTML += `<div class="qb"><div class="qb-head"><div class="qb-label">${q.label}${catBadge}</div><div class="qb-instr">${q.instr}</div></div>${optsHtml}</div>`;
+  });
+}
+
+function scSelect(containerId, qid, pts) {
+  const tool = containerId === 'sc-cinn-qs' ? 'cinn' : containerId === 'sc-race-qs' ? 'race' : 'fasted';
+  scState[tool][qid] = pts;
+  const questions = tool==='cinn' ? SC_CINN : tool==='race' ? SC_RACE : SC_FASTED;
+  scBuildQs(questions, scState[tool], containerId);
+  if (tool === 'cinn')  scUpdateCinn();
+  else if (tool === 'race')   scUpdateRace();
+  else scUpdateFasted();
+}
+
+function scUpdateCinn() {
+  const s = scState.cinn;
+  const vals = [s.sc_face, s.sc_arm, s.sc_speech];
+  const answered = vals.filter(v => v !== null).length;
+  const abnormal = vals.filter(v => v === 1).length;
+  const res = document.getElementById('sc-cinn-res');
+
+  if (!answered) { res.style.display = 'none'; return; }
+  res.style.display = 'block';
+
+  if (abnormal >= 1 && answered === 3) {
+    // All answered AND positive — show alert + county picker trigger
+    const findings = [];
+    if (s.sc_face === 1)   findings.push('Facial droop');
+    if (s.sc_arm === 1)    findings.push('Arm drift');
+    if (s.sc_speech === 1) findings.push('Speech abnormality');
+    res.innerHTML = `
+      <div style="background:#fdecea;border-radius:12px;padding:13px 14px;border-left:4px solid #c0392b;">
+        <div style="font-size:14px;font-weight:700;color:#c0392b;margin-bottom:5px;">&#x1F6A8; Stroke Alert — Cincinnati Positive</div>
+        <div style="font-size:12.5px;color:#c0392b;line-height:1.5;margin-bottom:10px;">Abnormal: <strong>${findings.join(', ')}</strong>. Activate Stroke Alert immediately. Transport to Comprehensive Stroke Center only.</div>
+        <button onclick="scGotoCounty('${findings.join(', ')}')" style="width:100%;background:#c0392b;color:#fff;border:none;border-radius:9px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;">Select County &#x2192;</button>
+      </div>`;
+  } else if (abnormal >= 1) {
+    // Partially answered but already positive — show interim alert
+    res.innerHTML = `<div class="sc-result"><div class="sc-verdict sv-red"><strong>&#x1F6A8; Abnormal finding detected.</strong> Complete all 3 items, then select your county for the full stroke scale.</div></div>`;
+  } else if (answered === 3) {
+    // All normal
+    res.innerHTML = `<div class="sc-result"><div class="sc-verdict sv-green">&#x2714;&#xFE0F; All 3 findings normal. Cincinnati Stroke Scale negative. Continue clinical assessment.</div></div>`;
+  } else {
+    res.innerHTML = `<div class="sc-result"><div class="sc-verdict sv-blue">Assessment in progress — ${answered}/3 completed.</div></div>`;
+  }
+}
+
+function scGotoCounty(findings) {
+  document.getElementById('sc-cinn-summary').textContent =
+    'Abnormal finding(s): ' + findings + '. Activate Stroke Alert. Select county below for the appropriate scale.';
+  scSetStep(2);
+}
+
+function scPickCounty(county) {
+  scState.county = county;
+  if (county === 'miamidade') {
+    document.getElementById('sc-header-sub').textContent = 'Step 3 of 3 — FAST-ED Scale';
+    scBuildQs(SC_FASTED, scState.fasted, 'sc-fasted-qs');
+    scSetStep('3b');
+  } else {
+    const label = county === 'broward' ? 'Broward County · RACE+ Scale' : 'Palm Beach County · RACE+ Scale';
+    document.getElementById('sc-race-county-label').textContent = label;
+    scBuildQs(SC_RACE, scState.race, 'sc-race-qs');
+    scUpdateRace();
+    scSetStep('3a');
+  }
+}
+
+function scToggleCortical() {
+  scState.race.cortical = !scState.race.cortical;
+  document.getElementById('sc-cortical').classList.toggle('on', scState.race.cortical);
+  scUpdateRace();
+}
+
+function scUpdateRace() {
+  const s = scState.race;
+  const keys = ['sc_rfacial','sc_rarm','sc_rleg','sc_rgaze','sc_raphasia','sc_ragnosia'];
+  const vals = keys.map(k => s[k]);
+  const answered = vals.filter(v => v !== null).length;
+  const total = vals.filter(v => v !== null).reduce((a,b) => a + (b||0), 0);
+  // Cortical signs auto-detected: Gaze (sc_rgaze), Aphasia (sc_raphasia), Agnosia (sc_ragnosia)
+  const corticalAutoPos = (s.sc_rgaze > 0) || (s.sc_raphasia > 0) || (s.sc_ragnosia > 0);
+  const cor = corticalAutoPos || s.cortical;
+  // Sync the toggle visual to reflect auto-detected state
+  const cortEl = document.getElementById('sc-cortical');
+  if (cortEl) cortEl.classList.toggle('on', cor);
+  const res = document.getElementById('sc-race-res');
+  if (!res) return;
+  const pct = Math.round((total/9)*100);
+  const disp = total + (cor ? '+' : '');
+  const col = total > 4 ? '#c0392b' : total >= 2 ? '#e65100' : '#2e7d32';
+  let verdict, vclass;
+  if (!answered)      { verdict='Complete all 6 items to see interpretation.'; vclass='sv-blue'; }
+  else if (answered<6){ verdict='In progress — '+answered+'/6 items scored.'; vclass='sv-blue'; }
+  else if (total>4)   { verdict='<strong>RACE+ Score '+disp+' — High probability of Large Vessel Occlusion (LVO).</strong> Notify Comprehensive Stroke Center with RACE+ score immediately. Activate Cath Lab team.'; vclass='sv-red'; }
+  else if (total>=2)  { verdict='<strong>RACE+ Score '+disp+'</strong> — Moderate. Activate Stroke Alert and transport to Comprehensive Stroke Center.'; vclass='sv-amber'; }
+  else                { verdict='<strong>RACE+ Score '+disp+'</strong> — Lower score. Cincinnati was positive, so Stroke Alert is still active. Transport to Comprehensive Stroke Center.'; vclass='sv-green'; }
+  res.innerHTML=`<div class="sc-score-row"><span class="sc-score-big" style="color:${col}">${total}</span><span class="sc-score-den">/9${cor?'<span style="font-size:22px;font-weight:700;color:var(--purple)"> +</span>':''}</span></div><div class="sc-score-lbl">RACE+ Scale — ${answered}/6 scored${cor?' · Cortical signs present':''}</div><div class="sc-progress"><div class="sc-prog-fill" style="width:${pct}%;background:${col}"></div></div><div class="sc-verdict ${vclass}" style="margin-top:8px;">${verdict}</div>`;
+}
+
+function scToggleBF(l) {
+  scState.fasted.bf[l] = !scState.fasted.bf[l];
+  const el = document.getElementById('scbf-'+l);
+  el.classList.toggle('on', scState.fasted.bf[l]);
+  el.textContent = scState.fasted.bf[l] ? '✓' : '';
+  const anyPos = Object.values(scState.fasted.bf).some(v => v);
+  const bfr = document.getElementById('sc-bf-result');
+  bfr.style.display = anyPos ? 'block' : 'none';
+  if (anyPos) {
+    const cnt = Object.values(scState.fasted.bf).filter(v => v).length;
+    bfr.innerHTML = `<div class="sc-verdict sv-red"><strong>BE FAST positive</strong> (${cnt} finding${cnt>1?'s':''}). Proceed to FAST-ED scoring below. Activate Stroke Alert.</div>`;
+  }
+  scUpdateFasted();
+}
+
+function scUpdateFasted() {
+  const s = scState.fasted;
+  const keys = ['sc_fface','sc_farm','sc_fspeech','sc_feye','sc_fdenial'];
+  const vals = keys.map(k => s[k]);
+  const answered = vals.filter(v => v !== null).length;
+  const total = vals.filter(v => v !== null).reduce((a,b) => a + (b||0), 0);
+  const bfPos = Object.values(s.bf).some(v => v);
+  const res = document.getElementById('sc-fasted-res');
+  if (!res) return;
+  if (!answered) { res.style.display='none'; return; }
+  res.style.display = 'block';
+  const pct = Math.round((total/9)*100);
+  const col = total>=4 ? '#c0392b' : total>=1 ? '#e65100' : '#2e7d32';
+  let verdict, vclass;
+  if (answered<5)             { verdict='In progress — '+answered+'/5 items scored.'; vclass='sv-blue'; }
+  else if (total>=4 && bfPos) { verdict='<strong>FAST-ED Score '+total+' — Activate Stroke Alert.</strong> Score ≥4 within 24h = transport to thrombectomy-capable Comprehensive Stroke Center. Cath Lab and Stroke Team will activate on notification.'; vclass='sv-red'; }
+  else if (total>=1 && bfPos) { verdict='<strong>FAST-ED Score '+total+' — Activate Stroke Alert.</strong> Within 4.5h: full Stroke Alert. Outside 4.5h: discuss with receiving facility.'; vclass='sv-amber'; }
+  else if (!bfPos)             { verdict='<strong>FAST-ED Score '+total+'</strong> — BE FAST screen negative. Score ≥4 outside 24h: discuss with receiving facility.'; vclass='sv-blue'; }
+  else                         { verdict='<strong>FAST-ED Score '+total+'</strong> — BE FAST positive. Any positive FAST-ED within 4.5h = Stroke Alert.'; vclass='sv-amber'; }
+  res.innerHTML=`<div class="sc-score-row"><span class="sc-score-big" style="color:${col}">${total}</span><span class="sc-score-den">/9</span></div><div class="sc-score-lbl">FAST-ED Score — ${answered}/5 items scored</div><div class="sc-progress"><div class="sc-prog-fill" style="width:${pct}%;background:${col}"></div></div><div class="sc-verdict ${vclass}" style="margin-top:8px;">${verdict}</div>`;
+}
+
+function scFullReset() {
+  scState.cinn   = { sc_face:null, sc_arm:null, sc_speech:null };
+  scState.race   = { sc_rfacial:null, sc_rarm:null, sc_rleg:null, sc_rgaze:null, sc_raphasia:null, sc_ragnosia:null, cortical:false };
+  scState.fasted = { sc_fface:null, sc_farm:null, sc_fspeech:null, sc_feye:null, sc_fdenial:null, bf:{b:false,e:false,f:false,a:false,s:false} };
+  scState.county = null;
+  const cortEl = document.getElementById('sc-cortical');
+  if (cortEl) cortEl.classList.remove('on');
+  ['b','e','f','a','s'].forEach(l => {
+    const el = document.getElementById('scbf-'+l);
+    if (el) { el.classList.remove('on'); el.textContent = ''; }
+  });
+  const bfr = document.getElementById('sc-bf-result');
+  if (bfr) bfr.style.display = 'none';
+  const fastedRes = document.getElementById('sc-fasted-res');
+  if (fastedRes) fastedRes.style.display = 'none';
+  scBuildQs(SC_CINN, scState.cinn, 'sc-cinn-qs');
+  document.getElementById('sc-cinn-res').style.display = 'none';
+  scSetStep(1);
+}
+
+
+
+// ── RHYTHM STRIP SVG BUILDER ─────────────────────────────────────────
+function buildRhythmStrips() {
+  // A-fib: irregularly irregular baseline with fibrillatory waves, no clear P waves, narrow QRS
+  function afibPath() {
+    const w = 320, h = 60, mid = 38;
+    // Fibrillatory baseline: rapid low-amplitude oscillations
+    let d = `M0,${mid}`;
+    // Draw irregular fibrillatory waves across the strip
+    const fibPoints = [];
+    let x = 0;
+    while (x < w) {
+      const amp = 1.5 + Math.sin(x * 0.3) * 1.2;
+      const step = 3 + (x % 5 === 0 ? 1 : 0);
+      fibPoints.push([x, mid + amp * Math.sin(x * 1.8 + 0.7)]);
+      x += step;
+    }
+    d = 'M' + fibPoints.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' L');
+    // Add irregularly-spaced narrow QRS complexes on top
+    const qrsTimes = [22, 58, 88, 130, 162, 205, 238, 278, 308];
+    let qrsPath = '';
+    qrsTimes.forEach(qx => {
+      // Q dip, R spike, S dip — narrow complex
+      qrsPath += ` M${qx-2},${mid+2} L${qx},${mid+4} L${qx+1},${mid-18} L${qx+3},${mid+5} L${qx+5},${mid+1}`;
+    });
+    return { fib: d, qrs: qrsPath };
+  }
+
+  // A-flutter: regular sawtooth P waves at ~300bpm (4:1 block = 75bpm ventricular)
+  function aflutterPath() {
+    const w = 320, h = 60, mid = 38;
+    // Regular sawtooth flutter waves
+    let sawPath = `M0,${mid}`;
+    const sawPeriod = 13; // ~300bpm flutter cycle
+    for (let x = 0; x < w; x += sawPeriod) {
+      // Downslope (slow), upstroke (fast) = sawtooth
+      sawPath += ` L${x + sawPeriod * 0.75},${mid + 5}`;   // slow descent
+      sawPath += ` L${x + sawPeriod},${mid - 3}`;           // fast upstroke
+    }
+    // Regular QRS complexes every 4 flutter waves (~52px apart)
+    const qrsTimes = [30, 82, 134, 186, 238, 290];
+    let qrsPath = '';
+    qrsTimes.forEach(qx => {
+      qrsPath += ` M${qx-2},${mid+2} L${qx},${mid+4} L${qx+1},${mid-18} L${qx+3},${mid+5} L${qx+5},${mid+1}`;
+    });
+    return { saw: sawPath, qrs: qrsPath };
+  }
+
+  const afib = afibPath();
+  const afl  = aflutterPath();
+
+  return `<div class="dsec-card" style="padding:12px 14px;">
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Atrial Fibrillation — fibrillatory waves</div>
+      <div style="background:#fff8f8;border-radius:8px;border:1px solid #f0d0d0;padding:6px 8px;overflow:hidden;">
+        <svg viewBox="0 0 320 60" width="100%" height="60" style="display:block;">
+          <rect width="320" height="60" fill="#fff8f8"/>
+          <!-- Grid lines -->
+          ${Array.from({length:16},(_,i)=>`<line x1="${i*20}" y1="0" x2="${i*20}" y2="60" stroke="#f5caca" stroke-width="0.4"/>`).join('')}
+          ${Array.from({length:4},(_,i)=>`<line x1="0" y1="${i*15+8}" x2="320" y2="${i*15+8}" stroke="#f5caca" stroke-width="0.4"/>`).join('')}
+          <!-- Baseline -->
+          <line x1="0" y1="38" x2="320" y2="38" stroke="#e8b0b0" stroke-width="0.5" stroke-dasharray="2,3"/>
+          <!-- Fibrillatory baseline -->
+          <path d="${afib.fib}" fill="none" stroke="#c0392b" stroke-width="1.2" stroke-linejoin="round"/>
+          <!-- QRS complexes -->
+          <path d="${afib.qrs}" fill="none" stroke="#c0392b" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+          <!-- Label -->
+          <text x="6" y="12" font-size="8" fill="#999" font-family="sans-serif">Lead II</text>
+          <text x="220" y="12" font-size="7.5" fill="#c0392b" font-family="sans-serif" font-weight="bold">Irregularly irregular · No P waves</text>
+        </svg>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Atrial Flutter — sawtooth pattern</div>
+      <div style="background:#fff8f8;border-radius:8px;border:1px solid #f0d0d0;padding:6px 8px;overflow:hidden;">
+        <svg viewBox="0 0 320 60" width="100%" height="60" style="display:block;">
+          <rect width="320" height="60" fill="#fff8f8"/>
+          <!-- Grid -->
+          ${Array.from({length:16},(_,i)=>`<line x1="${i*20}" y1="0" x2="${i*20}" y2="60" stroke="#f5caca" stroke-width="0.4"/>`).join('')}
+          ${Array.from({length:4},(_,i)=>`<line x1="0" y1="${i*15+8}" x2="320" y2="${i*15+8}" stroke="#f5caca" stroke-width="0.4"/>`).join('')}
+          <!-- Baseline -->
+          <line x1="0" y1="38" x2="320" y2="38" stroke="#e8b0b0" stroke-width="0.5" stroke-dasharray="2,3"/>
+          <!-- Sawtooth flutter waves -->
+          <path d="${afl.saw}" fill="none" stroke="#c0392b" stroke-width="1.4" stroke-linejoin="round"/>
+          <!-- QRS complexes -->
+          <path d="${afl.qrs}" fill="none" stroke="#c0392b" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+          <!-- Label -->
+          <text x="6" y="12" font-size="8" fill="#999" font-family="sans-serif">Lead II</text>
+          <text x="190" y="12" font-size="7.5" fill="#c0392b" font-family="sans-serif" font-weight="bold">Regular sawtooth · 4:1 block typical</text>
+        </svg>
+      </div>
+    </div>
+    <div style="margin-top:10px;background:#fff3e0;border-radius:8px;padding:9px 11px;">
+      <div style="font-size:11px;font-weight:700;color:#e65100;margin-bottom:3px;">⚠️ WPW — Delta Wave (Wolff-Parkinson-White)</div>
+      <div style="font-size:11.5px;color:#bf360c;line-height:1.5;">If WPW is suspected: <strong>slurred upstroke (delta wave) on QRS</strong> — do NOT give Cardizem, Adenosine, or Digoxin. Contact OLMC (305) 990-8950 immediately. Consider synchronized cardioversion.</div>
+    </div>
+  </div>`;
+}
+
+// ── INLINE CINCINNATI WIDGET (renders inside stroke protocol detail) ───
+const inlineCinnState = { face: null, arm: null, speech: null };
+
+function renderInlineCinn() {
+  const w = document.getElementById('inline-cinn-widget');
+  if (!w) return;
+  const s = inlineCinnState;
+
+  const questions = [
+    { id: 'face',   label: 'Facial droop',   instr: 'Ask the patient to smile or show their teeth.' },
+    { id: 'arm',    label: 'Arm drift',       instr: 'Eyes closed — hold both arms out for 10 seconds.' },
+    { id: 'speech', label: 'Speech',          instr: 'Ask the patient to repeat a simple sentence.' },
+  ];
+
+  const opts = [
+    { pts: 0, desc: 'Normal' },
+    { pts: 1, desc: 'Abnormal' },
+  ];
+
+  const purple = '#6a1b9a';
+
+  let html = '';
+
+  questions.forEach(q => {
+    const val = s[q.id];
+    html += `<div style="margin-bottom:10px;">
+      <div style="font-size:12.5px;font-weight:600;color:#1c1c1e;margin-bottom:2px;">${q.label}</div>
+      <div style="font-size:11px;color:#888;margin-bottom:6px;">${q.instr}</div>
+      <div style="display:flex;gap:8px;">`;
+    opts.forEach(o => {
+      const sel = val === o.pts;
+      const bg   = sel ? (o.pts === 1 ? '#fdecea' : '#e8f5e9') : '#f5f5f5';
+      const border = sel ? (o.pts === 1 ? '2px solid #c0392b' : '2px solid #2e7d32') : '1.5px solid #e0e0e0';
+      const col  = sel ? (o.pts === 1 ? '#c0392b' : '#2e7d32') : '#555';
+      html += `<div onclick="inlineCinnSelect('${q.id}',${o.pts})"
+        style="flex:1;padding:8px 6px;border-radius:9px;background:${bg};border:${border};cursor:pointer;text-align:center;transition:all .12s;">
+        <div style="font-size:13px;font-weight:600;color:${col};">${o.pts === 0 ? '✓ Normal' : '✗ Abnormal'}</div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+
+  // Result
+  const vals = [s.face, s.arm, s.speech];
+  const answered = vals.filter(v => v !== null).length;
+  const abnormal = vals.filter(v => v === 1).length;
+
+  if (answered > 0) {
+    if (abnormal >= 1 && answered === 3) {
+      const findings = [];
+      if (s.face === 1)   findings.push('Facial droop');
+      if (s.arm === 1)    findings.push('Arm drift');
+      if (s.speech === 1) findings.push('Speech');
+      html += `<div style="background:#fdecea;border-radius:10px;padding:12px 13px;margin-top:4px;border-left:4px solid #c0392b;">
+        <div style="font-size:13px;font-weight:700;color:#c0392b;margin-bottom:4px;">🚨 Stroke Alert — Cincinnati Positive</div>
+        <div style="font-size:12px;color:#c0392b;margin-bottom:10px;">Abnormal: <strong>${findings.join(', ')}</strong>. Activate Stroke Alert. Transport to Comprehensive Stroke Center only.</div>
+        <button onclick="inlineCinnGoCounty('${findings.join(', ')}')"
+          style="width:100%;background:#6a1b9a;color:#fff;border:none;border-radius:9px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;">
+          Select County for Full Scale →
+        </button>
+      </div>`;
+    } else if (abnormal >= 1) {
+      html += `<div style="background:#fdecea;border-radius:10px;padding:10px 12px;margin-top:4px;border-left:4px solid #c0392b;">
+        <div style="font-size:12.5px;color:#c0392b;font-weight:600;">🚨 Abnormal finding detected — complete all 3 items, then select county.</div>
+      </div>`;
+    } else if (answered === 3) {
+      html += `<div style="background:#e8f5e9;border-radius:10px;padding:10px 12px;margin-top:4px;border-left:4px solid #2e7d32;">
+        <div style="font-size:12.5px;color:#2e7d32;font-weight:600;">✓ Cincinnati Stroke Scale negative. Continue clinical assessment.</div>
+      </div>`;
+    } else {
+      html += `<div style="font-size:11.5px;color:#888;margin-top:4px;">${answered}/3 items assessed...</div>`;
+    }
+  }
+
+  html += `<button onclick="inlineCinnReset()" style="width:100%;margin-top:10px;padding:8px;font-size:12px;font-weight:500;border:1px solid #ddd;border-radius:9px;background:#fff;color:#888;cursor:pointer;">↺ Reset Cincinnati Scale</button>`;
+
+  w.innerHTML = html;
+}
+
+function inlineCinnSelect(qid, pts) {
+  inlineCinnState[qid] = pts;
+  renderInlineCinn();
+}
+
+function inlineCinnReset() {
+  inlineCinnState.face = null;
+  inlineCinnState.arm = null;
+  inlineCinnState.speech = null;
+  renderInlineCinn();
+}
+
+function inlineCinnGoCounty(findings) {
+  // Pre-fill cinn state into wizard state so it carries over, then open the county picker
+  scState.cinn.sc_face   = inlineCinnState.face;
+  scState.cinn.sc_arm    = inlineCinnState.arm;
+  scState.cinn.sc_speech = inlineCinnState.speech;
+  // Show stroke calc at step 2 (county picker) with the alert pre-filled
+  document.getElementById('detail').style.display = 'none';
+  document.getElementById('stroke-calc').style.display = 'flex';
+  document.getElementById('sc-cinn-summary').textContent =
+    'Abnormal: ' + findings + '. Activate Stroke Alert. Select county for the appropriate scale.';
+  // Reset county/race/fasted but keep cinn
+  scState.race   = { sc_rfacial:null, sc_rarm:null, sc_rleg:null, sc_rgaze:null, sc_raphasia:null, sc_ragnosia:null, cortical:false };
+  scState.fasted = { sc_fface:null, sc_farm:null, sc_fspeech:null, sc_feye:null, sc_fdenial:null, bf:{b:false,e:false,f:false,a:false,s:false} };
+  scState.county = null;
+  const cortEl = document.getElementById('sc-cortical');
+  if (cortEl) cortEl.classList.remove('on');
+  ['b','e','f','a','s'].forEach(l => {
+    const el = document.getElementById('scbf-'+l);
+    if (el) { el.classList.remove('on'); el.textContent = ''; }
+  });
+  scSetStep(2);
+}
+
+init();
+
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('HSF EMS SW registered:', reg.scope))
+      .catch(err => console.warn('SW registration failed:', err));
+  });
+}
+</script>
+</body>
+</html>
